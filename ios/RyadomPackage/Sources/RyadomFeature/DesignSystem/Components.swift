@@ -72,7 +72,7 @@ public struct RYPrimaryButtonStyle: ButtonStyle {
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity, minHeight: 48)
             .background(
-                RYColor.primary.opacity(isEnabled ? (configuration.isPressed ? 0.85 : 1) : 0.4),
+                RYColor.accent.opacity(isEnabled ? (configuration.isPressed ? 0.85 : 1) : 0.4),
                 in: RoundedRectangle(cornerRadius: RYRadius.card)
             )
     }
