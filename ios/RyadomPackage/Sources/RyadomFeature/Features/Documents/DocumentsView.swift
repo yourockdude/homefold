@@ -29,9 +29,8 @@ struct DocumentsView: View {
             Group {
                 if lock.isContentVisible { content } else { LockedDocumentsView() }
             }
-            .tabBarReserve()
             .toolbar(.hidden, for: .navigationBar)
-            .navigationDestination(for: DocumentRoute.self) { route in destination(route).tabBarReserve() }
+            .navigationDestination(for: DocumentRoute.self) { route in destination(route) }
         }
         .sheet(item: $sheet) { item in
             DocumentFormView(mode: item == .create ? .create : .edit(editId(item)), draft: $draft, pickedFile: $pickedFile,
@@ -224,10 +223,3 @@ struct LockedDocumentsView: View {
     private func unlock() async { failed = !(await session.documentsLock.unlock()) }
 }
 
-extension View {
-    /// Резерв под плавающую панель вкладок. `RootView` резервирует место снаружи, но `NavigationStack`
-    /// не передаёт этот отступ внутрь, поэтому кнопки экрана встают над панелью только с локальным резервом.
-    func tabBarReserve() -> some View {
-        safeAreaInset(edge: .bottom, spacing: 0) { Color.clear.frame(height: RYSpacing.tabBarReserve) }
-    }
-}
