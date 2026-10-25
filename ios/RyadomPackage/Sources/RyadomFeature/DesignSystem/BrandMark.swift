@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Логотип HomeFold: объёмный синий дом на скруглённой плитке и слово HomeFold. На сплэше — крупный, слово белое.
+/// Логотип HomeFold: объёмный синий дом и название Helvetica Neue. На сплэше — крупный, название белое.
 struct BrandMark: View {
     enum Style { case compact, splash }
 
@@ -10,14 +10,14 @@ struct BrandMark: View {
     var body: some View {
         Group {
             if style == .splash {
-                VStack(spacing: 18) {
-                    tile(size: 120)
-                    Text("HomeFold").ryFont(RYType.h1B).foregroundStyle(color)
+                VStack(spacing: 14) {
+                    house(height: 128)
+                    wordmark(size: 40)
                 }
             } else {
-                HStack(spacing: 8) {
-                    tile(size: 32)
-                    Text("HomeFold").ryFont(RYType.h3B).foregroundStyle(color)
+                HStack(spacing: 6) {
+                    house(height: 30)
+                    wordmark(size: 24)
                 }
             }
         }
@@ -25,12 +25,18 @@ struct BrandMark: View {
         .accessibilityLabel("HomeFold")
     }
 
-    private func tile(size: CGFloat) -> some View {
+    private func house(height: CGFloat) -> some View {
         Image("BrandLogo", bundle: .module)
             .resizable()
             .scaledToFit()
-            .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: size * 0.225, style: .continuous))
+            .frame(height: height)
+    }
+
+    private func wordmark(size: CGFloat) -> some View {
+        Text("HomeFold")
+            .font(.custom("HelveticaNeue-Bold", size: size, relativeTo: .title2))
+            .tracking(-size * 0.02)
+            .foregroundStyle(color)
     }
 }
 
