@@ -159,7 +159,7 @@ struct ItemFormView: View {
             }
             .padding(.horizontal, 14).frame(minHeight: 44)
             .background(selected ? RYColor.accentTint : RYColor.surface, in: Capsule())
-            .overlay(Capsule().stroke(selected ? RYColor.accent : Color.white, lineWidth: 1))
+            .overlay(Capsule().stroke(selected ? RYColor.accent : Color.clear, lineWidth: 1))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(title)

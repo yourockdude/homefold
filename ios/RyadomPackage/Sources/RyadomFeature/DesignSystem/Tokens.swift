@@ -1,33 +1,81 @@
 import SwiftUI
 
-/// Дизайн-токены «рядом» (редизайн: холодный фон, чёрно-зелёный текст, карточки r20).
+/// Цветовые токены «рядом» из гайда стилей Figma (Text & Icons, Surface, Background, Outlines, Gradients, Palette).
+/// Каждый токен — цвет в `Colors.xcassets` с вариантами Any/Dark, поэтому светлая и тёмная темы работают автоматически.
+/// Имена свойств ниже — смысловые роли приложения; сырые токены доступны через `RYToken`.
 public enum RYColor {
-    public static let background = Color(hex: 0xF2F2F7)
-    public static let surface = Color.white
-    /// Тонкие разделители внутри карточек (0,5 pt).
-    public static let divider = Color(hex: 0xDCDDE0)
-    public static let separator = Color(hex: 0xBFC2C6)
-    public static let border = Color(hex: 0xE3E4E8)
-    public static let checkBorder = Color(hex: 0xC7CBC8)
+    private static func token(_ name: String) -> Color { Color(name, bundle: .module) }
 
-    public static let ink = Color(hex: 0x18251F)
-    public static let muted = Color(hex: 0x6C716E)
-    public static let primary = Color(hex: 0x376653)
-    public static let accent = Color(hex: 0x376653)
-    public static let accentTint = Color(hex: 0xE5EEE8)
-    public static let coverShade = Color(hex: 0x122E24)
+    // Фоны и поверхности
+    /// Фон экрана: bg-contrast (светлая) / bg-secondary (тёмная).
+    public static let background = token("screen-background")
+    /// Карточки и поля: surface-neutral-primary.
+    public static let surface = token("surface-primary")
+    /// Вторичная поверхность (переключатель, скелетон): surface-neutral-secondary.
+    public static let surfaceSecondary = token("surface-secondary")
 
-    public static let peach = Color(hex: 0xF5E7D8)
-    public static let peachInk = Color(hex: 0x9C633F)
-    public static let sky = Color(hex: 0xE5EDF4)
-    public static let skyInk = Color(hex: 0x567487)
-    public static let lilac = Color(hex: 0xEEE7F4)
-    public static let lilacInk = Color(hex: 0x79618D)
+    // Линии
+    /// Разделители внутри карточек и в алертах: outline-neutral-tertiary.
+    public static let divider = token("outline-tertiary")
+    public static let separator = token("outline-tertiary")
+    public static let border = token("outline-quaternary")
+    /// Контур пустой отметки: outline-neutral-secondary.
+    public static let checkBorder = token("outline-secondary")
 
-    public static let danger = Color(hex: 0xC63830)
-    public static let dangerTint = Color(hex: 0xF8E6E3)
+    // Текст и значки
+    public static let ink = token("text-primary")
+    /// Вторичный текст: text-neutral-secondary.
+    public static let muted = token("text-secondary")
+    public static let placeholder = token("text-tertiary")
+    public static let softInk = token("text-softPrimary")
+    /// Акцентный текст, ссылки, значки: text-accent-primary.
+    public static let accent = token("text-accent")
+    /// Заливка акцентных элементов (кнопки, выбранный день, отметки): surface-accent-primary.
+    public static let accentFill = token("surface-accent-primary")
+    public static let primary = accentFill
+    /// Подложка акцентных плашек и выбранных пилюль: surface-accent-tsp.
+    public static let accentTint = token("surface-accent-tsp")
+    public static let accentInk = token("text-accent-ink")
+    /// Текст на акцентной заливке и на фото: text-constant-light.
+    public static let onAccent = token("text-constant-light")
+    /// Затемнение низа фотографии.
+    public static let coverShade = token("surface-constant-dark")
+
+    // Статусы
+    public static let danger = token("text-error")
+    public static let dangerTint = token("surface-error-minor")
+    public static let success = token("text-success")
+    public static let successTint = token("surface-success-minor")
+    public static let warning = token("text-warning")
+    public static let warningTint = token("surface-warning-minor")
+
+    // Цвета аватаров и значков категорий (Palette: soft / strong)
+    public static let peach = token("palette-orange-soft")
+    public static let peachInk = token("palette-orange-strong")
+    public static let sky = token("palette-blueGray-soft")
+    public static let skyInk = token("palette-blueGray-strong")
+    public static let lilac = token("palette-purple-soft")
+    public static let lilacInk = token("palette-purple-strong")
+    public static let mint = token("palette-green-soft")
+    public static let mintInk = token("palette-green-strong")
+
     /// Затемнение под диалогом.
-    public static let scrim = Color(hex: 0x18251F).opacity(0.45)
+    public static let scrim = token("surface-constant-dark").opacity(0.45)
+}
+
+/// Сырые токены гайда стилей по их именам в Figma (для редких случаев, когда нужен точный токен).
+public enum RYToken {
+    public static func color(_ name: String) -> Color { Color(name, bundle: .module) }
+
+    public enum Palette: String, CaseIterable {
+        case blueGray, inkBlue, skyBlue, teal, green, spring, gold, orange, red, pink, orchid, purple
+        public var soft: Color { RYToken.color("palette-\(rawValue)-soft") }
+        public var strong: Color { RYToken.color("palette-\(rawValue)-strong") }
+        /// Полупрозрачный вариант мягкого цвета.
+        public var tsp: Color { RYToken.color("palette-\(rawValue)-tsp") }
+    }
+
+    public static let gradientPeach = [color("gradient-peach-1"), color("gradient-peach-2")]
 }
 
 public enum RYSpacing {

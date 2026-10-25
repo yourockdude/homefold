@@ -71,8 +71,8 @@ struct MemberPickerSheet: View {
                 ZStack {
                     Circle().stroke(draft == id ? RYColor.accent : RYColor.checkBorder, lineWidth: 1.3)
                     if draft == id {
-                        Circle().fill(RYColor.accent)
-                        Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(.white)
+                        Circle().fill(RYColor.accentFill)
+                        Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(RYColor.onAccent)
                     }
                 }
                 .frame(width: 22, height: 22)

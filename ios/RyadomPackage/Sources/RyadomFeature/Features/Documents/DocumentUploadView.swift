@@ -76,7 +76,7 @@ struct DocumentUploadView: View {
                         Text("\(percent)%").ryFont(.headline).foregroundStyle(RYColor.accent)
                             .accessibilityIdentifier("upload.percent")
                     }
-                    ProgressView(value: progress.fraction).tint(RYColor.accent)
+                    ProgressView(value: progress.fraction).tint(RYColor.accentFill)
                         .accessibilityLabel("Загрузка файла").accessibilityValue("\(percent) процентов")
                     Text("\(DocumentFormat.decimal(Double(progress.sent) / 1_000_000, digits: 2)) из \(DocumentFormat.decimal(Double(progress.total) / 1_000_000)) МБ · \(DocumentFormat.eta(progress.etaSeconds))")
                         .ryFont(.subhead).foregroundStyle(RYColor.muted)

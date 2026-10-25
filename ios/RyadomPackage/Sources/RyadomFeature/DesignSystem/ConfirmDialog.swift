@@ -30,7 +30,7 @@ struct RYConfirmDialog: View {
             }
             .frame(width: 300)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: RYRadius.sheet))
-            .background(Color(hex: 0xF9F9F9, opacity: 0.95), in: RoundedRectangle(cornerRadius: RYRadius.sheet))
+            .background(RYColor.surface.opacity(0.95), in: RoundedRectangle(cornerRadius: RYRadius.sheet))
             .clipShape(RoundedRectangle(cornerRadius: RYRadius.sheet))
             .accessibilityElement(children: .contain)
             .accessibilityAddTraits(.isModal)

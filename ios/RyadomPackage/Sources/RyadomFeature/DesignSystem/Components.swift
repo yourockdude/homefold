@@ -9,7 +9,7 @@ public enum AvatarTone: Int, CaseIterable, Sendable {
         case .peach: RYColor.peach
         case .sky: RYColor.sky
         case .lilac: RYColor.lilac
-        case .mint: RYColor.accentTint
+        case .mint: RYColor.mint
         }
     }
 
@@ -18,7 +18,7 @@ public enum AvatarTone: Int, CaseIterable, Sendable {
         case .peach: RYColor.peachInk
         case .sky: RYColor.skyInk
         case .lilac: RYColor.lilacInk
-        case .mint: RYColor.accent
+        case .mint: RYColor.mintInk
         }
     }
 }
@@ -143,10 +143,10 @@ public struct RYPrimaryButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .ryFont(.headline)
-            .foregroundStyle(.white)
+            .foregroundStyle(RYColor.onAccent)
             .frame(maxWidth: .infinity, minHeight: 50)
             .background(
-                RYColor.accent.opacity(isEnabled ? (configuration.isPressed ? 0.85 : 1) : 0.4),
+                RYColor.accentFill.opacity(isEnabled ? (configuration.isPressed ? 0.85 : 1) : 0.4),
                 in: Capsule()
             )
     }
@@ -171,7 +171,7 @@ public struct RYDestructiveButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .ryFont(.headline)
-            .foregroundStyle(.white)
+            .foregroundStyle(RYColor.onAccent)
             .frame(maxWidth: .infinity, minHeight: 50)
             .background(RYColor.danger.opacity(configuration.isPressed ? 0.85 : 1), in: Capsule())
     }
@@ -210,10 +210,10 @@ public struct RYGlassBackground<S: Shape>: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
-            .background(Color.white.opacity(0.85), in: shape)   // поверх блюра
+            .background(RYColor.surface.opacity(0.85), in: shape)   // поверх блюра
             .background(.ultraThinMaterial, in: shape)
-            .overlay(shape.stroke(Color.white.opacity(0.9), lineWidth: 0.7))
-            .shadow(color: RYColor.ink.opacity(0.09), radius: 8, x: 0, y: 4)
+            .overlay(shape.stroke(RYColor.surface.opacity(0.9), lineWidth: 0.7))
+            .shadow(color: Color.black.opacity(0.10), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -288,10 +288,10 @@ public struct RYCheckbox: View {
 
     public var body: some View {
         ZStack {
-            Circle().fill(isOn ? RYColor.accent : RYColor.surface)
-            Circle().stroke(isOn ? RYColor.accent : RYColor.checkBorder, lineWidth: 1.3)
+            Circle().fill(isOn ? RYColor.accentFill : RYColor.surface)
+            Circle().stroke(isOn ? RYColor.accentFill : RYColor.checkBorder, lineWidth: 1.3)
             if isOn {
-                Image(systemName: "checkmark").font(.system(size: 13, weight: .bold)).foregroundStyle(.white)
+                Image(systemName: "checkmark").font(.system(size: 13, weight: .bold)).foregroundStyle(RYColor.onAccent)
             }
         }
         .frame(width: 26, height: 26)
@@ -489,7 +489,7 @@ public struct RYSegmentedControl<ID: Hashable>: View {
                         .frame(maxWidth: .infinity, minHeight: 36)
                         .background {
                             if selected {
-                                Capsule().fill(.white).shadow(color: .black.opacity(0.08), radius: 2, y: 1)
+                                Capsule().fill(RYColor.surface).shadow(color: .black.opacity(0.08), radius: 2, y: 1)
                                     .matchedGeometryEffect(id: "segment", in: ns)
                             }
                         }
@@ -500,6 +500,6 @@ public struct RYSegmentedControl<ID: Hashable>: View {
             }
         }
         .padding(2)
-        .background(Color(hex: 0xE3E3E8), in: Capsule())
+        .background(RYColor.surfaceSecondary, in: Capsule())
     }
 }

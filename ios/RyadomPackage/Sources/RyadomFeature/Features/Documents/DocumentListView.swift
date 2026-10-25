@@ -55,9 +55,9 @@ struct DocumentListView: View {
 
     private func chip(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(title).ryFont(.callout).fontWeight(.medium).foregroundStyle(selected ? .white : RYColor.muted)
+            Text(title).ryFont(.callout).fontWeight(.medium).foregroundStyle(selected ? RYColor.onAccent : RYColor.muted)
                 .padding(.horizontal, 16).frame(minHeight: 36)
-                .background(selected ? RYColor.accent : RYColor.surface, in: Capsule())
+                .background(selected ? RYColor.accentFill : RYColor.surface, in: Capsule())
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? .isSelected : [])

@@ -112,7 +112,7 @@ struct TaskFormView: View {
                         RYDateField(label: "Время", value: RussianDate.time(draft.start), date: timeBinding,
                                     components: .hourAndMinute, identifier: "task.time", inline: true)
                     }
-                    Toggle("Указать время", isOn: $draft.hasTime).labelsHidden().tint(RYColor.accent)
+                    Toggle("Указать время", isOn: $draft.hasTime).labelsHidden().tint(RYColor.accentFill)
                         .accessibilityIdentifier("task.timeToggle")
                         .onChange(of: draft.hasTime) { _, on in if on { applyDefaultTime() } }
                 }

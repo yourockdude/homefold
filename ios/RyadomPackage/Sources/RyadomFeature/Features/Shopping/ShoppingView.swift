@@ -162,7 +162,7 @@ struct ShoppingView: View {
                 .padding(14).frame(maxWidth: .infinity, alignment: .leading)
                 .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: RYRadius.card - 4))
                 .accessibilityElement(children: .combine)
-                Capsule().fill(RYColor.accent).frame(height: 4).padding(.horizontal, 2).accessibilityHidden(true)
+                Capsule().fill(RYColor.accentFill).frame(height: 4).padding(.horizontal, 2).accessibilityHidden(true)
             }
         } else {
             VStack(alignment: .leading, spacing: 8) {
@@ -384,7 +384,7 @@ struct ProgressTrack: View {
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
                 Capsule().fill(RYColor.accentTint)
-                Capsule().fill(RYColor.accent).frame(width: max(4, proxy.size.width * min(max(fraction, 0), 1)))
+                Capsule().fill(RYColor.accentFill).frame(width: max(4, proxy.size.width * min(max(fraction, 0), 1)))
             }
         }
         .frame(height: 4)

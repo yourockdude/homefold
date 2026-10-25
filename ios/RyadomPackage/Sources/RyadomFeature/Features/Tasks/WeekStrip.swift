@@ -18,14 +18,14 @@ struct WeekStrip: View {
                 Button { selected = calendar.startOfDay(for: day) } label: {
                     VStack(spacing: 6) {
                         Text(RussianDate.shortWeekday(day, calendar: calendar))
-                            .font(.system(size: 11)).foregroundStyle(isSelected ? .white.opacity(0.85) : RYColor.muted)
+                            .font(.system(size: 11)).foregroundStyle(isSelected ? RYColor.onAccent.opacity(0.85) : RYColor.muted)
                         Text("\(calendar.component(.day, from: day))")
                             .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
-                            .foregroundStyle(isSelected ? .white : (isToday ? RYColor.accent : RYColor.ink))
+                            .foregroundStyle(isSelected ? RYColor.onAccent : (isToday ? RYColor.accent : RYColor.ink))
                     }
                     .frame(maxWidth: .infinity, minHeight: 66)
                     .background {
-                        if isSelected { Capsule().fill(RYColor.accent).padding(.horizontal, 2) }
+                        if isSelected { Capsule().fill(RYColor.accentFill).padding(.horizontal, 2) }
                     }
                     .contentShape(Rectangle())
                 }

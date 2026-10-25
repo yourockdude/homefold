@@ -42,7 +42,6 @@ public struct RootView: View {
         .environment(session)
         .environment(dimming)
         .onChange(of: members.map(\.id), initial: true) { _, _ in bootstrapSession() }
-        .preferredColorScheme(.light)
     }
 }
 

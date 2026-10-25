@@ -152,7 +152,7 @@ struct DocumentsView: View {
                         .ryFont(.subhead).foregroundStyle(RYColor.muted)
                 }
             }
-            .tint(RYColor.accent)
+            .tint(RYColor.accentFill)
             .padding(.vertical, 10)
             .accessibilityIdentifier("documents.protection")
         }

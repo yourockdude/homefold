@@ -99,8 +99,8 @@ struct OverviewView: View {
             FamilyCover()
             LinearGradient(colors: [RYColor.coverShade.opacity(0.85), RYColor.coverShade.opacity(0)], startPoint: .bottom, endPoint: .top)
             VStack(alignment: .leading, spacing: 4) {
-                Text(families.first?.name ?? "").ryFont(.heading).foregroundStyle(.white)
-                if !compact { Text("Меньше забот. Больше времени вместе.").ryFont(.caption).foregroundStyle(.white) }
+                Text(families.first?.name ?? "").ryFont(.heading).foregroundStyle(RYColor.onAccent)
+                if !compact { Text("Меньше забот. Больше времени вместе.").ryFont(.caption).foregroundStyle(RYColor.onAccent) }
             }
             .padding(18)
         }
@@ -222,13 +222,13 @@ struct OverviewView: View {
     }
 
     private func block(width: CGFloat? = nil, height: CGFloat, radius: CGFloat) -> some View {
-        RoundedRectangle(cornerRadius: radius).fill(Color(hex: 0xE1E2E5))
+        RoundedRectangle(cornerRadius: radius).fill(RYColor.surfaceSecondary)
             .frame(width: width, height: height).frame(maxWidth: width == nil ? .infinity : nil, alignment: .leading)
     }
 
     private var skeletonRow: some View {
         HStack(spacing: 12) {
-            Circle().fill(Color(hex: 0xE1E2E5)).frame(width: 26, height: 26)
+            Circle().fill(RYColor.surfaceSecondary).frame(width: 26, height: 26)
             VStack(alignment: .leading, spacing: 6) {
                 block(width: 240, height: 14, radius: 5)
                 block(width: 80, height: 10, radius: 4)

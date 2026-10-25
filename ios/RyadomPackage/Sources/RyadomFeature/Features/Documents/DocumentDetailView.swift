@@ -125,7 +125,7 @@ struct DocumentDetailView: View {
             if lock.isContentVisible, let preview {
                 Button { open(doc) } label: {
                     ZStack(alignment: .top) {
-                        Color(hex: 0xE7EBE8)
+                        RYColor.surfaceSecondary
                         Image(uiImage: preview).resizable().scaledToFit().frame(width: 230)
                             .clipShape(RoundedRectangle(cornerRadius: 5)).padding(.top, 14)
                     }
@@ -140,7 +140,7 @@ struct DocumentDetailView: View {
                     Text("Откройте \(kind == .pdf ? "PDF" : "фото"), чтобы увидеть документ").ryFont(.subhead).foregroundStyle(RYColor.muted)
                 }
                 .frame(maxWidth: .infinity).frame(height: 150)
-                .background(Color(hex: 0xE7EBE8))
+                .background(RYColor.surfaceSecondary)
                 .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("document.previewHidden")
             }
