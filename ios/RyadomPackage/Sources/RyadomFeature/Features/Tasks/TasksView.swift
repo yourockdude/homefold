@@ -112,6 +112,7 @@ struct TasksView: View {
                 .padding(.bottom, RYSpacing.m)
             }
             .scrollIndicators(.hidden)
+            .ryPullToRefresh()
         }
         .background(RYColor.background)
         .safeAreaInset(edge: .bottom, spacing: 0) {

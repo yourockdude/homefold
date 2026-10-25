@@ -12,8 +12,12 @@ public final class AppSession {
     public var uploads: DocumentUploadCoordinator?
     /// Состояние загрузки обзора. Локальная база — источник данных; офлайн и ошибка выставляются слоем синхронизации.
     public var overviewState: OverviewLoadState = .loaded
+    /// Сколько раз запускалось обновление (pull-to-refresh). Нужен для отладки и тестов.
+    public internal(set) var refreshCount = 0
     /// Повторная загрузка. Подключается слоем синхронизации; без него остаётся прежнее состояние.
     public var refreshHandler: (@MainActor () async -> OverviewLoadState)?
+    /// Планировщик локальных напоминаний. В тестах подменяется заглушкой: `UNUserNotificationCenter` требует приложения.
+    public var reminders: any ReminderScheduling = SystemReminderScheduler()
     public let documentsLock: DocumentsLock
     public let fileStore = DocumentFileStore()
 
@@ -37,8 +41,7 @@ extension AppSession {
     /// Сервис дел для текущего пользователя; nil, пока вход не выполнен.
     func taskService(context: ModelContext) -> TaskService? {
         guard let familyId, let userId else { return nil }
-        return TaskService(context: context, familyId: familyId, userId: userId,
-                           reminders: SystemReminderScheduler())
+        return TaskService(context: context, familyId: familyId, userId: userId, reminders: reminders)
     }
 }
 

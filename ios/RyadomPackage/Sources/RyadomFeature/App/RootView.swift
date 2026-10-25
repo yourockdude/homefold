@@ -34,6 +34,15 @@ public struct RootView: View {
             if !keyboardVisible { MainTabBar(selection: tab, onSelect: select, isDimmed: dimming.isActive).padding(.bottom, 2) }
         }
         .background(RYColor.background.ignoresSafeArea())
+        #if DEBUG
+        .overlay(alignment: .topLeading) {
+            // Только для UI-тестов (-RYRefreshProbe): невидимый счётчик запущенных обновлений.
+            if ProcessInfo.processInfo.arguments.contains("-RYRefreshProbe") {
+                Text("\(session.refreshCount)").font(.system(size: 1)).opacity(0.01)
+                    .accessibilityIdentifier("debug.refreshCount").accessibilityLabel("\(session.refreshCount)")
+            }
+        }
+        #endif
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardVisible = false }
         .task(id: session.userId) { await refreshTasks() }

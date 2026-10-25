@@ -267,3 +267,39 @@ struct TaskServiceTests {
         #expect(Recurrence.monthly.title(for: at(22), calendar: calendar) == "Каждое 22-е число")
     }
 }
+
+@MainActor
+struct PullToRefreshTests {
+    private func makeSession() -> (AppSession, ModelContext) {
+        let context = ModelContext(RyadomSchema.makeContainer(inMemory: true))
+        let session = AppSession(userId: UUID(), familyId: UUID())
+        session.reminders = NoopReminderScheduler()
+        return (session, context)
+    }
+
+    @Test("С подключённой синхронизацией обновление запускает её и применяет состояние обзора")
+    func usesRefreshHandler() async {
+        let (session, context) = makeSession()
+        var calls = 0
+        session.refreshHandler = { calls += 1; return .offline(lastSync: nil) }
+        await session.refresh(context: context, minimumDuration: .zero)
+        #expect(calls == 1)
+        #expect(session.overviewState == .offline(lastSync: nil))
+    }
+
+    @Test("Без сервера обновление ничего не ломает и не меняет состояние обзора")
+    func localOnlyKeepsState() async {
+        let (session, context) = makeSession()
+        session.overviewState = .failed(lastSync: nil)
+        await session.refresh(context: context, minimumDuration: .zero)
+        #expect(session.overviewState == .failed(lastSync: nil))
+    }
+
+    @Test("Индикатор держится не меньше заданного времени")
+    func respectsMinimumDuration() async {
+        let (session, context) = makeSession()
+        let started = ContinuousClock.now
+        await session.refresh(context: context, minimumDuration: .milliseconds(200))
+        #expect(started.duration(to: .now) >= .milliseconds(180))
+    }
+}

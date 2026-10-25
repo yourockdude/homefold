@@ -53,6 +53,7 @@ struct OverviewView: View {
                 .padding(.bottom, RYSpacing.m)
             }
             .scrollIndicators(.hidden)
+            .ryPullToRefresh()
         }
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
     }

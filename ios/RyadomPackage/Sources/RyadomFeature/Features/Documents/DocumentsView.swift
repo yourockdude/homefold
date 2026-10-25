@@ -83,6 +83,7 @@ struct DocumentsView: View {
                 .padding(.bottom, RYSpacing.m)
             }
             .scrollIndicators(.hidden)
+            .ryPullToRefresh()
             .scrollDismissesKeyboard(.interactively)
         }
         .background(RYColor.background)

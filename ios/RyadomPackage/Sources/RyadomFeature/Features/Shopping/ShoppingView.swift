@@ -109,6 +109,7 @@ struct ShoppingView: View {
                 .padding(.bottom, RYSpacing.s)
             }
             .scrollIndicators(.hidden)
+            .ryPullToRefresh()
             .scrollDismissesKeyboard(.interactively)
         }
         .background(RYColor.background)
