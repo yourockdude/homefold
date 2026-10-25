@@ -10,6 +10,7 @@ struct RyadomApp: App {
         RYFonts.register()
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("-RYFreshInstall") {
+            UserDefaults.standard.removeObject(forKey: RootView.onboardingKey)
             container = RyadomSchema.makeContainer(inMemory: true)
             return
         }

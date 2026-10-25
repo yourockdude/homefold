@@ -5,7 +5,7 @@ final class FamilyUITests: XCTestCase {
     func testFirstLaunchCreatesFamily() {
         continueAfterFailure = false
         let app = XCUIApplication()
-        app.launchArguments = ["-RYFreshInstall", "-RYSkipSplash"]
+        app.launchArguments = ["-RYFreshInstall", "-RYSkipSplash", "-RYSkipOnboarding"]
         app.launch()
 
         XCTAssertTrue(app.staticTexts["Создайте семью"].waitForExistence(timeout: 5))

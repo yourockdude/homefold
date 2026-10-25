@@ -14,10 +14,13 @@ public struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Query(filter: #Predicate<MemberRecord> { !$0.isInvited }) private var members: [MemberRecord]
     @Query private var families: [FamilyRecord]
+    @AppStorage(RootView.onboardingKey) private var onboardingSeen = false
 
     /// Этапы сплэша: показан → растворяется → убран из иерархии.
     private enum SplashPhase { case visible, dissolving, gone }
     @State private var splash: SplashPhase = RootView.showsSplash ? .visible : .gone
+
+    public static let onboardingKey = "onboardingSeen"
 
     public init() {}
 
@@ -59,7 +62,28 @@ public struct RootView: View {
     }
 
     @ViewBuilder private var appContent: some View {
-        if families.isEmpty { FamilyOnboardingView() } else { mainContent }
+        Group {
+            if showsOnboarding {
+                OnboardingView { withAnimation(.easeInOut(duration: 0.35)) { onboardingSeen = true } }
+                    .transition(.opacity)
+            } else if families.isEmpty {
+                FamilyOnboardingView().transition(.opacity)
+            } else {
+                mainContent
+            }
+        }
+    }
+
+    /// Знакомство показывается один раз — новому пользователю, у которого ещё нет семьи.
+    private var showsOnboarding: Bool { !onboardingSeen && families.isEmpty && !Self.skipsOnboarding }
+
+    static var skipsOnboarding: Bool {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        return args.contains("-RYSkipOnboarding") || args.contains("-RYDemo")
+        #else
+        return false
+        #endif
     }
 
     private var mainContent: some View {
