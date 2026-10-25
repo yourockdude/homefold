@@ -137,7 +137,7 @@ struct CategoryCard: View {
 
 /// Иллюстрация пустого хранилища: синяя папка с документами.
 struct DocumentsIllustration: View {
-    var body: some View { RYIllustration(.folder, height: 210) }
+    var body: some View { RYIllustration(.folder) }
 }
 
 /// Миниатюра первой страницы PDF или изображения.

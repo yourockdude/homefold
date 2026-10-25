@@ -20,10 +20,13 @@ public enum RYIllustrationKind: String, Sendable {
 
 /// Иллюстрация состояния: вписывается в заданную высоту, для VoiceOver скрыта как декоративная.
 public struct RYIllustration: View {
+    /// Единая высота иллюстраций состояний (как в «Делах»). Менять размер на экранах не нужно — только здесь.
+    public static let standardHeight: CGFloat = 150
+
     let kind: RYIllustrationKind
     var height: CGFloat
 
-    public init(_ kind: RYIllustrationKind, height: CGFloat = 160) {
+    public init(_ kind: RYIllustrationKind, height: CGFloat = RYIllustration.standardHeight) {
         self.kind = kind
         self.height = height
     }

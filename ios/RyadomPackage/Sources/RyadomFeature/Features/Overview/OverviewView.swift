@@ -264,7 +264,7 @@ struct OverviewView: View {
     private func failed(lastSync: Date?) -> some View {
         greeting
         VStack(spacing: 14) {
-            RYIllustration(.cloud, height: 150)
+            RYIllustration(.cloud)
             Text("Не удалось загрузить обзор").ryFont(.number).foregroundStyle(RYColor.ink).multilineTextAlignment(.center)
             Text("Сервис временно недоступен. Семейные данные не потеряны — попробуйте ещё раз чуть позже.")
                 .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)

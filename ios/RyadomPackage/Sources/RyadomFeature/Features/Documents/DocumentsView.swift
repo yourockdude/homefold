@@ -165,7 +165,7 @@ struct DocumentsView: View {
         Text("Все категории · найдено \(results.count)").ryFont(.caption).foregroundStyle(RYColor.muted)
         if results.isEmpty {
             VStack(spacing: RYSpacing.m) {
-                RYIllustration(.search, height: 150).padding(.top, RYSpacing.s)
+                RYIllustration(.search).padding(.top, RYSpacing.s)
                 Text("Ничего не нашлось").ryFont(.heading).foregroundStyle(RYColor.ink)
                 Text("По запросу «\(query)» нет документов. Попробуйте другое название или имя участника семьи.")
                     .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)

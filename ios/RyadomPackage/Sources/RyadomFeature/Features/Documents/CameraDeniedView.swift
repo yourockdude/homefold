@@ -28,7 +28,7 @@ struct CameraDeniedView: View {
                 VStack(spacing: RYSpacing.s) {
                     Text("Сканирование").ryFont(.title).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    RYIllustration(.camera, height: 150).padding(.top, 6)
+                    RYIllustration(.camera).padding(.top, 6)
                     Text("Нужен доступ к камере").ryFont(.heading).foregroundStyle(RYColor.ink)
                         .multilineTextAlignment(.center)
                     Text("Разрешите приложению «рядом» использовать камеру в настройках телефона. Тогда вы сможете сканировать документы.")

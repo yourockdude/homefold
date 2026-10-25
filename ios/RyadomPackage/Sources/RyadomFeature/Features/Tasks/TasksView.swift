@@ -166,7 +166,7 @@ struct TasksView: View {
 
     private var emptyDay: some View {
         VStack(spacing: RYSpacing.m) {
-            RYIllustration(.calendar, height: 150).padding(.top, RYSpacing.s)
+            RYIllustration(.calendar).padding(.top, RYSpacing.s)
             Text("День свободен").ryFont(.heading).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
             Text("\(RussianDate.onThisWeekday(selectedDay).capitalizedFirst) пока ничего не запланировано. Добавьте дело или выберите другой день.")
                 .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)

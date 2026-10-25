@@ -70,4 +70,11 @@ final class IllustrationScreenshotTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Не удалось загрузить обзор"].waitForExistence(timeout: 5))
         save("ill-cloud")
     }
+
+    func testFolderEmptyDocuments() {
+        let app = launch(["-RYSkipBiometrics", "-RYEmptyDocuments"])
+        app.buttons["tab.documents"].tap()
+        XCTAssertTrue(app.staticTexts["Важное найдёт своё место"].waitForExistence(timeout: 5))
+        save("ill-folder")
+    }
 }

@@ -437,7 +437,7 @@ public struct RYEmptyState: View {
     public var body: some View {
         VStack(spacing: RYSpacing.m) {
             if let illustration {
-                RYIllustration(illustration, height: 150)
+                RYIllustration(illustration)
             } else if let systemImage {
                 Image(systemName: systemImage)
                     .font(.system(size: 28, weight: .light))
