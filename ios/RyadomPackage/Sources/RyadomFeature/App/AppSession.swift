@@ -10,6 +10,10 @@ public final class AppSession {
     public var familyId: UUID?
     /// Отправка документов на сервер. nil, пока нет входа и сетевого клиента: документы остаются «Ожидает синхронизации».
     public var uploads: DocumentUploadCoordinator?
+    /// Состояние загрузки обзора. Локальная база — источник данных; офлайн и ошибка выставляются слоем синхронизации.
+    public var overviewState: OverviewLoadState = .loaded
+    /// Повторная загрузка. Подключается слоем синхронизации; без него остаётся прежнее состояние.
+    public var refreshHandler: (@MainActor () async -> OverviewLoadState)?
     public let documentsLock: DocumentsLock
     public let fileStore = DocumentFileStore()
 
@@ -51,3 +55,23 @@ struct ApprovingAuthenticator: BiometricAuthenticating {
     func authenticate(reason: String) async -> Bool { true }
 }
 #endif
+
+/// Состояние экрана «Обзор»: первая загрузка, готово, нет связи (данные сохранены), ошибка.
+public enum OverviewLoadState: Equatable, Sendable {
+    case loading
+    case loaded
+    case offline(lastSync: Date?)
+    case failed(lastSync: Date?)
+}
+
+extension AppSession {
+    /// Повторяет загрузку. Если обработчика нет (сервер не подключён) — состояние не меняется.
+    func refreshOverview() async {
+        let previous = overviewState
+        overviewState = .loading
+        if let refreshHandler { overviewState = await refreshHandler() } else {
+            try? await Task.sleep(for: .milliseconds(500))
+            overviewState = previous
+        }
+    }
+}

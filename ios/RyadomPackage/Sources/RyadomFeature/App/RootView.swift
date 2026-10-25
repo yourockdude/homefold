@@ -15,7 +15,7 @@ public struct RootView: View {
         ZStack(alignment: .bottom) {
             Group {
                 switch tab {
-                case .overview: OverviewView(onOpenTasks: { tab = .tasks }, onOpenDocuments: { tab = .documents })
+                case .overview: OverviewView(onOpenTasks: { tab = .tasks }, onOpenDocuments: { tab = .documents }, onOpenShopping: { tab = .shopping })
                 case .shopping: ShoppingView()
                 case .tasks: TasksView()
                 case .documents: DocumentsView()
@@ -56,6 +56,7 @@ extension RootView {
     /// Временно, до этапа «Вход и семья»: текущий пользователь — первый администратор в локальной базе.
     private func bootstrapSession() {
         #if DEBUG
+        if let state = DemoData.overviewState { session.overviewState = state }
         if DemoData.isRequested, session.uploads == nil {
             session.uploads = DocumentUploadCoordinator(context: context, store: session.fileStore,
                                                         api: SimulatedDocumentAPI(), transfer: SimulatedStorageTransfer())

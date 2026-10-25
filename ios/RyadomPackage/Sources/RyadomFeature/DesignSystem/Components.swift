@@ -210,8 +210,8 @@ public struct RYGlassBackground<S: Shape>: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
+            .background(Color.white.opacity(0.85), in: shape)   // поверх блюра
             .background(.ultraThinMaterial, in: shape)
-            .background(Color.white.opacity(0.85), in: shape)
             .overlay(shape.stroke(Color.white.opacity(0.9), lineWidth: 0.7))
             .shadow(color: RYColor.ink.opacity(0.09), radius: 8, x: 0, y: 4)
     }
