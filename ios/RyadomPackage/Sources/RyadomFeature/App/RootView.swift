@@ -12,7 +12,7 @@ public struct RootView: View {
     public init() {}
 
     public var body: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .bottom) {
             Group {
                 switch tab {
                 case .overview: OverviewView(onOpenTasks: { tab = .tasks }, onOpenDocuments: { tab = .documents })
@@ -22,7 +22,11 @@ public struct RootView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            if !keyboardVisible { MainTabBar(selection: $tab) }
+            // Резерв под плавающую панель: кнопки экранов встают над ней, прокрутка не уходит под неё.
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                Color.clear.frame(height: keyboardVisible ? 0 : RYSpacing.tabBarReserve)
+            }
+            if !keyboardVisible { MainTabBar(selection: $tab).padding(.bottom, 2) }
         }
         .background(RYColor.background.ignoresSafeArea())
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }

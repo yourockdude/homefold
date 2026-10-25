@@ -1,8 +1,7 @@
 import SwiftUI
 
-/// Диалог подтверждения из макета: белая карточка по центру на затемнении.
+/// Диалог подтверждения в стиле системного алерта: 300 pt, r28, кнопки-строки с тонкими разделителями.
 struct RYConfirmDialog: View {
-    let systemImage: String
     let title: String
     let message: String
     let confirmTitle: String
@@ -13,44 +12,54 @@ struct RYConfirmDialog: View {
 
     var body: some View {
         ZStack {
-            Color(hex: 0x183C2D).opacity(0.55)
+            RYColor.scrim
                 .ignoresSafeArea()
                 .onTapGesture(perform: onCancel)
                 .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: RYSpacing.m) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 20, weight: .light))
-                    .foregroundStyle(RYColor.danger)
-                    .accessibilityHidden(true)
-                Text(title).ryFont(.heading).foregroundStyle(RYColor.ink)
-                    .accessibilityAddTraits(.isHeader)
-                Text(message).ryFont(.body).foregroundStyle(RYColor.muted)
-                VStack(spacing: RYSpacing.s) {
-                    Button(confirmTitle, action: onConfirm).buttonStyle(.ryDestructive)
-                    if let extraTitle, let onExtra {
-                        Button(extraTitle, action: onExtra).buttonStyle(.ryDestructive)
-                    }
-                    Button("Отмена", action: onCancel).buttonStyle(.rySecondary)
+            VStack(spacing: 0) {
+                VStack(spacing: 10) {
+                    Text(title).ryFont(.headline).foregroundStyle(RYColor.ink)
+                        .accessibilityAddTraits(.isHeader)
+                    Text(message).ryFont(.subhead).foregroundStyle(RYColor.ink)
                 }
-                .padding(.top, RYSpacing.xs)
+                .multilineTextAlignment(.center)
+                .padding(22)
+                row(confirmTitle, color: RYColor.danger, weight: .regular, id: "dialog.confirm", action: onConfirm)
+                if let extraTitle, let onExtra { row(extraTitle, color: RYColor.danger, weight: .regular, id: "dialog.extra", action: onExtra) }
+                row("Отмена", color: RYColor.accent, weight: .semibold, id: "dialog.cancel", action: onCancel)
             }
-            .padding(RYSpacing.screen)
-            .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.sheet))
-            .padding(.horizontal, RYSpacing.screen)
+            .frame(width: 300)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: RYRadius.sheet))
+            .background(Color(hex: 0xF9F9F9, opacity: 0.95), in: RoundedRectangle(cornerRadius: RYRadius.sheet))
+            .clipShape(RoundedRectangle(cornerRadius: RYRadius.sheet))
             .accessibilityElement(children: .contain)
             .accessibilityAddTraits(.isModal)
         }
         .transition(.opacity)
     }
+
+    private func row(_ title: String, color: Color, weight: Font.Weight, id: String, action: @escaping () -> Void) -> some View {
+        VStack(spacing: 0) {
+            Rectangle().fill(RYColor.separator).frame(height: 0.5)
+            Button(action: action) {
+                Text(title).font(.system(size: 17, weight: weight)).foregroundStyle(color)
+                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier(id)
+        }
+    }
 }
 
 extension View {
+    /// Подтверждение в виде алерта. `systemImage` оставлен для совместимости вызовов и не отображается.
     func ryConfirm(isPresented: Binding<Bool>, systemImage: String = "trash", title: String, message: String,
                    confirmTitle: String, extraTitle: String? = nil, onExtra: (() -> Void)? = nil,
                    onConfirm: @escaping () -> Void) -> some View {
         overlay {
             if isPresented.wrappedValue {
-                RYConfirmDialog(systemImage: systemImage, title: title, message: message, confirmTitle: confirmTitle,
+                RYConfirmDialog(title: title, message: message, confirmTitle: confirmTitle,
                                 extraTitle: extraTitle,
                                 onExtra: onExtra.map { extra in { isPresented.wrappedValue = false; extra() } },
                                 onConfirm: { isPresented.wrappedValue = false; onConfirm() },
