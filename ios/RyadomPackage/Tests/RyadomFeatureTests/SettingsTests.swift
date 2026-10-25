@@ -111,3 +111,37 @@ import SwiftData
         #expect(list.first?.fireDate == calendar.date(from: DateComponents(year: 2026, month: 10, day: 23, hour: 8)))
     }
 }
+
+/// Детерминированный генератор для тестов.
+struct SeededGenerator: RandomNumberGenerator {
+    var state: UInt64
+    mutating func next() -> UInt64 {
+        state &+= 0x9E3779B97F4A7C15
+        var z = state
+        z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+        z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+        return z ^ (z >> 31)
+    }
+}
+
+@Suite struct SplashShaderTests {
+    @Test func configIsDeterministicForSameSeed() {
+        var a = SeededGenerator(state: 42), b = SeededGenerator(state: 42)
+        #expect(SplashShaderConfig.random(using: &a) == SplashShaderConfig.random(using: &b))
+    }
+
+    @Test func anglesAndOffsetsStayInRange() {
+        var generator = SeededGenerator(state: 7)
+        for _ in 0..<500 {
+            let config = SplashShaderConfig.random(using: &generator)
+            #expect((0..<360).contains(config.angle))
+            #expect((0.12...0.32).contains(config.offset))
+        }
+    }
+
+    @Test func allKindsAppearAcrossLaunches() {
+        var generator = SeededGenerator(state: 1)
+        let kinds = Set((0..<200).map { _ in SplashShaderConfig.random(using: &generator).kind })
+        #expect(kinds == Set(SplashShaderConfig.Kind.allCases))
+    }
+}

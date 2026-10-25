@@ -1,13 +1,15 @@
 import SwiftUI
 
-/// Сплэш: анимированный цветовой фон в цветах приложения и логотип HomeFold с белым названием.
+/// Сплэш: анимированный цветовой фон в цветах приложения (случайный тип и угол при каждом запуске) и логотип HomeFold с белым названием.
 struct SplashView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var logoVisible = false
+    /// Вариант фона выбирается один раз за запуск.
+    @State private var shader = SplashShaderConfig.debugOverride ?? .random()
 
     var body: some View {
         ZStack {
-            SplashBackground(animated: !reduceMotion)
+            SplashBackground(config: shader, animated: !reduceMotion)
             BrandMark(style: .splash, color: RYColor.onAccent)
                 .opacity(logoVisible ? 1 : 0)
                 .scaleEffect(logoVisible ? 1 : 0.94)
@@ -18,51 +20,5 @@ struct SplashView: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("HomeFold")
         .accessibilityIdentifier("splash")
-    }
-}
-
-/// Плавно «перетекающий» цветовой градиент. Сетка 3×3 из системного `MeshGradient`: точки медленно
-/// смещаются, цвета берутся из токенов (тёмно-синий, акцентный, голубой). Для «Уменьшить движение» — статичный кадр.
-struct SplashBackground: View {
-    let animated: Bool
-
-    var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: !animated)) { context in
-            MeshGradient(width: 3, height: 3,
-                         points: Self.points(at: animated ? context.date.timeIntervalSinceReferenceDate : 0),
-                         colors: Self.colors,
-                         smoothsColors: true)
-        }
-        .background(RYColor.accentFill)
-    }
-
-    private static let colors: [Color] = {
-        let ink = RYToken.color("surface-accent-ink")
-        let primary = RYColor.accentFill
-        let light = RYColor.accent
-        let sky = RYToken.Palette.skyBlue.strong
-        // Розовое свечение, как на скате крыши логотипа: пиковый цвет логотипа (240, 132, 248),
-        // в верхнем правом углу. Сглаживание сетки растягивает угол, поэтому цвет смешан со светлым синим:
-        // розовое занимает небольшую часть экрана, как на логотипе.
-        let pink = light.mix(with: Color(red: 240 / 255, green: 132 / 255, blue: 248 / 255), by: 0.6)
-        return [
-            ink, primary, pink,
-            primary, sky, primary,
-            ink, primary, light,
-        ]
-    }()
-
-    /// Углы закреплены, остальные точки плывут по медленным синусоидам с разными фазами.
-    static func points(at t: TimeInterval) -> [SIMD2<Float>] {
-        func wave(_ speed: Double, _ phase: Double, _ amplitude: Double) -> Float {
-            Float(sin(t * speed + phase) * amplitude)
-        }
-        return [
-            SIMD2(0, 0), SIMD2(0.5 + wave(0.7, 0, 0.08), 0), SIMD2(1, 0),
-            SIMD2(0, 0.5 + wave(0.5, 1, 0.10)),
-            SIMD2(0.5 + wave(0.6, 2, 0.14), 0.5 + wave(0.45, 4, 0.14)),
-            SIMD2(1, 0.5 + wave(0.55, 3, 0.10)),
-            SIMD2(0, 1), SIMD2(0.5 + wave(0.65, 5, 0.08), 1), SIMD2(1, 1),
-        ]
     }
 }
