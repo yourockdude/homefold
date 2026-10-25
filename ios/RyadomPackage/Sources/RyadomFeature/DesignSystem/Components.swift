@@ -408,7 +408,8 @@ public struct RYStatusBanner: View {
 }
 
 public struct RYEmptyState: View {
-    let systemImage: String
+    let systemImage: String?
+    let illustration: RYIllustrationKind?
     let title: String
     let message: String
     var actionTitle: String?
@@ -416,6 +417,17 @@ public struct RYEmptyState: View {
 
     public init(systemImage: String, title: String, message: String, actionTitle: String? = nil, action: (() -> Void)? = nil) {
         self.systemImage = systemImage
+        self.illustration = nil
+        self.title = title
+        self.message = message
+        self.actionTitle = actionTitle
+        self.action = action
+    }
+
+    /// Состояние с иллюстрацией вместо значка.
+    public init(illustration: RYIllustrationKind, title: String, message: String, actionTitle: String? = nil, action: (() -> Void)? = nil) {
+        self.systemImage = nil
+        self.illustration = illustration
         self.title = title
         self.message = message
         self.actionTitle = actionTitle
@@ -424,11 +436,15 @@ public struct RYEmptyState: View {
 
     public var body: some View {
         VStack(spacing: RYSpacing.m) {
-            Image(systemName: systemImage)
-                .font(.system(size: 28, weight: .light))
-                .foregroundStyle(RYColor.accent)
-                .frame(width: 64, height: 64)
-                .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: 20))
+            if let illustration {
+                RYIllustration(illustration, height: 150)
+            } else if let systemImage {
+                Image(systemName: systemImage)
+                    .font(.system(size: 28, weight: .light))
+                    .foregroundStyle(RYColor.accent)
+                    .frame(width: 64, height: 64)
+                    .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: 20))
+            }
             Text(title).ryFont(.section).foregroundStyle(RYColor.ink).multilineTextAlignment(.center)
             Text(message).ryFont(.callout).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
             if let actionTitle, let action {

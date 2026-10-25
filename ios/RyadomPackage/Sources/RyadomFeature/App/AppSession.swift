@@ -30,6 +30,7 @@ public final class AppSession {
     private static func makeAuthenticator() -> any BiometricAuthenticating {
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("-RYSkipBiometrics") { return ApprovingAuthenticator() }
+        if ProcessInfo.processInfo.arguments.contains("-RYDenyBiometrics") { return DenyingAuthenticator() }
         #endif
         return SystemBiometricAuthenticator()
     }
@@ -56,6 +57,11 @@ extension AppSession {
 /// Только для UI-тестов и отладки: Face ID подтверждается без системного диалога.
 struct ApprovingAuthenticator: BiometricAuthenticating {
     func authenticate(reason: String) async -> Bool { true }
+}
+
+/// Только для UI-тестов и отладки: Face ID всегда отклоняется (экран блокировки остаётся).
+struct DenyingAuthenticator: BiometricAuthenticating {
+    func authenticate(reason: String) async -> Bool { false }
 }
 #endif
 

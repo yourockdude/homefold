@@ -135,16 +135,9 @@ struct CategoryCard: View {
     }
 }
 
-/// Иллюстрация пустого хранилища: синяя папка с документами (PNG с прозрачным фоном, `DocumentsEmpty`).
+/// Иллюстрация пустого хранилища: синяя папка с документами.
 struct DocumentsIllustration: View {
-    var body: some View {
-        Image("DocumentsEmpty", bundle: .module)
-            .resizable()
-            .scaledToFit()
-            .frame(maxWidth: 260)
-            .frame(height: 210)
-            .accessibilityHidden(true)
-    }
+    var body: some View { RYIllustration(.folder, height: 210) }
 }
 
 /// Миниатюра первой страницы PDF или изображения.

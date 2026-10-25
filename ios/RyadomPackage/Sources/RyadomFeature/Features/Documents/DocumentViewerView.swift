@@ -33,7 +33,7 @@ struct DocumentViewerView: View {
 
             Group {
                 if !session.documentsLock.isContentVisible {
-                    RYEmptyState(systemImage: "lock", title: "Документ закрыт", message: "Разблокируйте документы, чтобы продолжить.",
+                    RYEmptyState(illustration: .lock, title: "Документ закрыт", message: "Разблокируйте документы, чтобы продолжить.",
                                  actionTitle: "Разблокировать") { Task { await session.documentsLock.unlock() } }
                 } else if let url = fileURL, let doc, let kind = DocumentFileKind(mimeType: doc.mimeType) {
                     if kind == .pdf { PDFKitView(url: url).accessibilityLabel("Содержимое документа") }

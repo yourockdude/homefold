@@ -165,8 +165,7 @@ struct DocumentsView: View {
         Text("Все категории · найдено \(results.count)").ryFont(.caption).foregroundStyle(RYColor.muted)
         if results.isEmpty {
             VStack(spacing: RYSpacing.m) {
-                Image(systemName: "magnifyingglass").font(.system(size: 40, weight: .light)).foregroundStyle(RYColor.accent)
-                    .padding(.top, RYSpacing.l)
+                RYIllustration(.search, height: 150).padding(.top, RYSpacing.s)
                 Text("Ничего не нашлось").ryFont(.heading).foregroundStyle(RYColor.ink)
                 Text("По запросу «\(query)» нет документов. Попробуйте другое название или имя участника семьи.")
                     .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
@@ -211,7 +210,7 @@ struct LockedDocumentsView: View {
     var body: some View {
         VStack(spacing: RYSpacing.m) {
             Spacer()
-            RYEmptyState(systemImage: "lock", title: "Документы защищены",
+            RYEmptyState(illustration: .lock, title: "Документы защищены",
                          message: failed ? "Не удалось подтвердить личность. Попробуйте ещё раз." : "Подтвердите вход с помощью Face ID или кода-пароля устройства.",
                          actionTitle: "Разблокировать") { Task { await unlock() } }
             Spacer()

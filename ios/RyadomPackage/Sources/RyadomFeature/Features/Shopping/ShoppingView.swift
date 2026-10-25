@@ -185,8 +185,7 @@ struct ShoppingView: View {
 
     private var emptyState: some View {
         VStack(spacing: 14) {
-            Image(systemName: "basket").font(.system(size: 44, weight: .ultraLight)).foregroundStyle(RYColor.accent)
-                .padding(.top, 56)
+            RYIllustration(.basket, height: 170).padding(.top, 36)
             Text("Что нужно купить?").ryFont(.heading).foregroundStyle(RYColor.ink)
             Text("Добавьте первый товар. \(Self.nameList(members)) увидят его в общем списке и смогут отметить покупку.")
                 .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)

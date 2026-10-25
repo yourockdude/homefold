@@ -38,7 +38,7 @@ public enum DemoData {
             ("Йогурт", 1, "шт.", "Молочное и яйца", "", nil, true),
             ("Бананы", 1, "кг", "Овощи и фрукты", "", nil, true),
         ]
-        for i in items {
+        for i in items where !ProcessInfo.processInfo.arguments.contains("-RYEmptyShopping") {
             let r = ShoppingItemRecord(familyId: familyId, listId: list.id, authorId: i.0 == "Яблоки" ? mikhail : anna, name: i.0,
                                        quantity: i.1, unit: i.2, category: i.3, assigneeId: i.5, note: i.4)
             r.isBought = i.6
