@@ -1,0 +1,5 @@
+
+# Сборка
+DerivedData/
+build/
+.DS_Store
