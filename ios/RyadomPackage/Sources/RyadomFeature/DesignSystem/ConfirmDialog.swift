@@ -16,6 +16,7 @@ struct RYConfirmDialog: View {
                 .ignoresSafeArea()
                 .onTapGesture(perform: onCancel)
                 .accessibilityHidden(true)
+                .transition(.opacity)
             VStack(spacing: 0) {
                 VStack(spacing: 10) {
                     Text(title).ryFont(.headline).foregroundStyle(RYColor.ink)
@@ -34,8 +35,8 @@ struct RYConfirmDialog: View {
             .clipShape(RoundedRectangle(cornerRadius: RYRadius.sheet))
             .accessibilityElement(children: .contain)
             .accessibilityAddTraits(.isModal)
+            .transition(.scale(scale: 0.92).combined(with: .opacity))
         }
-        .transition(.opacity)
     }
 
     private func row(_ title: String, color: Color, weight: Font.Weight, id: String, action: @escaping () -> Void) -> some View {
@@ -80,7 +81,7 @@ private struct ConfirmModifier: ViewModifier {
                                     onCancel: { isPresented = false })
                 }
             }
-            .animation(.easeOut(duration: 0.2), value: isPresented)
+            .animation(RYMotion.dialog, value: isPresented)
             .onChange(of: isPresented) { _, shown in dimming?.isActive = shown }
             .onDisappear { if isPresented { dimming?.isActive = false } }
     }

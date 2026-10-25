@@ -128,6 +128,8 @@ struct OverviewView: View {
             }
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text("\(count)").ryFont(.number).foregroundStyle(RYColor.ink)
+                    .contentTransition(.numericText(value: Double(count)))
+                    .animation(RYMotion.snappy, value: count)
                 Text(unit).ryFont(.subhead).foregroundStyle(RYColor.muted).lineLimit(1).minimumScaleFactor(0.8)
             }
         }

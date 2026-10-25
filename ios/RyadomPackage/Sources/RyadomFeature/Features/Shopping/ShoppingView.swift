@@ -168,6 +168,8 @@ struct ShoppingView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .firstTextBaseline) {
                     Text("Осталось купить \(remaining)").ryFont(.headline).foregroundStyle(RYColor.ink)
+                        .contentTransition(.numericText(value: Double(remaining)))
+                        .animation(RYMotion.snappy, value: remaining)
                     Spacer()
                     Text("\(bought.count) из \(total)").ryFont(.callout).foregroundStyle(RYColor.muted)
                 }

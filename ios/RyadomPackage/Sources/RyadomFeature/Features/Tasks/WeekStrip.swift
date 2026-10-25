@@ -4,6 +4,7 @@ import SwiftUI
 struct WeekStrip: View {
     @Binding var selected: Date
     var calendar: Calendar = .current
+    @Namespace private var highlight
 
     private var days: [Date] {
         guard let interval = calendar.dateInterval(of: .weekOfYear, for: selected) else { return [] }
@@ -15,7 +16,7 @@ struct WeekStrip: View {
             ForEach(days, id: \.self) { day in
                 let isSelected = calendar.isDate(day, inSameDayAs: selected)
                 let isToday = calendar.isDateInToday(day)
-                Button { selected = calendar.startOfDay(for: day) } label: {
+                Button { withAnimation(RYMotion.snappy) { selected = calendar.startOfDay(for: day) } } label: {
                     VStack(spacing: 6) {
                         Text(RussianDate.shortWeekday(day, calendar: calendar))
                             .ryFont(.micro).foregroundStyle(isSelected ? RYColor.onAccent.opacity(0.85) : RYColor.muted)
@@ -25,7 +26,10 @@ struct WeekStrip: View {
                     }
                     .frame(maxWidth: .infinity, minHeight: 66)
                     .background {
-                        if isSelected { Capsule().fill(RYColor.accentFill).padding(.horizontal, 2) }
+                        if isSelected {
+                            Capsule().fill(RYColor.accentFill).padding(.horizontal, 2)
+                                .matchedGeometryEffect(id: "day-highlight", in: highlight)
+                        }
                     }
                     .contentShape(Rectangle())
                 }
@@ -37,7 +41,7 @@ struct WeekStrip: View {
         }
         .gesture(DragGesture(minimumDistance: 30).onEnded { value in
             let delta = value.translation.width < 0 ? 7 : -7
-            if let moved = calendar.date(byAdding: .day, value: delta, to: selected) { selected = moved }
+            if let moved = calendar.date(byAdding: .day, value: delta, to: selected) { withAnimation(RYMotion.snappy) { selected = moved } }
         })
     }
 }

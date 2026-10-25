@@ -3,6 +3,9 @@ import SwiftData
 
 public struct RootView: View {
     @State private var tab: MainTab = .overview
+    /// Предыдущая вкладка — от неё считается направление сдвига.
+    @State private var previousTab: MainTab = .overview
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var session = AppSession()
     @State private var keyboardVisible = false
     /// Диалоги экранов сообщают сюда, чтобы затемнить и плавающую панель вкладок, как в макете.
@@ -15,19 +18,20 @@ public struct RootView: View {
 
     public var body: some View {
         ZStack(alignment: .bottom) {
-            Group {
-                switch tab {
-                case .overview: OverviewView(onOpenTasks: { tab = .tasks }, onOpenDocuments: { tab = .documents }, onOpenShopping: { tab = .shopping })
-                case .shopping: ShoppingView()
-                case .tasks: TasksView()
-                case .documents: DocumentsView()
-                }
+            // Переход между вкладками: старый экран растворяется со сдвигом в сторону, откуда уходим,
+            // новый появляется со стороны выбора. Экран неактивной вкладки не остаётся в дереве доступности.
+            ZStack {
+                screen(for: tab)
+                    .id(tab)
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .offset(x: RYMotion.tabOffset(distance: tab.index - previousTab.index, reduceMotion: reduceMotion))),
+                        removal: .opacity.combined(with: .offset(x: -RYMotion.tabOffset(distance: tab.index - previousTab.index, reduceMotion: reduceMotion)))))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             // Резерв под плавающую панель: кнопки экранов встают над ней, прокрутка не уходит под неё.
             // Обычный отступ, а не safeAreaInset: NavigationStack не передаёт внутрь вставки предка.
             .padding(.bottom, keyboardVisible ? 0 : RYSpacing.tabBarReserve)
-            if !keyboardVisible { MainTabBar(selection: $tab, isDimmed: dimming.isActive).padding(.bottom, 2) }
+            if !keyboardVisible { MainTabBar(selection: tab, onSelect: select, isDimmed: dimming.isActive).padding(.bottom, 2) }
         }
         .background(RYColor.background.ignoresSafeArea())
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
@@ -46,6 +50,23 @@ public struct RootView: View {
 }
 
 extension RootView {
+    @ViewBuilder
+    private func screen(for tab: MainTab) -> some View {
+        switch tab {
+        case .overview: OverviewView(onOpenTasks: { select(.tasks) }, onOpenDocuments: { select(.documents) }, onOpenShopping: { select(.shopping) })
+        case .shopping: ShoppingView()
+        case .tasks: TasksView()
+        case .documents: DocumentsView()
+        }
+    }
+
+    /// Переключает вкладку с анимацией; панель и контент двигаются в одной транзакции.
+    private func select(_ new: MainTab) {
+        guard new != tab else { return }
+        previousTab = tab
+        withAnimation(RYMotion.tab(reduceMotion: reduceMotion)) { tab = new }
+    }
+
     /// Достраивает повторяющиеся дела и пересобирает локальные напоминания: после запуска, возврата в приложение,
     /// смены часового пояса и смены даты.
     private func refreshTasks() async {

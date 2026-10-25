@@ -156,6 +156,8 @@ struct TasksView: View {
                 .ryFont(.section).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
             Spacer()
             Text("\(active.count) \(OverviewView.plural(active.count, "дело", "дела", "дел"))")
+                .contentTransition(.numericText(value: Double(active.count)))
+                .animation(RYMotion.snappy, value: active.count)
                 .ryFont(.body).foregroundStyle(RYColor.accent)
         }
         .padding(.top, 4)

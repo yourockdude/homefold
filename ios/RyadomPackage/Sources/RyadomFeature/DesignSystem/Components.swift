@@ -149,6 +149,8 @@ public struct RYPrimaryButtonStyle: ButtonStyle {
                 RYColor.accentFill.opacity(isEnabled ? (configuration.isPressed ? 0.85 : 1) : 0.4),
                 in: Capsule()
             )
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }
 }
 
@@ -162,6 +164,8 @@ public struct RYSecondaryButtonStyle: ButtonStyle {
             .foregroundStyle(RYColor.accent)
             .frame(maxWidth: .infinity, minHeight: 50)
             .background(RYColor.accentTint.opacity(configuration.isPressed ? 0.7 : 1), in: Capsule())
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }
 }
 
@@ -174,6 +178,8 @@ public struct RYDestructiveButtonStyle: ButtonStyle {
             .foregroundStyle(RYColor.onAccent)
             .frame(maxWidth: .infinity, minHeight: 50)
             .background(RYColor.danger.opacity(configuration.isPressed ? 0.85 : 1), in: Capsule())
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }
 }
 
@@ -292,9 +298,13 @@ public struct RYCheckbox: View {
             Circle().stroke(isOn ? RYColor.accentFill : RYColor.checkBorder, lineWidth: 1.3)
             if isOn {
                 Image(systemName: "checkmark").font(.system(size: 13, weight: .bold)).foregroundStyle(RYColor.onAccent)
+                    .transition(.scale(scale: 0.4).combined(with: .opacity))
             }
         }
         .frame(width: 26, height: 26)
+        .scaleEffect(isOn ? 1 : 0.98)
+        .animation(RYMotion.snappy, value: isOn)
+        .sensoryFeedback(trigger: isOn) { _, new in new ? .success : .impact(flexibility: .soft) }
         .accessibilityHidden(true)
     }
 }
