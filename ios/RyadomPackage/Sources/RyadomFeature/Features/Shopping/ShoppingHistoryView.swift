@@ -12,15 +12,12 @@ struct ShoppingHistoryView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: RYSpacing.s) {
-                Button { if !path.isEmpty { path.removeLast() } } label: {
-                    Image(systemName: "arrow.left").font(.system(size: 18)).foregroundStyle(RYColor.ink)
-                }
-                .accessibilityLabel("Назад")
-                Text("История покупок").ryFont(.section).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
+            HStack {
+                RYBackButton("Покупки") { if !path.isEmpty { path.removeLast() } }
                 Spacer()
             }
-            .padding(.horizontal, RYSpacing.screen).padding(.vertical, RYSpacing.m)
+            .padding(.horizontal, RYSpacing.screen).padding(.top, 8)
+            RYScreenHeader(title: "История")
 
             if lists.isEmpty {
                 RYEmptyState(systemImage: "clock.arrow.circlepath", title: "История пуста",
@@ -31,30 +28,34 @@ struct ShoppingHistoryView: View {
                     VStack(alignment: .leading, spacing: RYSpacing.m) {
                         ForEach(lists) { list in
                             let listItems = items.filter { $0.listId == list.id }
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(list.updatedAt.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "ru_RU"))).uppercased())
-                                    .ryFont(.micro).foregroundStyle(RYColor.muted)
-                                VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: 5) {
+                                RYGroupCaption(list.updatedAt.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "ru_RU"))))
+                                RYListGroup {
                                     if listItems.isEmpty {
-                                        Text("Список был пуст").ryFont(.body).foregroundStyle(RYColor.muted)
+                                        RYListRow("Список был пуст", minHeight: 44)
                                     }
-                                    ForEach(listItems) { item in
-                                        HStack {
-                                            Image(systemName: item.isBought ? "checkmark" : "circle")
-                                                .font(.system(size: 11)).foregroundStyle(RYColor.accent)
-                                            Text("\(item.name) · \(ShoppingFormat.amount(item))")
-                                                .ryFont(.body).foregroundStyle(item.isBought ? RYColor.muted : RYColor.ink)
-                                            Spacer()
+                                    ForEach(Array(listItems.enumerated()), id: \.element.id) { index, item in
+                                        VStack(spacing: 0) {
+                                            HStack(spacing: 12) {
+                                                Image(systemName: item.isBought ? "checkmark.circle.fill" : "circle")
+                                                    .font(.system(size: 20, weight: .light))
+                                                    .foregroundStyle(item.isBought ? RYColor.accent : RYColor.checkBorder)
+                                                Text("\(item.name) · \(ShoppingFormat.amount(item))")
+                                                    .ryFont(.body).foregroundStyle(item.isBought ? RYColor.muted : RYColor.ink)
+                                                Spacer()
+                                            }
+                                            .frame(minHeight: 44)
+                                            if index < listItems.count - 1 { RYListDivider(inset: 32) }
                                         }
                                     }
                                 }
-                                .padding(14).frame(maxWidth: .infinity, alignment: .leading)
-                                .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
                             }
                         }
                     }
                     .padding(.horizontal, RYSpacing.screen)
+                    .padding(.bottom, RYSpacing.s)
                 }
+                .scrollIndicators(.hidden)
             }
         }
         .background(RYColor.background)

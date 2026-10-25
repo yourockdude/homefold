@@ -1,6 +1,23 @@
 import SwiftUI
 import SwiftData
 
+/// Режим листа формы товара.
+enum ShoppingFormMode: Identifiable {
+    case add(ShoppingListRecord)
+    case edit(ShoppingItemRecord)
+
+    var id: String {
+        switch self {
+        case .add(let list): "add-\(list.id)"
+        case .edit(let item): "edit-\(item.id)"
+        }
+    }
+}
+
+enum ShoppingRoute: Hashable {
+    case history
+}
+
 /// Совместные покупки. Данные — из локальной базы, действия — через `ShoppingService`.
 struct ShoppingView: View {
     @Environment(AppSession.self) private var session
@@ -14,6 +31,7 @@ struct ShoppingView: View {
     @Query private var families: [FamilyRecord]
 
     @State private var path: [ShoppingRoute] = []
+    @State private var formMode: ShoppingFormMode?
     @State private var boughtExpanded = false
     @State private var confirmClear = false
     @State private var undoItem: ShoppingItemRecord?
@@ -35,19 +53,17 @@ struct ShoppingView: View {
         NavigationStack(path: $path) {
             content
                 .toolbar(.hidden, for: .navigationBar)
-                .navigationDestination(for: ShoppingRoute.self) { route in
-                    switch route {
-                    case .add:
-                        if let list { ItemFormView(mode: .add(list), service: service, members: members, path: $path) }
-                    case .edit(let id):
-                        if let item = allItems.first(where: { $0.id == id }) {
-                            ItemFormView(mode: .edit(item), service: service, members: members, path: $path,
-                                         onDeleted: { undoItem = $0 })
-                        }
-                    case .history:
-                        ShoppingHistoryView(members: members, path: $path)
-                    }
+                .navigationDestination(for: ShoppingRoute.self) { _ in
+                    ShoppingHistoryView(members: members, path: $path)
                 }
+        }
+        .sheet(item: $formMode) { mode in
+            switch mode {
+            case .add(let list):
+                ItemFormView(mode: .add(list), service: service, members: members)
+            case .edit(let item):
+                ItemFormView(mode: .edit(item), service: service, members: members, onDeleted: { undoItem = $0 })
+            }
         }
         .task { _ = service?.activeList() }
         .ryConfirm(isPresented: $confirmClear, title: "Убрать купленные товары?",
@@ -79,7 +95,7 @@ struct ShoppingView: View {
         VStack(spacing: 0) {
             header
             ScrollView {
-                VStack(alignment: .leading, spacing: RYSpacing.m) {
+                VStack(alignment: .leading, spacing: 8) {
                     statusCard
                     if items.isEmpty {
                         emptyState
@@ -90,7 +106,7 @@ struct ShoppingView: View {
                     }
                 }
                 .padding(.horizontal, RYSpacing.screen)
-                .padding(.bottom, RYSpacing.m)
+                .padding(.bottom, RYSpacing.s)
             }
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
@@ -100,14 +116,8 @@ struct ShoppingView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Покупки").ryFont(.title).foregroundStyle(RYColor.ink)
-                    .accessibilityAddTraits(.isHeader)
-                Text("Общий список семьи \(RussianNames.familyGenitive(families.first?.name ?? ""))")
-                    .ryFont(.caption).foregroundStyle(RYColor.muted)
-            }
-            Spacer()
+        RYScreenHeader(title: "Покупки",
+                       subtitle: "Общий список семьи \(RussianNames.familyGenitive(families.first?.name ?? ""))") {
             Menu {
                 Button { path.append(.history) } label: { Label("История списков", systemImage: "clock.arrow.circlepath") }
                 Button { confirmClear = true } label: { Label("Убрать купленные", systemImage: "trash") }
@@ -115,120 +125,132 @@ struct ShoppingView: View {
                 Button { service?.startNewList() } label: { Label("Начать новый список", systemImage: "plus.square.on.square") }
                     .disabled(items.isEmpty)
             } label: {
-                Image(systemName: "ellipsis").font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(RYColor.ink)
-                    .frame(width: 40, height: 40)
-                    .background(RYColor.surface, in: Circle())
+                RYGlassCircleLabel(systemImage: "ellipsis")
             }
             .accessibilityLabel("Действия со списком")
             .accessibilityIdentifier("shopping.menu")
         }
-        .padding(.horizontal, RYSpacing.screen)
-        .padding(.top, RYSpacing.s)
-        .padding(.bottom, RYSpacing.m)
     }
 
-    private var statusCard: some View {
+    // MARK: Карточка статуса
+
+    @ViewBuilder private var statusCard: some View {
         let total = items.count
         let remaining = active.count
-        return VStack(alignment: .leading, spacing: 7) {
-            HStack(alignment: .center) {
-                VStack(alignment: .leading, spacing: 4) {
-                    if total > 0 && remaining == 0 {
-                        Text("Всё куплено").ryFont(.heading).foregroundStyle(RYColor.ink)
-                        Text("\(total) из \(total) · осталось купить 0").ryFont(.caption).foregroundStyle(RYColor.accent)
-                    } else if total == 0 {
-                        Label("Новый список · 0 товаров", systemImage: "basket")
-                            .ryFont(.bodyMedium).foregroundStyle(RYColor.accent)
-                        Text("Пока никто ничего не добавил.").ryFont(.caption).foregroundStyle(RYColor.accent)
-                    } else {
-                        Text("Осталось купить \(remaining)").ryFont(.section).foregroundStyle(RYColor.accent)
-                        Text("Куплено \(bought.count) из \(total)").ryFont(.caption).foregroundStyle(RYColor.accent)
-                    }
+        if total == 0 {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "basket").font(.system(size: 17, weight: .light)).foregroundStyle(RYColor.accent)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Новый список · 0 товаров").ryFont(.callout).fontWeight(.semibold).foregroundStyle(RYColor.accent)
+                    Text("Пока никто ничего не добавил.").ryFont(.subhead).foregroundStyle(RYColor.accent)
                 }
-                Spacer()
-                if total > 0 {
-                    HStack(spacing: 4) {
-                        ForEach(members.prefix(3)) { AvatarView(name: $0.displayName, tone: $0.tone, diameter: 26) }
+                Spacer(minLength: 0)
+            }
+            .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+            .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: RYRadius.card - 4))
+            .accessibilityElement(children: .combine)
+        } else if remaining == 0 {
+            VStack(spacing: 8) {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "checkmark.circle").font(.system(size: 20, weight: .light)).foregroundStyle(RYColor.accent)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Всё куплено").ryFont(.headline).foregroundStyle(RYColor.accent)
+                        Text("\(total) из \(total) · осталось купить 0").ryFont(.subhead).foregroundStyle(RYColor.accent)
                     }
+                    Spacer(minLength: 0)
                 }
+                .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+                .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: RYRadius.card - 4))
+                .accessibilityElement(children: .combine)
+                Capsule().fill(RYColor.accent).frame(height: 4).padding(.horizontal, 2).accessibilityHidden(true)
             }
-            if total > 0 {
-                ProgressView(value: Double(bought.count), total: Double(max(total, 1)))
-                    .tint(RYColor.accent)
-                    .scaleEffect(x: 1, y: 0.7)
-                    .accessibilityHidden(true)
+        } else {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Осталось купить \(remaining)").ryFont(.headline).foregroundStyle(RYColor.ink)
+                    Spacer()
+                    Text("\(bought.count) из \(total)").ryFont(.callout).foregroundStyle(RYColor.muted)
+                }
+                Text("Всего \(total) \(Self.goods(total))").ryFont(.subhead).foregroundStyle(RYColor.muted)
+                ProgressTrack(fraction: Double(bought.count) / Double(max(total, 1)))
             }
+            .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+            .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
+            .accessibilityElement(children: .combine)
         }
-        .padding(RYSpacing.s + 2)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: RYRadius.card))
-        .accessibilityElement(children: .combine)
     }
 
     private var emptyState: some View {
-        VStack(spacing: RYSpacing.m) {
-            RYEmptyState(
-                systemImage: "basket",
-                title: "Что нужно купить?",
-                message: "Добавьте первый товар. \(Self.nameList(members)) увидят его в общем списке и смогут отметить покупку."
-            )
+        VStack(spacing: 14) {
+            Image(systemName: "basket").font(.system(size: 44, weight: .ultraLight)).foregroundStyle(RYColor.accent)
+                .padding(.top, 56)
+            Text("Что нужно купить?").ryFont(.heading).foregroundStyle(RYColor.ink)
+            Text("Добавьте первый товар. \(Self.nameList(members)) увидят его в общем списке и смогут отметить покупку.")
+                .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
             Text("Можно указать количество, категорию и того, кто зайдёт в магазин.")
-                .ryFont(.caption).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
-                .padding(.horizontal, RYSpacing.screen)
+                .ryFont(.subhead).foregroundStyle(RYColor.muted).multilineTextAlignment(.center).padding(.top, 24)
         }
-        .padding(.top, RYSpacing.l)
+        .padding(.horizontal, 8)
+        .frame(maxWidth: .infinity)
     }
 
+    // MARK: Активные товары
+
     private var activeBody: some View {
-        VStack(alignment: .leading, spacing: RYSpacing.m) {
+        VStack(alignment: .leading, spacing: 8) {
             ForEach(grouped, id: \.category) { group in
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(group.category.uppercased()).ryFont(.micro).foregroundStyle(RYColor.muted)
-                        .padding(.leading, 2)
-                    VStack(spacing: 0) {
-                        ForEach(group.items) { item in itemRow(item) }
+                VStack(alignment: .leading, spacing: 5) {
+                    RYGroupCaption(group.category)
+                    RYListGroup {
+                        ForEach(Array(group.items.enumerated()), id: \.element.id) { index, item in
+                            itemRow(item, isLast: index == group.items.count - 1)
+                        }
                     }
-                    .padding(.horizontal, 14).padding(.vertical, 2)
-                    .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
                 }
             }
             if !bought.isEmpty { boughtBlock }
         }
     }
 
-    private func itemRow(_ item: ShoppingItemRecord) -> some View {
-        HStack(spacing: 11) {
-            Button {
-                withAnimation { service?.setBought(item, true) }
-            } label: { RYCheckbox(isOn: false).padding(.vertical, 14).contentShape(Rectangle()) }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Отметить купленным: \(item.name)")
-            Button { path.append(.edit(item.id)) } label: {
-                HStack(spacing: 11) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(item.name).ryFont(.body).fontWeight(.medium).foregroundStyle(RYColor.ink)
-                        Text(ShoppingFormat.subtitle(item)).ryFont(.micro).foregroundStyle(RYColor.muted)
+    private func itemRow(_ item: ShoppingItemRecord, isLast: Bool) -> some View {
+        HStack(spacing: 8) {
+            VStack(spacing: 0) {
+                HStack(spacing: 12) {
+                    Button {
+                        withAnimation { service?.setBought(item, true) }
+                    } label: { RYCheckbox(isOn: false).frame(minWidth: 30, minHeight: 44).contentShape(Rectangle()) }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Отметить купленным: \(item.name)")
+                    Button { formMode = .edit(item) } label: {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(item.name).ryFont(.body).foregroundStyle(RYColor.ink).multilineTextAlignment(.leading)
+                            Text(ShoppingFormat.subtitle(item)).ryFont(.subhead).foregroundStyle(RYColor.muted)
+                                .multilineTextAlignment(.leading)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
-                    Spacer(minLength: 0)
-                    if item.syncStatus == .pending {
-                        Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 10))
-                            .foregroundStyle(RYColor.muted).accessibilityLabel("Ожидает синхронизации")
-                    } else if item.syncStatus == .failed {
-                        Image(systemName: "exclamationmark.circle").font(.system(size: 12))
-                            .foregroundStyle(RYColor.danger).accessibilityLabel("Не удалось синхронизировать")
-                    }
-                    if let m = members.first(where: { $0.id == item.assigneeId }) {
-                        AvatarView(name: m.displayName, tone: m.tone, diameter: 28)
-                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Открыть для редактирования")
                 }
-                .contentShape(Rectangle())
+                .padding(.vertical, 5)
+                .frame(minHeight: 52)
+                if !isLast { RYListDivider() }
             }
-            .buttonStyle(.plain)
-            .accessibilityHint("Открыть для редактирования")
+            if item.syncStatus == .pending {
+                Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 10))
+                    .foregroundStyle(RYColor.muted).accessibilityLabel("Ожидает синхронизации")
+            } else if item.syncStatus == .failed {
+                Image(systemName: "exclamationmark.circle").font(.system(size: 12))
+                    .foregroundStyle(RYColor.danger).accessibilityLabel("Не удалось синхронизировать")
+            }
+            if let m = members.first(where: { $0.id == item.assigneeId }) {
+                AvatarView(name: m.displayName, tone: m.tone, diameter: 26)
+            }
         }
-        .frame(minHeight: 54)
     }
+
+    // MARK: Купленные
 
     private var boughtBlock: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -236,62 +258,72 @@ struct ShoppingView: View {
                 withAnimation { boughtExpanded.toggle() }
             } label: {
                 HStack(spacing: 10) {
-                    Image(systemName: "checkmark").font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(RYColor.accent).frame(width: 23, height: 23)
-                        .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: 8))
-                    Text("Уже в корзине · \(bought.count) из \(items.count)")
-                        .ryFont(.body).foregroundStyle(RYColor.muted)
+                    Image(systemName: "checkmark.circle").font(.system(size: 22, weight: .light)).foregroundStyle(RYColor.accent)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Уже в корзине · \(bought.count) из \(items.count)").ryFont(.callout).foregroundStyle(RYColor.muted)
+                        if !boughtExpanded {
+                            Text(boughtNames).ryFont(.subhead).foregroundStyle(RYColor.muted).lineLimit(1)
+                        }
+                    }
                     Spacer()
-                    Image(systemName: "chevron.down").font(.system(size: 12))
+                    Image(systemName: "chevron.down").font(.system(size: 13, weight: .medium))
                         .rotationEffect(.degrees(boughtExpanded ? 180 : 0)).foregroundStyle(RYColor.muted)
                 }
+                .padding(.horizontal, 4).padding(.vertical, 3)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityValue(boughtExpanded ? "развёрнуто" : "свёрнуто")
             .accessibilityIdentifier("shopping.boughtToggle")
             if boughtExpanded {
-                VStack(spacing: 0) {
-                    ForEach(bought) { item in boughtRow(item) }
+                RYListGroup {
+                    ForEach(Array(bought.enumerated()), id: \.element.id) { index, item in
+                        boughtRow(item, isLast: index == bought.count - 1)
+                    }
                 }
-                .padding(.horizontal, 14)
-                .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
-            } else {
-                Text(bought.map(\.name).joined(separator: ", "))
-                    .ryFont(.micro).foregroundStyle(RYColor.muted).strikethrough()
-                    .padding(.leading, 33)
             }
         }
-        .padding(.top, RYSpacing.xs)
+        .padding(.top, 2)
     }
 
-    private func boughtRow(_ item: ShoppingItemRecord) -> some View {
-        Button {
-            withAnimation { service?.setBought(item, false) }
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(RYColor.accent)
-                Text("\(item.name) · \(ShoppingFormat.amount(item))")
-                    .ryFont(.body).foregroundStyle(RYColor.muted).strikethrough()
-                Spacer()
+    /// «Йогурт, бананы»: первое слово как есть, остальные со строчной буквы.
+    private var boughtNames: String {
+        bought.enumerated().map { index, item in
+            index == 0 ? item.name : item.name.prefix(1).lowercased() + item.name.dropFirst()
+        }.joined(separator: ", ")
+    }
+
+    private func boughtRow(_ item: ShoppingItemRecord, isLast: Bool, showAmount: Bool = true) -> some View {
+        VStack(spacing: 0) {
+            Button {
+                withAnimation { service?.setBought(item, false) }
+            } label: {
+                HStack(spacing: 12) {
+                    RYCheckbox(isOn: true)
+                    Text(showAmount ? "\(item.name) · \(ShoppingFormat.amount(item))" : item.name)
+                        .ryFont(.body).foregroundStyle(RYColor.muted).strikethrough()
+                    Spacer()
+                }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
             }
-            .frame(minHeight: 36)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+            .accessibilityLabel("Куплено: \(item.name)")
+            .accessibilityHint("Вернуть в список")
+            if !isLast { RYListDivider(inset: 38) }
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Куплено: \(item.name)")
-        .accessibilityHint("Вернуть в список")
     }
 
     private var allBoughtBody: some View {
-        VStack(alignment: .leading, spacing: RYSpacing.m) {
-            Text("Отличная командная работа. Всё из списка уже в корзине.")
-                .ryFont(.body).foregroundStyle(RYColor.muted)
-            VStack(spacing: 0) {
-                ForEach(bought) { item in boughtRow(item) }
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Отличная командная работа. Всё для семейного ужина уже в корзине.")
+                .ryFont(.callout).foregroundStyle(RYColor.muted).padding(.top, 4)
+            RYListGroup {
+                ForEach(Array(bought.enumerated()), id: \.element.id) { index, item in
+                    boughtRow(item, isLast: index == bought.count - 1, showAmount: item.quantity != 1 || !item.note.isEmpty || item.unit != ShoppingUnit.piece.rawValue)
+                }
             }
-            .padding(.horizontal, 14).padding(.vertical, 6)
-            .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
+            Text("Купленные товары останутся в истории.").ryFont(.subhead).foregroundStyle(RYColor.muted)
         }
     }
 
@@ -302,39 +334,35 @@ struct ShoppingView: View {
             if let undoItem {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("\(undoItem.name) удалён").ryFont(.bodyMedium).foregroundStyle(.white)
-                        Text("\(ShoppingFormat.amount(undoItem)) · можно вернуть").ryFont(.micro).foregroundStyle(.white.opacity(0.8))
+                        Text("\(undoItem.name) удалён").ryFont(.callout).fontWeight(.semibold).foregroundStyle(RYColor.ink)
+                        Text("\(ShoppingFormat.amount(undoItem)) · можно вернуть").ryFont(.subhead).foregroundStyle(RYColor.muted)
                     }
                     Spacer()
                     Button("Отменить") {
                         service?.undoDelete(undoItem)
                         self.undoItem = nil
                     }
-                    .ryFont(.bodyMedium).foregroundStyle(.white)
+                    .ryFont(.headline).foregroundStyle(RYColor.accent)
                 }
-                .padding(RYSpacing.s + 2)
-                .background(RYColor.primary, in: RoundedRectangle(cornerRadius: RYRadius.card))
+                .padding(14)
+                .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .accessibilityElement(children: .combine)
             }
             if !items.isEmpty && active.isEmpty {
-                Button { service?.startNewList() } label: {
-                    Label("Начать новый список", systemImage: "plus")
-                }
-                .buttonStyle(.ryPrimary)
-                .accessibilityIdentifier("shopping.newList")
-                Text("Купленные товары останутся в истории.").ryFont(.micro).foregroundStyle(RYColor.muted)
+                Button { service?.startNewList() } label: { Text("Начать новый список") }
+                    .buttonStyle(.ryPrimary)
+                    .accessibilityIdentifier("shopping.newList")
             } else {
-                Button { path.append(.add) } label: {
-                    Label(items.isEmpty ? "Добавить первый товар" : "Добавить покупку", systemImage: "plus")
-                }
-                .buttonStyle(.ryPrimary)
-                .accessibilityIdentifier("shopping.add")
+                Button {
+                    if let list { formMode = .add(list) }
+                } label: { Text(items.isEmpty ? "Добавить первый товар" : "Добавить покупку") }
+                    .buttonStyle(.ryPrimary)
+                    .accessibilityIdentifier("shopping.add")
             }
         }
         .padding(.horizontal, RYSpacing.screen)
-        .padding(.vertical, RYSpacing.s)
-        .background(RYColor.background)
+        .padding(.bottom, RYSpacing.xs)
         .animation(.easeOut(duration: 0.2), value: undoItem?.id)
     }
 
@@ -348,8 +376,18 @@ struct ShoppingView: View {
     }
 }
 
-enum ShoppingRoute: Hashable {
-    case add
-    case edit(UUID)
-    case history
+/// Тонкая полоса прогресса: трек #E5EEE8, заливка акцентным цветом.
+struct ProgressTrack: View {
+    let fraction: Double
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule().fill(RYColor.accentTint)
+                Capsule().fill(RYColor.accent).frame(width: max(4, proxy.size.width * min(max(fraction, 0), 1)))
+            }
+        }
+        .frame(height: 4)
+        .accessibilityHidden(true)
+    }
 }
