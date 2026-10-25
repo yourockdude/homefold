@@ -14,3 +14,14 @@ public final class AppSession {
         self.familyId = familyId
     }
 }
+
+import SwiftData
+
+extension AppSession {
+    /// Сервис дел для текущего пользователя; nil, пока вход не выполнен.
+    func taskService(context: ModelContext) -> TaskService? {
+        guard let familyId, let userId else { return nil }
+        return TaskService(context: context, familyId: familyId, userId: userId,
+                           reminders: SystemReminderScheduler())
+    }
+}

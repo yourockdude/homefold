@@ -36,14 +36,33 @@ public enum DemoData {
         }
 
         let cal = Calendar.current
-        func today(_ h: Int, _ m: Int) -> Date { cal.date(bySettingHour: h, minute: m, second: 0, of: .now) ?? .now }
-        for (title, d, who) in [("Забрать Соню с танцев", today(18, 30), mikhail),
-                                ("Полить растения", today(19, 0), sonya),
-                                ("Оплатить интернет", today(21, 0), anna)] {
-            let s = TaskSeriesRecord(familyId: familyId, authorId: anna, title: title, assigneeId: who, startDate: d, hasTime: true)
-            context.insert(s)
-            context.insert(TaskOccurrenceRecord(familyId: familyId, seriesId: s.id, authorId: anna, title: title,
-                                                assigneeId: who, dueAt: d, hasTime: true))
+        func at(_ day: Int, _ h: Int, _ m: Int) -> Date {
+            let base = cal.date(byAdding: .day, value: day, to: .now) ?? .now
+            return cal.date(bySettingHour: h, minute: m, second: 0, of: base) ?? base
+        }
+        let tasks = TaskService(context: context, familyId: familyId, userId: anna)
+        func make(_ title: String, _ when: Date, who: UUID, tag: String, place: String = "", note: String = "",
+                  repeat r: Recurrence = .none, checklist: [String] = []) -> TaskOccurrenceRecord? {
+            var d = TaskDraft(start: when)
+            d.title = title; d.assigneeId = who; d.tag = tag; d.place = place; d.note = note
+            d.recurrence = r; d.checklist = checklist
+            return tasks.create(d)
+        }
+        if let pickup = make("Забрать Соню с танцев", at(0, 18, 30), who: mikhail, tag: "Дети",
+                             place: "Студия «Ритм»\nул. Лесная, 12 · вход со двора",
+                             note: "Сменка уже в рюкзаке. После занятия Соня будет ждать у входа со двора.",
+                             checklist: ["Положить сменку в рюкзак", "Взять бутылку воды"]),
+           let first = tasks.checklist(for: pickup).first {
+            tasks.toggle(first)
+        }
+        _ = make("Полить растения", at(0, 19, 0), who: sonya, tag: "Дом", note: "На кухне и в гостиной", repeat: .weekly)
+        _ = make("Сверить показания счётчиков", at(0, 21, 0), who: anna, tag: "Дом")
+        _ = make("Продлить страховку квартиры", at(-1, 21, 0), who: anna, tag: "Документы")
+        if let paid = make("Оплатить интернет", at(0, 9, 0), who: mikhail, tag: "Дом", note: "Оплата прошла. Подтверждение сохранено у Михаила.",
+                           checklist: ["Оплатить за ноябрь"]) {
+            for item in tasks.checklist(for: paid) { tasks.toggle(item) }
+            paid.completedAt = at(0, 8, 45)
+            paid.completedById = mikhail
         }
 
         let exp = cal.date(from: DateComponents(year: 2027, month: 8, day: 31))
@@ -52,6 +71,9 @@ public enum DemoData {
                                       sizeBytes: 120_000, localFileName: nil))
         for r in (try? context.fetch(FetchDescriptor<ShoppingItemRecord>())) ?? [] { r.syncStatus = .synced }
         for r in (try? context.fetch(FetchDescriptor<ShoppingListRecord>())) ?? [] { r.syncStatus = .synced }
+        for r in (try? context.fetch(FetchDescriptor<TaskSeriesRecord>())) ?? [] { r.syncStatus = .synced }
+        for r in (try? context.fetch(FetchDescriptor<TaskOccurrenceRecord>())) ?? [] { r.syncStatus = .synced }
+        for r in (try? context.fetch(FetchDescriptor<ChecklistItemRecord>())) ?? [] { r.syncStatus = .synced }
         try? context.save()
     }
     #endif

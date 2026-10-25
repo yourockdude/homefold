@@ -6,6 +6,8 @@ struct RYConfirmDialog: View {
     let title: String
     let message: String
     let confirmTitle: String
+    var extraTitle: String?
+    var onExtra: (() -> Void)?
     let onConfirm: () -> Void
     let onCancel: () -> Void
 
@@ -25,6 +27,9 @@ struct RYConfirmDialog: View {
                 Text(message).ryFont(.body).foregroundStyle(RYColor.muted)
                 VStack(spacing: RYSpacing.s) {
                     Button(confirmTitle, action: onConfirm).buttonStyle(.ryDestructive)
+                    if let extraTitle, let onExtra {
+                        Button(extraTitle, action: onExtra).buttonStyle(.ryDestructive)
+                    }
                     Button("Отмена", action: onCancel).buttonStyle(.rySecondary)
                 }
                 .padding(.top, RYSpacing.xs)
@@ -41,10 +46,13 @@ struct RYConfirmDialog: View {
 
 extension View {
     func ryConfirm(isPresented: Binding<Bool>, systemImage: String = "trash", title: String, message: String,
-                   confirmTitle: String, onConfirm: @escaping () -> Void) -> some View {
+                   confirmTitle: String, extraTitle: String? = nil, onExtra: (() -> Void)? = nil,
+                   onConfirm: @escaping () -> Void) -> some View {
         overlay {
             if isPresented.wrappedValue {
                 RYConfirmDialog(systemImage: systemImage, title: title, message: message, confirmTitle: confirmTitle,
+                                extraTitle: extraTitle,
+                                onExtra: onExtra.map { extra in { isPresented.wrappedValue = false; extra() } },
                                 onConfirm: { isPresented.wrappedValue = false; onConfirm() },
                                 onCancel: { isPresented.wrappedValue = false })
             }

@@ -247,6 +247,15 @@ struct TaskServiceTests {
 
     // MARK: Формат
 
+    @Test("Дательный падеж имён")
+    func dativeNames() {
+        #expect(RussianNames.dative("Соня") == "Соне")
+        #expect(RussianNames.dative("Анна") == "Анне")
+        #expect(RussianNames.dative("Михаил") == "Михаилу")
+        #expect(RussianNames.dative("Мария") == "Марии")
+        #expect(RussianNames.dative("Андрей") == "Андрею")
+    }
+
     @Test("Русские формулировки дат")
     func dateWording() {
         #expect(RussianDate.onThisWeekday(at(24), calendar: calendar) == "на эту субботу")

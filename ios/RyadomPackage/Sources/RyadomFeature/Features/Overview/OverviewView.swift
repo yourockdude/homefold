@@ -3,6 +3,8 @@ import SwiftData
 
 /// Семейный обзор. Все счётчики считаются из локальной базы.
 struct OverviewView: View {
+    @Environment(AppSession.self) private var session
+    @Environment(\.modelContext) private var context
     var onOpenTasks: () -> Void
     var onOpenDocuments: () -> Void
 
@@ -16,7 +18,7 @@ struct OverviewView: View {
     private var expiringDocuments: [DocumentRecord]
 
     private var todayTasks: [TaskOccurrenceRecord] {
-        occurrences.filter { Calendar.current.isDateInToday($0.dueAt) }
+        occurrences.filter { Calendar.current.isDateInToday($0.dueAt) && !$0.isCompleted }
     }
 
     var body: some View {
@@ -115,7 +117,12 @@ struct OverviewView: View {
                 VStack(spacing: 0) {
                     ForEach(todayTasks.prefix(3)) { task in
                         HStack(spacing: 11) {
-                            RYCheckbox(isOn: task.isCompleted)
+                            Button {
+                                let service = session.taskService(context: context)
+                                task.isCompleted ? service?.reopen(task) : service?.complete(task)
+                            } label: { RYCheckbox(isOn: task.isCompleted).frame(minWidth: 30, minHeight: 44) }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(task.isCompleted ? "Вернуть в работу: \(task.title)" : "Отметить выполненным: \(task.title)")
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(task.title).ryFont(.bodyMedium).foregroundStyle(RYColor.ink)
                                 if task.hasTime {

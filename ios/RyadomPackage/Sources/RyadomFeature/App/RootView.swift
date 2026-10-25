@@ -5,6 +5,8 @@ public struct RootView: View {
     @State private var tab: MainTab = .overview
     @State private var session = AppSession()
     @State private var keyboardVisible = false
+    @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var members: [MemberRecord]
 
     public init() {}
@@ -15,7 +17,7 @@ public struct RootView: View {
                 switch tab {
                 case .overview: OverviewView(onOpenTasks: { tab = .tasks }, onOpenDocuments: { tab = .documents })
                 case .shopping: ShoppingView()
-                case .tasks: PlaceholderScreen(title: "Дела семьи")
+                case .tasks: TasksView()
                 case .documents: PlaceholderScreen(title: "Документы")
                 }
             }
@@ -25,6 +27,10 @@ public struct RootView: View {
         .background(RYColor.background.ignoresSafeArea())
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardVisible = false }
+        .task(id: session.userId) { await refreshTasks() }
+        .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await refreshTasks() } } }
+        .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in Task { await refreshTasks() } }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in Task { await refreshTasks() } }
         .environment(session)
         .onChange(of: members.map(\.id), initial: true) { _, _ in bootstrapSession() }
         .preferredColorScheme(.light)
@@ -32,6 +38,14 @@ public struct RootView: View {
 }
 
 extension RootView {
+    /// Достраивает повторяющиеся дела и пересобирает локальные напоминания: после запуска, возврата в приложение,
+    /// смены часового пояса и смены даты.
+    private func refreshTasks() async {
+        guard let tasks = session.taskService(context: context) else { return }
+        tasks.extendHorizon()
+        await tasks.reconcileReminders()
+    }
+
     /// Временно, до этапа «Вход и семья»: текущий пользователь — первый администратор в локальной базе.
     private func bootstrapSession() {
         guard session.userId == nil, let me = members.first(where: \.isAdmin) ?? members.first else { return }

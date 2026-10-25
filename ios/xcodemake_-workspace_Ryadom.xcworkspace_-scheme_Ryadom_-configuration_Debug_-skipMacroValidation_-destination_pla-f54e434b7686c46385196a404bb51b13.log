@@ -40,23 +40,27 @@ ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --
 
 ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: 0c0a682ed6641398741703de12ead1e6
-Build description path: /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/XCBuildData/0c0a682ed6641398741703de12ead1e6.xcbuilddata
+Build description signature: 4a06f004963d0f1522c1d565c076316a
+Build description path: /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/XCBuildData/4a06f004963d0f1522c1d565c076316a.xcbuilddata
 ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -o /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache
-
-CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    builtin-create-build-directory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex
 
 CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     builtin-create-build-directory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products
 
+CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    builtin-create-build-directory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex
+
 CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     builtin-create-build-directory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    builtin-create-build-directory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator
 
 CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/ExplicitPrecompiledModules
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -65,10 +69,6 @@ CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/worksp
 CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     builtin-create-build-directory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
-
-CreateBuildDirectory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    builtin-create-build-directory /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator
 
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom-b02674b7867e44e84ff29ed08612370c-VFS-iphonesimulator/all-product-headers.yaml
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -82,9 +82,17 @@ WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspac
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/empty-Ryadom.plist
 
+WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-project-headers.hmap (in target 'Ryadom' from project 'Ryadom')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-project-headers.hmap
+
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.DependencyStaticMetadataFileList (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.hmap (in target 'Ryadom' from project 'Ryadom')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.hmap
 
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.DependencyMetadataFileList (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -94,29 +102,21 @@ WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspac
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.modulemap
 
-WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.DependencyStaticMetadataFileList (in target 'RyadomFeature' from project 'RyadomFeature')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
-    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.DependencyStaticMetadataFileList
-
-WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.hmap (in target 'Ryadom' from project 'Ryadom')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.hmap
-
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.DependencyMetadataFileList (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.DependencyMetadataFileList
 
-WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature-OutputFileMap.json (in target 'RyadomFeature' from project 'RyadomFeature')
+WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.DependencyStaticMetadataFileList (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
-    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature-OutputFileMap.json
+    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.DependencyStaticMetadataFileList
 
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature_const_extract_protocols.json (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature_const_extract_protocols.json
 
-WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.LinkFileList (in target 'RyadomFeature' from project 'RyadomFeature')
+WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature-OutputFileMap.json (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
-    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.LinkFileList
+    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature-OutputFileMap.json
 
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.SwiftFileList (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
@@ -126,9 +126,9 @@ WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspac
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.SwiftConstValuesFileList
 
-WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-project-headers.hmap (in target 'Ryadom' from project 'Ryadom')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-project-headers.hmap
+WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.LinkFileList (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
+    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.LinkFileList
 
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-own-target-headers.hmap (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -137,6 +137,10 @@ WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspac
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-generated-files.hmap (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-generated-files.hmap
+
+WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-all-target-headers.hmap (in target 'Ryadom' from project 'Ryadom')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-all-target-headers.hmap
 
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-all-non-framework-target-headers.hmap (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -149,10 +153,6 @@ WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspac
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-DebugDylibInstallName-normal-arm64.txt (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-DebugDylibInstallName-normal-arm64.txt
-
-WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-all-target-headers.hmap (in target 'Ryadom' from project 'Ryadom')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-all-target-headers.hmap
 
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom_const_extract_protocols.json (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -170,13 +170,13 @@ Copy /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a7326
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.modulemap /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator
 
-WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-OutputFileMap.json (in target 'Ryadom' from project 'Ryadom')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-OutputFileMap.json
-
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.LinkFileList (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.LinkFileList
+
+WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-OutputFileMap.json (in target 'Ryadom' from project 'Ryadom')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    write-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-OutputFileMap.json
 
 WriteAuxiliaryFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources/Entitlements-Simulated.plist (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -190,19 +190,36 @@ SwiftDriver RyadomFeature normal arm64 com.apple.xcode.tools.swift.compiler (in 
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name RyadomFeature -Onone @/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.SwiftFileList -DSWIFT_PACKAGE -DDEBUG -DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE -DXcode -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios18.0-simulator -g -module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 6 -I /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -c -j14 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -sdk-module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex/Session.modulevalidation -package-name ryadompackage -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature_const_extract_protocols.json -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/DerivedSources-normal/arm64 -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/DerivedSources/arm64 -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature-Swift.h -working-directory /Users/yuriyurchenko/Developer/Ryadom/ios -experimental-emit-module-separately -disable-cmo
 
-SwiftCompile normal arm64 Compiling\ OverviewView.swift,\ ItemFormView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Overview/OverviewView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ItemFormView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 Compiling\ Components.swift,\ ConfirmDialog.swift,\ Fields.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/Components.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/ConfirmDialog.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/Fields.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Overview/OverviewView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/Components.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
-
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ItemFormView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    
-
-SwiftCompile normal arm64 Compiling\ ConfirmDialog.swift,\ Tokens.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/ConfirmDialog.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/Tokens.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
 SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/ConfirmDialog.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/Fields.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ ShoppingView.swift,\ TaskCard.swift,\ TaskDetailView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TaskCard.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TaskDetailView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TaskCard.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TaskDetailView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ MemberPickerSheet.swift,\ Tokens.swift,\ OverviewView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/MemberPickerSheet.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/Tokens.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Overview/OverviewView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/MemberPickerSheet.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
@@ -210,7 +227,15 @@ SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackag
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ ShoppingFormat.swift,\ ShoppingHistoryView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingFormat.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingHistoryView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Overview/OverviewView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ ItemFormView.swift,\ ShoppingFormat.swift,\ ShoppingHistoryView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ItemFormView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingFormat.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingHistoryView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ItemFormView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
 
 SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingFormat.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -218,9 +243,9 @@ SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackag
 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingFormat.swift:33:65: warning: call to main actor-isolated static method 'goods' in a synchronous nonisolated context
     public static func goods(_ n: Int) -> String { ShoppingView.goods(n) }
                                                                 ^
-/Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingView.swift:339:17: note: calls to static method 'goods' from outside of its actor context are implicitly asynchronous
+/Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingView.swift:341:17: note: calls to static method 'goods' from outside of its actor context are implicitly asynchronous
     static func goods(_ n: Int) -> String { OverviewView.plural(n, "товар", "товара", "товаров") }
-/Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingView.swift:339:17: note: main actor isolation inferred from conformance to protocol 'View'
+/Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingView.swift:341:17: note: main actor isolation inferred from conformance to protocol 'View'
     static func goods(_ n: Int) -> String { OverviewView.plural(n, "товар", "товара", "товаров") }
 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingFormat.swift:33:24: note: add '@MainActor' to make static method 'goods' part of global actor 'MainActor'
     public static func goods(_ n: Int) -> String { ShoppingView.goods(n) }
@@ -231,17 +256,7 @@ SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackag
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ RootView.swift,\ Components.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/RootView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/Components.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/RootView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    
-
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/DesignSystem/Components.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    
-
-SwiftCompile normal arm64 Compiling\ AppSession.swift,\ MainTab.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/AppSession.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/MainTab.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 Compiling\ AppSession.swift,\ MainTab.swift,\ RootView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/AppSession.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/MainTab.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/RootView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
 SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/AppSession.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -251,48 +266,57 @@ SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackag
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ Documents.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Documents.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Documents.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/App/RootView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ Outbox.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Outbox.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Outbox.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    
-
-SwiftCompile normal arm64 Compiling\ ShoppingView.swift,\ DemoData.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/DemoData.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Shopping/ShoppingView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    
+SwiftCompile normal arm64 Compiling\ DemoData.swift,\ Documents.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/DemoData.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Documents.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
 SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/DemoData.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ RyadomSchema.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/RyadomSchema.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Documents.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ ReminderScheduler.swift,\ RussianNames.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/ReminderScheduler.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/RussianNames.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/ReminderScheduler.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/RussianNames.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ TasksView.swift,\ WeekStrip.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TasksView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/WeekStrip.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TasksView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/WeekStrip.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ RyadomSchema.swift,\ Shopping.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/RyadomSchema.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Shopping.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
 SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/RyadomSchema.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ SyncMetadata.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/SyncMetadata.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/SyncMetadata.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Shopping.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ ShoppingService.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/ShoppingService.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 Compiling\ DeterministicUUID.swift,\ Recurrence.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/DeterministicUUID.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/Recurrence.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/ShoppingService.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/DeterministicUUID.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ Tasks.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Tasks.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Tasks.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/Recurrence.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
@@ -302,41 +326,65 @@ EmitSwiftModule normal arm64 (in target 'RyadomFeature' from project 'RyadomFeat
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ Shopping.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Shopping.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 Compiling\ SyncMetadata.swift,\ Tasks.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/SyncMetadata.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Tasks.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Shopping.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/SyncMetadata.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftCompile normal arm64 Compiling\ Family.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Family.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Tasks.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ ShoppingService.swift,\ TaskService.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/ShoppingService.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/TaskService.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/ShoppingService.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Services/TaskService.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ TaskFormView.swift,\ TaskRoute.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TaskFormView.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TaskRoute.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TaskFormView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Features/Tasks/TaskRoute.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftCompile normal arm64 Compiling\ Family.swift,\ Outbox.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Family.swift /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Outbox.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
 SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Family.swift (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
-SwiftDriverJobDiscovery normal arm64 Compiling SyncMetadata.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftCompile normal arm64 /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage/Sources/RyadomFeature/Models/Outbox.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
 
-SwiftDriverJobDiscovery normal arm64 Compiling ConfirmDialog.swift, Tokens.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling DeterministicUUID.swift, Recurrence.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling Outbox.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling ReminderScheduler.swift, RussianNames.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling Documents.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling Components.swift, ConfirmDialog.swift, Fields.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling AppSession.swift, MainTab.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling Family.swift, Outbox.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling RyadomSchema.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling SyncMetadata.swift, Tasks.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling Shopping.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling DemoData.swift, Documents.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling Family.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling RyadomSchema.swift, Shopping.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling ShoppingService.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling TaskFormView.swift, TaskRoute.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling Tasks.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling AppSession.swift, MainTab.swift, RootView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftDriverJobDiscovery normal arm64 Compiling ShoppingFormat.swift, ShoppingHistoryView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
-
-SwiftDriverJobDiscovery normal arm64 Compiling RootView.swift, Components.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling TasksView.swift, WeekStrip.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
 SwiftDriverJobDiscovery normal arm64 Emitting module for RyadomFeature (in target 'RyadomFeature' from project 'RyadomFeature')
 
@@ -417,23 +465,25 @@ CompileAssetCatalogVariant thinned /Users/yuriyurchenko/Library/Developer/XcodeB
 /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_generated_info.plist_thinned
 
 
+SwiftDriverJobDiscovery normal arm64 Compiling ShoppingService.swift, TaskService.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+
 SwiftDriver Ryadom normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Ryadom -Onone @/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios18.0-simulator -g -module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator -F /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator -emit-localized-strings -emit-localized-strings-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64 -c -j14 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -sdk-module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom_const_extract_protocols.json -Xcc -iquote -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-generated-files.hmap -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-own-target-headers.hmap -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom-b02674b7867e44e84ff29ed08612370c-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-project-headers.hmap -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources-normal/arm64 -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources/arm64 -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-Swift.h -working-directory /Users/yuriyurchenko/Developer/Ryadom/ios -experimental-emit-module-separately -disable-cmo
 
-LinkAssetCatalog /Users/yuriyurchenko/Developer/Ryadom/ios/Ryadom/Assets.xcassets (in target 'Ryadom' from project 'Ryadom')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    builtin-linkAssetCatalog --thinned /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_output/thinned --thinned-dependencies /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_generated_info.plist_unthinned --output /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app --plist-output /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_generated_info.plist
+SwiftDriverJobDiscovery normal arm64 Compiling MemberPickerSheet.swift, Tokens.swift, OverviewView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
-SwiftEmitModule normal arm64 Emitting\ module\ for\ Ryadom (in target 'Ryadom' from project 'Ryadom')
-
-EmitSwiftModule normal arm64 (in target 'Ryadom' from project 'Ryadom')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    
+SwiftDriverJobDiscovery normal arm64 Compiling ItemFormView.swift, ShoppingFormat.swift, ShoppingHistoryView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
 SwiftCompile normal arm64 Compiling\ GeneratedAssetSymbols.swift /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Ryadom' from project 'Ryadom')
 
 SwiftCompile normal arm64 /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Ryadom' from project 'Ryadom')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ Ryadom (in target 'Ryadom' from project 'Ryadom')
+
+EmitSwiftModule normal arm64 (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     
 
@@ -453,17 +503,17 @@ SwiftMergeGeneratedHeaders /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     builtin-swiftHeaderTool -arch arm64 /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-Swift.h -o /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources/Ryadom-Swift.h
 
-Copy /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.swiftdoc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftdoc (in target 'Ryadom' from project 'Ryadom')
+Copy /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.abi.json (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftdoc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.swiftdoc
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.abi.json /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.abi.json
 
 Copy /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.swiftmodule /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftmodule (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftmodule /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.swiftmodule
 
-Copy /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.abi.json (in target 'Ryadom' from project 'Ryadom')
+Copy /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.swiftdoc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftdoc (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.abi.json /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.abi.json
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftdoc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/arm64-apple-ios-simulator.swiftdoc
 
 Copy /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftsourceinfo (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -477,9 +527,11 @@ SwiftDriver\ Compilation Ryadom normal arm64 com.apple.xcode.tools.swift.compile
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Ryadom -Onone @/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios18.0-simulator -g -module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator -F /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator -emit-localized-strings -emit-localized-strings-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64 -c -j14 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -sdk-module-cache-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom_const_extract_protocols.json -Xcc -iquote -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-generated-files.hmap -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-own-target-headers.hmap -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom-b02674b7867e44e84ff29ed08612370c-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom-project-headers.hmap -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources-normal/arm64 -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources/arm64 -Xcc -I/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom-Swift.h -working-directory /Users/yuriyurchenko/Developer/Ryadom/ios -experimental-emit-module-separately -disable-cmo
 
-SwiftDriverJobDiscovery normal arm64 Compiling OverviewView.swift, ItemFormView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+LinkAssetCatalog /Users/yuriyurchenko/Developer/Ryadom/ios/Ryadom/Assets.xcassets (in target 'Ryadom' from project 'Ryadom')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    builtin-linkAssetCatalog --thinned /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_output/thinned --thinned-dependencies /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_generated_info.plist_unthinned --output /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app --plist-output /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/assetcatalog_generated_info.plist
 
-SwiftDriverJobDiscovery normal arm64 Compiling ShoppingView.swift, DemoData.swift (in target 'RyadomFeature' from project 'RyadomFeature')
+SwiftDriverJobDiscovery normal arm64 Compiling ShoppingView.swift, TaskCard.swift, TaskDetailView.swift (in target 'RyadomFeature' from project 'RyadomFeature')
 
 SwiftDriver\ Compilation RyadomFeature normal arm64 com.apple.xcode.tools.swift.compiler (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -492,20 +544,20 @@ Ld /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e
 ExtractAppIntentsMetadata (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name RyadomFeature --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 18.0 --bundle-identifier ryadompackage.RyadomFeature --output /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/RyadomFeature.appintents --target-triple arm64-apple-ios18.0-simulator --binary-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/RyadomFeature.o --dependency-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature_dependency_info.dat --stringsdata-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.SwiftFileList --metadata-file-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.DependencyMetadataFileList --static-metadata-file-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/RyadomFeature.DependencyStaticMetadataFileList --swift-const-vals-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/RyadomFeature.build/Debug-iphonesimulator/RyadomFeature.build/Objects-normal/arm64/RyadomFeature.SwiftConstValuesFileList --force --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-25 15:52:35.639 appintentsmetadataprocessor[2326:5882331] Starting appintentsmetadataprocessor export
-2026-10-25 15:52:35.648 appintentsmetadataprocessor[2326:5882331] Extracted no relevant App Intents symbols, skipping writing output
+2026-10-25 16:14:18.725 appintentsmetadataprocessor[9582:5975965] Starting appintentsmetadataprocessor export
+2026-10-25 16:14:18.731 appintentsmetadataprocessor[9582:5975965] Extracted no relevant App Intents symbols, skipping writing output
 
 RegisterExecutionPolicyException /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/RyadomFeature.o (in target 'RyadomFeature' from project 'RyadomFeature')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios/RyadomPackage
     builtin-RegisterExecutionPolicyException /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/RyadomFeature.o
 
-CpResource /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/Ryadom.xctestplan /Users/yuriyurchenko/Developer/Ryadom/ios/Ryadom/Ryadom.xctestplan (in target 'Ryadom' from project 'Ryadom')
-    cd /Users/yuriyurchenko/Developer/Ryadom/ios
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/yuriyurchenko/Developer/Ryadom/ios/Ryadom/Ryadom.xctestplan /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app
-
 Ld /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/__preview.dylib normal (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios18.0-simulator -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator -F/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/PackageFrameworks -F/Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator -install_name @rpath/Ryadom.debug.dylib -Xlinker -dead_strip -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -debug_variant -Xlinker -dependency_info -Xlinker /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom_dependency_info.dat -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __entitlements -Xlinker /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.app-Simulated.xcent -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __ents_der -Xlinker /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.app-Simulated.xcent.der -Xlinker -no_adhoc_codesign -o /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/__preview.dylib
+
+CpResource /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/Ryadom.xctestplan /Users/yuriyurchenko/Developer/Ryadom/ios/Ryadom/Ryadom.xctestplan (in target 'Ryadom' from project 'Ryadom')
+    cd /Users/yuriyurchenko/Developer/Ryadom/ios
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/yuriyurchenko/Developer/Ryadom/ios/Ryadom/Ryadom.xctestplan /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app
 
 ProcessInfoPlistFile /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/Info.plist /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/empty-Ryadom.plist (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
@@ -531,15 +583,15 @@ CopySwiftLibs /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mc
 ExtractAppIntentsMetadata (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Ryadom --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 18.0 --bundle-identifier com.yuriyurchenko.ryadom --output /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app --target-triple arm64-apple-ios18.0-simulator --binary-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/Ryadom --dependency-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom_dependency_info.dat --stringsdata-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.SwiftFileList --metadata-file-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.DependencyMetadataFileList --static-metadata-file-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.DependencyStaticMetadataFileList --swift-const-vals-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Objects-normal/arm64/Ryadom.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-25 15:52:35.860 appintentsmetadataprocessor[2333:5882392] Starting appintentsmetadataprocessor export
-2026-10-25 15:52:35.861 appintentsmetadataprocessor[2333:5882392] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+2026-10-25 16:14:18.960 appintentsmetadataprocessor[9589:5976022] Starting appintentsmetadataprocessor export
+2026-10-25 16:14:18.961 appintentsmetadataprocessor[9589:5976022] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
 
 AppIntentsSSUTraining (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/Info.plist --temp-dir-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/ssu --bundle-id com.yuriyurchenko.ryadom --product-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app --extracted-metadata-path /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/Metadata.appintents --metadata-file-list /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Intermediates.noindex/Ryadom.build/Debug-iphonesimulator/Ryadom.build/Ryadom.DependencyMetadataFileList --source-file /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/Info.plist --archive-ssu-assets
-2026-10-25 15:52:35.873 appintentsnltrainingprocessor[2334:5882393] Parsing options for appintentsnltrainingprocessor
-2026-10-25 15:52:35.873 appintentsnltrainingprocessor[2334:5882393] Starting AppIntents SSU YAML Generation
-2026-10-25 15:52:35.873 appintentsnltrainingprocessor[2334:5882393] No AppShortcuts found - Skipping.
+2026-10-25 16:14:18.977 appintentsnltrainingprocessor[9590:5976024] Parsing options for appintentsnltrainingprocessor
+2026-10-25 16:14:18.977 appintentsnltrainingprocessor[9590:5976024] Starting AppIntents SSU YAML Generation
+2026-10-25 16:14:18.979 appintentsnltrainingprocessor[9590:5976024] No AppShortcuts found - Skipping.
 
 CodeSign /Users/yuriyurchenko/Library/Developer/XcodeBuildMCP/workspaces/mcp-32a73267e281/DerivedData/Ryadom-f692b5abd6a3/Build/Products/Debug-iphonesimulator/Ryadom.app/Ryadom.debug.dylib (in target 'Ryadom' from project 'Ryadom')
     cd /Users/yuriyurchenko/Developer/Ryadom/ios
