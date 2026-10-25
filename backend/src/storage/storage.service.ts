@@ -83,25 +83,28 @@ export class LocalStorage extends Storage {
 
 export class S3Storage extends Storage {
   private readonly client: S3Client;
+  /** Клиент для подписи ссылок: хост должен быть доступен устройству (S3_PUBLIC_ENDPOINT), а не только контейнеру API. */
+  private readonly signer: S3Client;
   private readonly bucket: string;
   constructor() {
     super();
     const s3 = loadConfig().storage.s3;
     this.bucket = s3.bucket;
-    this.client = new S3Client({
+    const base = {
       region: s3.region,
-      endpoint: s3.endpoint,
       forcePathStyle: s3.forcePathStyle,
       credentials: s3.accessKeyId && s3.secretAccessKey ? { accessKeyId: s3.accessKeyId, secretAccessKey: s3.secretAccessKey } : undefined,
-    });
+    };
+    this.client = new S3Client({ ...base, endpoint: s3.endpoint });
+    this.signer = new S3Client({ ...base, endpoint: s3.publicEndpoint ?? s3.endpoint });
   }
   async presignPut(key: string, contentType: string, ttlSec: number): Promise<PresignedUpload> {
-    const url = await getSignedUrl(this.client, new PutObjectCommand({ Bucket: this.bucket, Key: key, ContentType: contentType }), { expiresIn: ttlSec });
+    const url = await getSignedUrl(this.signer, new PutObjectCommand({ Bucket: this.bucket, Key: key, ContentType: contentType }), { expiresIn: ttlSec });
     return { url, method: 'PUT', headers: { 'Content-Type': contentType }, expiresInSeconds: ttlSec };
   }
   presignGet(key: string, fileName: string, ttlSec: number) {
     return getSignedUrl(
-      this.client,
+      this.signer,
       new GetObjectCommand({ Bucket: this.bucket, Key: key, ResponseContentDisposition: `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}` }),
       { expiresIn: ttlSec },
     );

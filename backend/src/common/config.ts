@@ -15,7 +15,7 @@ export interface AppConfig {
   storage: {
     driver: 'local' | 's3';
     localDir: string;
-    s3: { bucket: string; region: string; endpoint?: string; accessKeyId?: string; secretAccessKey?: string; forcePathStyle: boolean };
+    s3: { bucket: string; region: string; endpoint?: string; publicEndpoint?: string; accessKeyId?: string; secretAccessKey?: string; forcePathStyle: boolean };
   };
   billing: {
     mode: BillingMode;
@@ -62,6 +62,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
         bucket: env.S3_BUCKET ?? 'ryadom-documents',
         region: env.S3_REGION ?? 'us-east-1',
         endpoint: env.S3_ENDPOINT || undefined,
+        publicEndpoint: env.S3_PUBLIC_ENDPOINT || undefined,
         accessKeyId: env.S3_ACCESS_KEY_ID || undefined,
         secretAccessKey: env.S3_SECRET_ACCESS_KEY || undefined,
         forcePathStyle: env.S3_FORCE_PATH_STYLE === 'true',

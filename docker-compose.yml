@@ -1,0 +1,83 @@
+# Локальный стек для разработки: PostgreSQL, MinIO (S3), Mailpit (почта), API.
+# Запуск: docker compose up --build   →   API http://localhost:3000, Swagger /docs, Mailpit http://localhost:8025
+# NODE_ENV здесь development: mock-биллинг и локальные сервисы разрешены только в этом режиме.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ryadom
+      POSTGRES_PASSWORD: ryadom
+      POSTGRES_DB: ryadom
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ryadom"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ryadom
+      MINIO_ROOT_PASSWORD: ryadom-secret
+    ports: ["9000:9000", "9001:9001"]
+    volumes: [miniodata:/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ryadom ryadom-secret &&
+      mc mb --ignore-existing local/ryadom-documents &&
+      mc anonymous set none local/ryadom-documents"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ["1025:1025", "8025:8025"]
+
+  api:
+    build: ./backend
+    depends_on:
+      postgres: { condition: service_healthy }
+      minio-init: { condition: service_completed_successfully }
+    ports: ["3000:3000"]
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://ryadom:ryadom@postgres:5432/ryadom
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:3000}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-dev-only-secret}
+      OTP_PEPPER: ${OTP_PEPPER:-dev-only-pepper}
+      MAIL_TRANSPORT: smtp
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      STORAGE_DRIVER: s3
+      S3_ENDPOINT: http://minio:9000
+      # Устройство ходит в MinIO напрямую по подписанным ссылкам: для физического iPhone укажите IP вашего Mac.
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+      S3_FORCE_PATH_STYLE: "true"
+      S3_BUCKET: ryadom-documents
+      S3_ACCESS_KEY_ID: ryadom
+      S3_SECRET_ACCESS_KEY: ryadom-secret
+      BILLING_MODE: ${BILLING_MODE:-sandbox-mock}
+      APPLE_BUNDLE_ID: ${APPLE_BUNDLE_ID:-com.yuriyurchenko.ryadom}
+      APPLE_IAP_KEY_ID: ${APPLE_IAP_KEY_ID:-}
+      APPLE_IAP_ISSUER_ID: ${APPLE_IAP_ISSUER_ID:-}
+      APPLE_IAP_PRIVATE_KEY: ${APPLE_IAP_PRIVATE_KEY:-}
+      APNS_KEY_ID: ${APNS_KEY_ID:-}
+      APNS_TEAM_ID: ${APNS_TEAM_ID:-}
+      APNS_TOPIC: ${APNS_TOPIC:-com.yuriyurchenko.ryadom}
+      APNS_PRIVATE_KEY: ${APNS_PRIVATE_KEY:-}
+
+volumes:
+  pgdata:
+  miniodata:

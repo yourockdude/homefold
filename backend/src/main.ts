@@ -1,3 +1,4 @@
+import './env';
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -9,7 +10,7 @@ import { buildOpenApi, configureApp } from './setup';
 async function bootstrap() {
   const cfg = loadConfig();
   assertProductionSafe(cfg);
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: cfg.isProd ? ['error', 'warn', 'log'] : ['error', 'warn', 'log'] });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: ['error', 'warn', 'log'] });
   app.set('trust proxy', 1);
   app.enableShutdownHooks();
   configureApp(app);
