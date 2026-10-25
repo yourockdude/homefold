@@ -18,7 +18,7 @@ public struct RootView: View {
                 case .overview: OverviewView(onOpenTasks: { tab = .tasks }, onOpenDocuments: { tab = .documents })
                 case .shopping: ShoppingView()
                 case .tasks: TasksView()
-                case .documents: PlaceholderScreen(title: "Документы")
+                case .documents: DocumentsView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -28,7 +28,10 @@ public struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardVisible = false }
         .task(id: session.userId) { await refreshTasks() }
-        .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await refreshTasks() } } }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await refreshTasks() } }
+            if phase == .background { session.documentsLock.lock() }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in Task { await refreshTasks() } }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in Task { await refreshTasks() } }
         .environment(session)
@@ -48,6 +51,12 @@ extension RootView {
 
     /// Временно, до этапа «Вход и семья»: текущий пользователь — первый администратор в локальной базе.
     private func bootstrapSession() {
+        #if DEBUG
+        if DemoData.isRequested, session.uploads == nil {
+            session.uploads = DocumentUploadCoordinator(context: context, store: session.fileStore,
+                                                        api: SimulatedDocumentAPI(), transfer: SimulatedStorageTransfer())
+        }
+        #endif
         guard session.userId == nil, let me = members.first(where: \.isAdmin) ?? members.first else { return }
         session.userId = me.id
         session.familyId = me.familyId

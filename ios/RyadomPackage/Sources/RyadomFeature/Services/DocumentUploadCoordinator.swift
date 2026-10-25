@@ -72,6 +72,25 @@ public final class DocumentUploadCoordinator {
         try? context.save()
     }
 
+    /// Возвращает локальную копию файла; если её нет (документ добавил другой участник или копия была
+    /// стёрта), скачивает по короткоживущей ссылке прямо из хранилища.
+    public func ensureLocalFile(for id: UUID) async throws -> URL {
+        guard let doc = document(id) else { throw DocumentTransferError.server("Документ не найден.") }
+        if let name = doc.localFileName, store.exists(name) { return store.url(for: name) }
+        let kind = DocumentFileKind(mimeType: doc.mimeType) ?? .pdf
+        let target = try store.reserve(documentId: id, kind: kind)
+        let link = try await api.downloadURL(documentId: id)
+        try await transfer.download(from: link, to: target.url)
+        guard let data = try? Data(contentsOf: target.url), DocumentFileKind.sniff(data) == kind else {
+            store.remove(target.name)
+            throw DocumentTransferError.rejected("Файл повреждён. Попробуйте ещё раз.")
+        }
+        store.protect(target.name)
+        doc.localFileName = target.name
+        try? context.save()
+        return target.url
+    }
+
     // MARK: Внутреннее
 
     private func run(_ id: UUID) async {

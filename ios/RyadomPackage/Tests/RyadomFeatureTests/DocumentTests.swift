@@ -253,7 +253,9 @@ actor FakeTransfer: StorageTransferring {
         if !script.isEmpty { try script.removeFirst().get() }
         progress(100, 100)
     }
-    func download(from url: URL, to destination: URL) async throws {}
+    var downloadBytes = Data("%PDF-1.4 downloaded".utf8)
+    func setDownloadBytes(_ d: Data) { downloadBytes = d }
+    func download(from url: URL, to destination: URL) async throws { try downloadBytes.write(to: destination) }
 }
 
 @MainActor
@@ -355,6 +357,31 @@ struct DocumentUploadTests {
         #expect(!store.exists(name))
         let ops = (try? context.fetch(FetchDescriptor<OutboxOperation>())) ?? []
         #expect(ops.contains { $0.type == .delete && $0.entityId == id })
+    }
+
+    @Test("Чужой документ без локальной копии скачивается по короткоживущей ссылке")
+    func downloadsMissingFile() async throws {
+        let id = UUID()
+        let doc = DocumentRecord(id: id, familyId: UUID(), authorId: UUID(), ownerId: nil, title: "Чужой", category: .home,
+                                 mimeType: "application/pdf", sizeBytes: 20, localFileName: nil)
+        context.insert(doc)
+        let url = try await coordinator.ensureLocalFile(for: id)
+        #expect(FileManager.default.fileExists(atPath: url.path))
+        #expect(doc.localFileName != nil)
+        // Повторный вызов использует уже скачанную копию.
+        #expect(try await coordinator.ensureLocalFile(for: id) == url)
+    }
+
+    @Test("Скачанный файл с неверной сигнатурой отклоняется и не остаётся на диске")
+    func rejectsCorruptDownload() async throws {
+        await transfer.setDownloadBytes(Data("not a pdf".utf8))
+        let id = UUID()
+        let doc = DocumentRecord(id: id, familyId: UUID(), authorId: UUID(), ownerId: nil, title: "Чужой", category: .home,
+                                 mimeType: "application/pdf", sizeBytes: 20, localFileName: nil)
+        context.insert(doc)
+        await #expect(throws: DocumentTransferError.self) { try await coordinator.ensureLocalFile(for: id) }
+        #expect(doc.localFileName == nil)
+        #expect(!store.exists("\(id.uuidString).pdf"))
     }
 
     @Test("Повторный start во время загрузки не запускает вторую")

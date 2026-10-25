@@ -31,6 +31,18 @@ public struct DocumentFileStore: Sendable {
         return name
     }
 
+    /// Подготавливает место для скачанного файла и возвращает имя и путь.
+    public func reserve(documentId: UUID, kind: DocumentFileKind) throws -> (name: String, url: URL) {
+        try prepareDirectory()
+        let name = "\(documentId.uuidString).\(kind.fileExtension)"
+        return (name, url(for: name))
+    }
+
+    /// Включает защиту данных для файла, полученного не через `save`.
+    public func protect(_ name: String) {
+        try? FileManager.default.setAttributes([.protectionKey: FileProtectionType.complete], ofItemAtPath: url(for: name).path)
+    }
+
     public func remove(_ name: String?) {
         guard let name else { return }
         try? FileManager.default.removeItem(at: url(for: name))

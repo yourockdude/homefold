@@ -65,10 +65,8 @@ public enum DemoData {
             paid.completedById = mikhail
         }
 
-        let exp = cal.date(from: DateComponents(year: 2027, month: 8, day: 31))
-        context.insert(DocumentRecord(familyId: familyId, authorId: anna, ownerId: sonya, title: "Полис ДМС · Соня",
-                                      category: .health, expiresAt: exp, mimeType: "application/pdf",
-                                      sizeBytes: 120_000, localFileName: nil))
+        DemoDocuments.seed(into: context, store: DocumentFileStore(), familyId: familyId,
+                           anna: anna, mikhail: mikhail, sonya: sonya)
         for r in (try? context.fetch(FetchDescriptor<ShoppingItemRecord>())) ?? [] { r.syncStatus = .synced }
         for r in (try? context.fetch(FetchDescriptor<ShoppingListRecord>())) ?? [] { r.syncStatus = .synced }
         for r in (try? context.fetch(FetchDescriptor<TaskSeriesRecord>())) ?? [] { r.syncStatus = .synced }
