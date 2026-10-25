@@ -97,10 +97,10 @@ export class DocumentsService {
     const plan = await this.plan.get(ctx.familyId);
     const usage = await this.prisma.document.aggregate({ where: { familyId: ctx.familyId, deletedAt: null }, _count: true, _sum: { sizeBytes: true } });
     if (plan.limits.documents !== null && usage._count + 1 > plan.limits.documents) {
-      throw Err.premium('documents', `В бесплатном тарифе — до ${plan.limits.documents} файлов. Подключите «рядом Плюс»`);
+      throw Err.premium('documents', `В бесплатном тарифе — до ${plan.limits.documents} файлов. Подключите HomeFold Plus`);
     }
     if ((usage._sum.sizeBytes ?? 0) + dto.sizeBytes > plan.limits.totalBytes) {
-      throw Err.premium('documents', 'Не хватает места для документов. Подключите «рядом Плюс» или удалите ненужные файлы');
+      throw Err.premium('documents', 'Не хватает места для документов. Подключите HomeFold Plus или удалите ненужные файлы');
     }
     const { access, selected } = await this.resolveSharing(ctx, dto);
     const title = requireText(dto.title, 'Название');

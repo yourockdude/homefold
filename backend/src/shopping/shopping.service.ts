@@ -24,7 +24,7 @@ export class ShoppingService {
     if (plan.limits.activeLists === null) return;
     const active = await this.prisma.shoppingList.count({ where: { familyId, status: 'active', deletedAt: null } });
     if (active >= plan.limits.activeLists) {
-      throw Err.premium('multiple_lists', 'В бесплатном тарифе один активный список. Подключите «рядом Плюс» для нескольких списков');
+      throw Err.premium('multiple_lists', 'В бесплатном тарифе один активный список. Подключите HomeFold Plus для нескольких списков');
     }
   }
 

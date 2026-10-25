@@ -1,4 +1,4 @@
-# API «рядом» — контракт для iOS
+# API HomeFold — контракт для iOS
 
 Полная схема: `backend/openapi.json` (OpenAPI 3), живая документация — `GET /docs`.
 Базовый URL в dev: `http://localhost:3000`. В production — только HTTPS.

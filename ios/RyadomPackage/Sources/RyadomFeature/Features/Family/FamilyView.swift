@@ -105,7 +105,7 @@ struct FamilyView: View {
         }, trailing: {
             HStack(spacing: 14) {
                 if let url = member.inviteURL.flatMap(URL.init(string:)) {
-                    ShareLink(item: url, message: Text("Присоединяйтесь к семье в «рядом»")) {
+                    ShareLink(item: url, message: Text("Присоединяйтесь к семье в HomeFold")) {
                         Image(systemName: "square.and.arrow.up").font(.system(size: 17, weight: .regular))
                             .foregroundStyle(RYColor.accent)
                     }

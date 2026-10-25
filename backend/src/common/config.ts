@@ -50,7 +50,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       transport: (env.MAIL_TRANSPORT as 'smtp' | 'memory') ?? 'smtp',
       host: env.SMTP_HOST ?? 'localhost',
       port: Number(env.SMTP_PORT ?? 1025),
-      from: env.MAIL_FROM ?? 'рядом <no-reply@ryadom.app>',
+      from: env.MAIL_FROM ?? 'HomeFold <no-reply@ryadom.app>',
       user: env.SMTP_USER || undefined,
       pass: env.SMTP_PASS || undefined,
       secure: env.SMTP_SECURE === 'true',

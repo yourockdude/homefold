@@ -26,7 +26,7 @@ export class InvitationsService {
   async create(ctx: FamilyCtx) {
     const { plan, members, pending } = await this.assertRoom(ctx.familyId);
     if (members + pending >= plan.limits.members) {
-      throw Err.premium('members', plan.premium ? `В семье может быть не более ${plan.limits.members} участников` : `В бесплатном тарифе — до ${plan.limits.members} участников. Подключите «рядом Плюс»`);
+      throw Err.premium('members', plan.premium ? `В семье может быть не более ${plan.limits.members} участников` : `В бесплатном тарифе — до ${plan.limits.members} участников. Подключите HomeFold Plus`);
     }
     const token = randomBytes(24).toString('base64url');
     const inv = await this.prisma.invitation.create({

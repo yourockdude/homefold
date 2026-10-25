@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Цветовые токены «рядом» из гайда стилей Figma (Text & Icons, Surface, Background, Outlines, Gradients, Palette).
+/// Цветовые токены HomeFold из гайда стилей Figma (Text & Icons, Surface, Background, Outlines, Gradients, Palette).
 /// Каждый токен — цвет в `Colors.xcassets` с вариантами Any/Dark, поэтому светлая и тёмная темы работают автоматически.
 /// Имена свойств ниже — смысловые роли приложения; сырые токены доступны через `RYToken`.
 public enum RYColor {

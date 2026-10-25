@@ -17,8 +17,8 @@ export class SmtpMailer extends Mailer {
     await this.transport.sendMail({
       from: loadConfig().mail.from,
       to: email,
-      subject: `Код для входа в «рядом»: ${code}`,
-      text: `Ваш код для входа в «рядом»: ${code}\n\nКод действует 10 минут. Если вы не запрашивали вход, просто проигнорируйте это письмо.`,
+      subject: `Код для входа в HomeFold: ${code}`,
+      text: `Ваш код для входа в HomeFold: ${code}\n\nКод действует 10 минут. Если вы не запрашивали вход, просто проигнорируйте это письмо.`,
     });
   }
 }

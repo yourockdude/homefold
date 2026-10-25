@@ -42,7 +42,7 @@ public enum DocumentTransferError: Error, Equatable, Sendable {
         switch self {
         case .offline: ("Не удалось загрузить файл", "Проверьте интернет и повторите загрузку.")
         case .slotExpired: ("Не удалось загрузить файл", "Ссылка на загрузку устарела. Повторите загрузку.")
-        case .premiumRequired: ("Достигнут лимит бесплатного тарифа", "Чтобы добавить файл, освободите место или подключите «рядом Плюс».")
+        case .premiumRequired: ("Достигнут лимит бесплатного тарифа", "Чтобы добавить файл, освободите место или подключите HomeFold Plus.")
         case .rejected(let message): ("Файл не прошёл проверку", message)
         case .server(let message): ("Не удалось загрузить файл", message)
         }

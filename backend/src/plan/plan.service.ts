@@ -43,7 +43,7 @@ export class PlanService {
 
   async requireRecurring(familyId: string) {
     if (!(await this.get(familyId)).limits.recurringTasks) {
-      throw Err.premium('recurring_tasks', 'Повторяющиеся дела доступны в тарифе «рядом Плюс»');
+      throw Err.premium('recurring_tasks', 'Повторяющиеся дела доступны в тарифе HomeFold Plus');
     }
   }
 }

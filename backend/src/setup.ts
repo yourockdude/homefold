@@ -23,8 +23,8 @@ export function configureApp(app: INestApplication) {
 
 export function buildOpenApi(app: INestApplication) {
   const config = new DocumentBuilder()
-    .setTitle('рядом API')
-    .setDescription('Backend семейного приложения «рядом». Ошибки: { "error": { "code", "message", "details?" } }.')
+    .setTitle('HomeFold API')
+    .setDescription('Backend семейного приложения HomeFold. Ошибки: { "error": { "code", "message", "details?" } }.')
     .setVersion('0.1.0')
     .addBearerAuth()
     .build();

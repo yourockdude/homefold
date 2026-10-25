@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Сплэш: анимированный цветовой фон в цветах приложения и белый логотип «рядом».
+/// Сплэш: анимированный цветовой фон в цветах приложения и логотип HomeFold с белым названием.
 struct SplashView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var logoVisible = false
@@ -16,7 +16,7 @@ struct SplashView: View {
         .ignoresSafeArea()
         .task { withAnimation(.easeOut(duration: reduceMotion ? 0.2 : 1.0)) { logoVisible = true } }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("рядом")
+        .accessibilityLabel("HomeFold")
         .accessibilityIdentifier("splash")
     }
 }

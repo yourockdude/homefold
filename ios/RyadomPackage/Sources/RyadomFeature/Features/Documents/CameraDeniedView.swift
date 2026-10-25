@@ -31,9 +31,9 @@ struct CameraDeniedView: View {
                     RYIllustration(.camera).padding(.top, 6)
                     Text("Нужен доступ к камере").ryFont(.heading).foregroundStyle(RYColor.ink)
                         .multilineTextAlignment(.center)
-                    Text("Разрешите приложению «рядом» использовать камеру в настройках телефона. Тогда вы сможете сканировать документы.")
+                    Text("Разрешите приложению HomeFold использовать камеру в настройках телефона. Тогда вы сможете сканировать документы.")
                         .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
-                    RYNotice(systemImage: "checkmark.shield", title: "Настройки → рядом → Камера",
+                    RYNotice(systemImage: "checkmark.shield", title: "Настройки → HomeFold → Камера",
                              text: "Включите доступ и вернитесь в приложение. Камера используется только для сканирования.")
                     RYListGroup {
                         RYListRow(draft.title.isEmpty ? "Без названия" : draft.title,

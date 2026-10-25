@@ -3,7 +3,7 @@ import request from 'supertest';
 import { assertProductionSafe, loadConfig } from '../src/common/config';
 import { addMember, makeApp, notification, signAppleJws, signInWithFamily, txPayload, uid } from './helpers';
 
-describe('Подписка «рядом Плюс»', () => {
+describe('Подписка HomeFold Plus', () => {
   let app: INestApplication;
   beforeAll(async () => (app = await makeApp()));
   afterAll(() => app.close());
