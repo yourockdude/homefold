@@ -262,6 +262,7 @@ struct TaskFormView: View {
         switch mode {
         case .create(let date):
             draft = TaskDraft(start: date)
+            draft.reminderMinutes = session.settings.notifications.defaultReminderMinutes
             draft.assigneeId = session.userId
             titleFocused = true
         case .editOccurrence(let id), .editSeries(let id):

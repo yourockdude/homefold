@@ -103,7 +103,11 @@ extension RootView {
     @ViewBuilder
     private func screen(for tab: MainTab) -> some View {
         switch tab {
-        case .overview: OverviewView(onOpenTasks: { select(.tasks) }, onOpenDocuments: { select(.documents) }, onOpenShopping: { select(.shopping) })
+        case .overview:
+            NavigationStack {
+                OverviewView(onOpenTasks: { select(.tasks) }, onOpenDocuments: { select(.documents) }, onOpenShopping: { select(.shopping) })
+                    .toolbar(.hidden, for: .navigationBar)
+            }
         case .shopping: ShoppingView()
         case .tasks: TasksView()
         case .documents: DocumentsView()

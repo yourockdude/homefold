@@ -139,23 +139,6 @@ struct DocumentsView: View {
             }
             .padding(.horizontal, 8).padding(.vertical, 4)
             .accessibilityElement(children: .combine)
-            protectionToggle
-        }
-    }
-
-    private var protectionToggle: some View {
-        @Bindable var lock = lock
-        return RYListGroup {
-            Toggle(isOn: $lock.isProtectionEnabled) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Защита Face ID").ryFont(.body).foregroundStyle(RYColor.ink)
-                    Text("Закрывает документы на этом устройстве. Права доступа проверяет сервер.")
-                        .ryFont(.subhead).foregroundStyle(RYColor.muted)
-                }
-            }
-            .tint(RYColor.accentFill)
-            .padding(.vertical, 10)
-            .accessibilityIdentifier("documents.protection")
         }
     }
 

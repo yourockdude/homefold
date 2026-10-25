@@ -19,6 +19,7 @@ public final class AppSession {
     /// Планировщик локальных напоминаний. В тестах подменяется заглушкой: `UNUserNotificationCenter` требует приложения.
     public var reminders: any ReminderScheduling = SystemReminderScheduler()
     public let documentsLock: DocumentsLock
+    public let settings = AppSettings()
     public let fileStore = DocumentFileStore()
 
     public init(userId: UUID? = nil, familyId: UUID? = nil, documentsLock: DocumentsLock? = nil) {
@@ -42,7 +43,8 @@ extension AppSession {
     /// Сервис дел для текущего пользователя; nil, пока вход не выполнен.
     func taskService(context: ModelContext) -> TaskService? {
         guard let familyId, let userId else { return nil }
-        return TaskService(context: context, familyId: familyId, userId: userId, reminders: reminders)
+        return TaskService(context: context, familyId: familyId, userId: userId, reminders: reminders,
+                           settings: settings.notifications)
     }
 }
 

@@ -86,13 +86,16 @@ public final class TaskService {
     private let calendar: Calendar
     private let now: @Sendable () -> Date
     private let reminders: any ReminderScheduling
+    private let settings: NotificationSettings
     /// Последнее запланированное обновление напоминаний — в тестах его можно дождаться.
     public private(set) var reminderTask: Task<Void, Never>?
 
     public init(context: ModelContext, familyId: UUID, userId: UUID,
                 calendar: Calendar = .current,
                 now: @escaping @Sendable () -> Date = { Date() },
-                reminders: any ReminderScheduling = NoopReminderScheduler()) {
+                reminders: any ReminderScheduling = NoopReminderScheduler(),
+                settings: NotificationSettings = NotificationSettings()) {
+        self.settings = settings
         self.context = context
         self.familyId = familyId
         self.userId = userId
@@ -301,14 +304,16 @@ public final class TaskService {
     }
 
     func pendingReminders() -> [TaskReminder] {
+        guard settings.taskReminders else { return [] }
         let current = now()
         let descriptor = FetchDescriptor<TaskOccurrenceRecord>(
             predicate: #Predicate { $0.deletedAt == nil && $0.completedAt == nil && $0.hasTime })
         let list = ((try? context.fetch(descriptor)) ?? []).compactMap { occ -> TaskReminder? in
             guard occ.familyId == familyId, let minutes = occ.reminderMinutes,
                   occ.assigneeId == nil || occ.assigneeId == userId else { return nil }
-            let fire = occ.dueAt.addingTimeInterval(-TimeInterval(minutes) * 60)
-            guard fire > current else { return nil }
+            let planned = occ.dueAt.addingTimeInterval(-TimeInterval(minutes) * 60)
+            guard let fire = QuietHours.adjusted(planned, due: occ.dueAt, settings: settings, calendar: calendar),
+                  fire > current else { return nil }
             return TaskReminder(id: occ.id.uuidString, title: occ.title,
                                 body: Self.reminderBody(minutes: minutes, due: occ.dueAt, place: occ.place, calendar: calendar),
                                 fireDate: fire)

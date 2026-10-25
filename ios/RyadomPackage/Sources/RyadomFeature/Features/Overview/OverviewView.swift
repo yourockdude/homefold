@@ -20,6 +20,8 @@ struct OverviewView: View {
     @Query(filter: #Predicate<DocumentRecord> { $0.deletedAt == nil && $0.expiresAt != nil }, sort: \DocumentRecord.expiresAt)
     private var expiringDocuments: [DocumentRecord]
 
+    @State private var showSettings = false
+
     private var state: OverviewLoadState { session.overviewState }
     private var me: MemberRecord? { members.first { $0.id == session.userId } ?? members.first }
 
@@ -56,18 +58,41 @@ struct OverviewView: View {
             .ryPullToRefresh()
         }
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
+        .background(RYColor.background.ignoresSafeArea())
+        .navigationDestination(isPresented: $showSettings) { SettingsView() }
     }
 
     // MARK: Шапка
 
     private var header: some View {
         HStack {
+            BrandMark()
             Spacer()
-            HStack(spacing: 4) {
-                ForEach(members.prefix(4)) { AvatarView(name: $0.displayName, tone: $0.tone, diameter: 32) }
-            }
+            Button { showSettings = true } label: { profileButtonLabel }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Настройки профиля")
+                .accessibilityIdentifier("overview.profile")
         }
         .frame(minHeight: 38)
+    }
+
+    private var profileButtonLabel: some View {
+        ZStack(alignment: .bottomTrailing) {
+            if let me {
+                AvatarView(name: me.displayName, tone: me.tone, diameter: 36)
+            } else {
+                Image(systemName: "person.crop.circle").font(.system(size: 30, weight: .light)).foregroundStyle(RYColor.accent)
+                    .frame(width: 36, height: 36)
+            }
+            Image(systemName: "gearshape.fill").font(.system(size: 9, weight: .bold))
+                .foregroundStyle(RYColor.onAccent)
+                .frame(width: 16, height: 16)
+                .background(RYColor.accentFill, in: Circle())
+                .overlay(Circle().stroke(RYColor.background, lineWidth: 1.5))
+                .offset(x: 3, y: 3)
+        }
+        .frame(width: 44, height: 44, alignment: .trailing)
+        .contentShape(Rectangle())
     }
 
     private var greeting: some View {
