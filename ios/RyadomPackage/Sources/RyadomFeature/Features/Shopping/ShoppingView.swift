@@ -27,7 +27,7 @@ struct ShoppingView: View {
            sort: \ShoppingListRecord.createdAt) private var lists: [ShoppingListRecord]
     @Query(filter: #Predicate<ShoppingItemRecord> { $0.deletedAt == nil },
            sort: \ShoppingItemRecord.createdAt) private var allItems: [ShoppingItemRecord]
-    @Query(sort: \MemberRecord.displayName) private var members: [MemberRecord]
+    @Query(filter: #Predicate<MemberRecord> { !$0.isInvited }, sort: \MemberRecord.displayName) private var members: [MemberRecord]
     @Query private var families: [FamilyRecord]
 
     @State private var path: [ShoppingRoute] = []

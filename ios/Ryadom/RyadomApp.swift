@@ -9,6 +9,10 @@ struct RyadomApp: App {
     init() {
         RYFonts.register()
         #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-RYFreshInstall") {
+            container = RyadomSchema.makeContainer(inMemory: true)
+            return
+        }
         if DemoData.isRequested {
             container = RyadomSchema.makeContainer(inMemory: true)
             DemoData.seed(into: container.mainContext)

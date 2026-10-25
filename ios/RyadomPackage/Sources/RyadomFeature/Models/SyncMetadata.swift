@@ -12,6 +12,8 @@ public enum SyncEntity: String, Codable, Sendable {
     case shoppingList, shoppingItem
     case taskSeries, taskOccurrence, checklistItem
     case document
+    /// Операции над семьёй уходят на REST-эндпоинты `/families`, `/invitations`, а не в `/sync/push`.
+    case family, member, invitation
 }
 
 public enum SyncOperationType: String, Codable, Sendable {

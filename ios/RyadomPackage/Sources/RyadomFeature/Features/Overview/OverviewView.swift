@@ -1,6 +1,8 @@
 import SwiftUI
 import SwiftData
 
+enum OverviewRoute: Hashable { case settings, family(back: String) }
+
 /// Семейный обзор. Все счётчики считаются из локальной базы; состояния загрузки приходят из `AppSession`.
 struct OverviewView: View {
     @Environment(AppSession.self) private var session
@@ -10,7 +12,7 @@ struct OverviewView: View {
     var onOpenShopping: () -> Void = {}
 
     @Query private var families: [FamilyRecord]
-    @Query(sort: \MemberRecord.displayName) private var members: [MemberRecord]
+    @Query(filter: #Predicate<MemberRecord> { !$0.isInvited }, sort: \MemberRecord.displayName) private var members: [MemberRecord]
     @Query(filter: #Predicate<ShoppingItemRecord> { !$0.isBought && $0.deletedAt == nil })
     private var unboughtItems: [ShoppingItemRecord]
     @Query(filter: #Predicate<ShoppingItemRecord> { $0.deletedAt == nil }, sort: \ShoppingItemRecord.updatedAt, order: .reverse)
@@ -20,7 +22,7 @@ struct OverviewView: View {
     @Query(filter: #Predicate<DocumentRecord> { $0.deletedAt == nil && $0.expiresAt != nil }, sort: \DocumentRecord.expiresAt)
     private var expiringDocuments: [DocumentRecord]
 
-    @State private var showSettings = false
+    @State private var path: [OverviewRoute] = []
 
     private var state: OverviewLoadState { session.overviewState }
     private var me: MemberRecord? { members.first { $0.id == session.userId } ?? members.first }
@@ -39,6 +41,19 @@ struct OverviewView: View {
     }
 
     var body: some View {
+        NavigationStack(path: $path) {
+            content
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationDestination(for: OverviewRoute.self) { route in
+                    switch route {
+                    case .settings: SettingsView(onOpenFamily: { path.append(.family(back: "Настройки")) })
+                    case .family(let back): FamilyView(backTitle: back)
+                    }
+                }
+        }
+    }
+
+    private var content: some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
@@ -59,7 +74,6 @@ struct OverviewView: View {
         }
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
         .background(RYColor.background.ignoresSafeArea())
-        .navigationDestination(isPresented: $showSettings) { SettingsView() }
     }
 
     // MARK: Шапка
@@ -68,7 +82,7 @@ struct OverviewView: View {
         HStack {
             BrandMark()
             Spacer()
-            Button { showSettings = true } label: { profileButtonLabel }
+            Button { path.append(.settings) } label: { profileButtonLabel }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Настройки профиля")
                 .accessibilityIdentifier("overview.profile")
@@ -131,7 +145,12 @@ struct OverviewView: View {
         }
         .frame(height: compact ? 102 : 138)
         .clipShape(RoundedRectangle(cornerRadius: RYRadius.cover))
+        .contentShape(RoundedRectangle(cornerRadius: RYRadius.cover))
+        .onTapGesture { path.append(.family(back: "Обзор")) }
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint("Открыть настройки семьи")
+        .accessibilityIdentifier("overview.cover")
     }
 
     private var summary: some View {

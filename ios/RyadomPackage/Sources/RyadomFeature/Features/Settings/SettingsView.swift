@@ -4,11 +4,12 @@ import SwiftData
 /// Настройки профиля: профиль и семья, уведомления, защита документов (Figma 45:3062).
 /// Изменения копятся в черновике и применяются кнопкой «Сохранить настройки».
 struct SettingsView: View {
+    var onOpenFamily: () -> Void = {}
     @Environment(AppSession.self) private var session
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    @Query(sort: \MemberRecord.displayName) private var members: [MemberRecord]
+    @Query(filter: #Predicate<MemberRecord> { !$0.isInvited }, sort: \MemberRecord.displayName) private var members: [MemberRecord]
     @Query private var families: [FamilyRecord]
 
     @State private var draft = NotificationSettings()
@@ -17,7 +18,6 @@ struct SettingsView: View {
     @State private var saved = false
     @State private var showDiscard = false
     @State private var showRename = false
-    @State private var showMembers = false
     @State private var nameDraft = ""
 
     private let leadOptions: [(Int, String)] = [
@@ -64,7 +64,6 @@ struct SettingsView: View {
         } message: {
             Text("Так вас видят в семье.")
         }
-        .sheet(isPresented: $showMembers) { membersSheet }
         .sensoryFeedback(.success, trigger: saved)
     }
 
@@ -97,7 +96,7 @@ struct SettingsView: View {
                 Image(systemName: "person.2").font(.system(size: 18, weight: .light)).foregroundStyle(RYColor.accent)
                     .frame(width: 32)
             }, trailing: {
-                Button("Открыть") { showMembers = true }
+                Button("Открыть") { onOpenFamily() }
                     .ryFont(.callout).foregroundStyle(RYColor.accent)
                     .accessibilityIdentifier("settings.family")
             })
@@ -231,23 +230,6 @@ struct SettingsView: View {
         guard let me, !name.isEmpty, name != me.displayName else { return }
         me.displayName = name
         try? context.save()
-    }
-
-    // MARK: Участники
-
-    private var membersSheet: some View {
-        RYSheetScaffold(title: familyTitle, cancelTitle: "Закрыть", confirmTitle: "", confirmEnabled: false,
-                        onCancel: { showMembers = false }, onConfirm: {}) {
-            RYListGroup {
-                ForEach(Array(members.enumerated()), id: \.element.id) { index, member in
-                    if index > 0 { RYListDivider(inset: 44) }
-                    RYListRow(member.displayName, subtitle: roleText(member), leading: {
-                        AvatarView(name: member.displayName, tone: member.tone, diameter: 32)
-                    }, trailing: { EmptyView() })
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
     }
 
     // MARK: Время

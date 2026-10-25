@@ -8,7 +8,7 @@ struct DocumentsView: View {
 
     @Query(filter: #Predicate<DocumentRecord> { $0.deletedAt == nil }, sort: \DocumentRecord.createdAt, order: .reverse)
     private var docs: [DocumentRecord]
-    @Query(sort: \MemberRecord.displayName) private var members: [MemberRecord]
+    @Query(filter: #Predicate<MemberRecord> { !$0.isInvited }, sort: \MemberRecord.displayName) private var members: [MemberRecord]
     @Query private var families: [FamilyRecord]
 
     @State private var path: [DocumentRoute] = []

@@ -12,7 +12,8 @@ public struct RootView: View {
     @State private var dimming = DialogDimming()
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
-    @Query private var members: [MemberRecord]
+    @Query(filter: #Predicate<MemberRecord> { !$0.isInvited }) private var members: [MemberRecord]
+    @Query private var families: [FamilyRecord]
 
     /// Этапы сплэша: показан → растворяется → убран из иерархии.
     private enum SplashPhase { case visible, dissolving, gone }
@@ -57,7 +58,11 @@ public struct RootView: View {
         splash = .gone
     }
 
-    private var appContent: some View {
+    @ViewBuilder private var appContent: some View {
+        if families.isEmpty { FamilyOnboardingView() } else { mainContent }
+    }
+
+    private var mainContent: some View {
         ZStack(alignment: .bottom) {
             // Переход между вкладками: старый экран растворяется со сдвигом в сторону, откуда уходим,
             // новый появляется со стороны выбора. Экран неактивной вкладки не остаётся в дереве доступности.
@@ -104,10 +109,7 @@ extension RootView {
     private func screen(for tab: MainTab) -> some View {
         switch tab {
         case .overview:
-            NavigationStack {
-                OverviewView(onOpenTasks: { select(.tasks) }, onOpenDocuments: { select(.documents) }, onOpenShopping: { select(.shopping) })
-                    .toolbar(.hidden, for: .navigationBar)
-            }
+            OverviewView(onOpenTasks: { select(.tasks) }, onOpenDocuments: { select(.documents) }, onOpenShopping: { select(.shopping) })
         case .shopping: ShoppingView()
         case .tasks: TasksView()
         case .documents: DocumentsView()

@@ -27,8 +27,13 @@ public final class MemberRecord {
     public var displayName: String
     public var role: String
     public var toneIndex: Int
+    /// Приглашён, но ещё не принял приглашение: на сервере это приглашение, а не участник.
+    public var isInvited: Bool = false
+    /// Ссылка-приглашение. Выдаёт сервер и показывает один раз; до синхронизации nil.
+    public var inviteURL: String?
 
-    public init(id: UUID, familyId: UUID, displayName: String, role: String, toneIndex: Int) {
+    public init(id: UUID, familyId: UUID, displayName: String, role: String, toneIndex: Int, isInvited: Bool = false) {
+        self.isInvited = isInvited
         self.id = id
         self.familyId = familyId
         self.displayName = displayName
