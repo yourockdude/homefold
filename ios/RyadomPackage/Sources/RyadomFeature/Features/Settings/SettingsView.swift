@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import StoreKit
 
 /// Настройки профиля: профиль и семья, уведомления, защита документов (Figma 45:3062).
 /// Изменения копятся в черновике и применяются кнопкой «Сохранить настройки».
@@ -20,6 +21,8 @@ struct SettingsView: View {
     @State private var showRename = false
     @State private var nameDraft = ""
     @State private var avatarTarget: MemberRecord?
+    @State private var paywallReason: PaywallReason?
+    @State private var showManageSubscription = false
 
     private let leadOptions: [(Int, String)] = [
         (0, "В момент срока"), (10, "За 10 минут"), (30, "За 30 минут"), (60, "За час"), (1440, "За день"),
@@ -41,6 +44,7 @@ struct SettingsView: View {
                         .padding(.top, 8).padding(.bottom, 14)
                     VStack(alignment: .leading, spacing: 22) {
                         profileGroup
+                        subscriptionGroup
                         notificationsSection
                         protectionSection
                     }
@@ -55,6 +59,8 @@ struct SettingsView: View {
         .toolbar(.hidden, for: .navigationBar)
         .onAppear(perform: load)
         .avatarEditing(target: $avatarTarget)
+        .paywall(reason: $paywallReason)
+        .manageSubscriptionsSheet(isPresented: $showManageSubscription)
         .confirmationDialog("Выйти без сохранения?", isPresented: $showDiscard, titleVisibility: .visible) {
             Button("Не сохранять", role: .destructive) { dismiss() }
             Button("Остаться", role: .cancel) {}
@@ -115,6 +121,25 @@ struct SettingsView: View {
                 Button("Открыть") { onOpenFamily() }
                     .ryFont(.callout).foregroundStyle(RYColor.accent)
                     .accessibilityIdentifier("settings.family")
+            })
+        }
+    }
+
+    private var isPlus: Bool { family?.isPremium ?? false }
+
+    private var subscriptionGroup: some View {
+        RYListGroup {
+            RYListRow(isPlus ? "HomeFold Plus" : "Бесплатный тариф",
+                      subtitle: isPlus ? "Подключён · до 8 участников, повторы дел, 10 ГБ" : "До 3 участников, 100 МБ для документов",
+                      leading: {
+                Image(systemName: isPlus ? "checkmark.seal.fill" : "sparkles").font(.system(size: 18, weight: .light))
+                    .foregroundStyle(RYColor.accent).frame(width: 32)
+            }, trailing: {
+                Button(isPlus ? "Управлять" : "Подключить") {
+                    if isPlus { showManageSubscription = true } else { paywallReason = .general }
+                }
+                .ryFont(.callout).foregroundStyle(RYColor.accent)
+                .accessibilityIdentifier("settings.subscription")
             })
         }
     }

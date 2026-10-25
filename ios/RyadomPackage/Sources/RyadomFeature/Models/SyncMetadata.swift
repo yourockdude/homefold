@@ -14,6 +14,8 @@ public enum SyncEntity: String, Codable, Sendable {
     case document
     /// Операции над семьёй уходят на REST-эндпоинты `/families`, `/invitations`, а не в `/sync/push`.
     case family, member, invitation
+    /// Подтверждение покупки: JWS транзакции StoreKit 2 для `POST /billing/verify`.
+    case subscription
 }
 
 public enum SyncOperationType: String, Codable, Sendable {

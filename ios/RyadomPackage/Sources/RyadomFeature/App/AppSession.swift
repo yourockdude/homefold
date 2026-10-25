@@ -20,12 +20,23 @@ public final class AppSession {
     public var reminders: any ReminderScheduling = SystemReminderScheduler()
     public let documentsLock: DocumentsLock
     public let settings = AppSettings()
+    /// Подписка HomeFold Plus. В отладочных запусках с `-RYDemo` или `-RYSimulatedStore` магазин симулируется.
+    public let subscription: SubscriptionStore
     public let fileStore = DocumentFileStore()
 
     public init(userId: UUID? = nil, familyId: UUID? = nil, documentsLock: DocumentsLock? = nil) {
         self.userId = userId
         self.familyId = familyId
         self.documentsLock = documentsLock ?? DocumentsLock(authenticator: AppSession.makeAuthenticator())
+        self.subscription = SubscriptionStore(provider: AppSession.makeSubscriptionProvider())
+    }
+
+    private static func makeSubscriptionProvider() -> any SubscriptionProviding {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("-RYDemo") || args.contains("-RYSimulatedStore") { return SimulatedSubscriptionProvider() }
+        #endif
+        return StoreKitSubscriptionProvider()
     }
 
     private static func makeAuthenticator() -> any BiometricAuthenticating {
@@ -84,5 +95,15 @@ extension AppSession {
             try? await Task.sleep(for: .milliseconds(500))
             overviewState = previous
         }
+    }
+}
+
+extension AppSession {
+    /// Приводит тариф семьи в соответствие с подпиской этого устройства (только администратор).
+    func reconcilePlan(context: ModelContext) {
+        guard subscription.hasCheckedEntitlement, let familyId, let userId else { return }
+        let family = (try? context.fetch(FetchDescriptor<FamilyRecord>(predicate: #Predicate { $0.id == familyId })))?.first
+        guard let family else { return }
+        try? FamilyService(context: context).applyPlus(subscription.entitlement, to: family, by: userId)
     }
 }

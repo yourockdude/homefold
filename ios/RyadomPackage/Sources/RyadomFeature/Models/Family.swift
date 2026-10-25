@@ -6,6 +6,9 @@ public final class FamilyRecord {
     @Attribute(.unique) public var id: UUID
     public var name: String
     public var plan: String
+    /// Тариф выставлен локально после покупки на этом устройстве. Пока нет сервера, только такой тариф можно снять,
+    /// когда подписка закончилась; тариф, пришедший с сервера, локально не трогаем.
+    public var planIsLocal: Bool = false
     public var version: Int
     public var updatedAt: Date
 

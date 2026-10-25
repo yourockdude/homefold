@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-/// Завершённые списки. Бесплатный тариф показывает последние 30 дней (см. этап подписок).
+/// Завершённые списки. Бесплатный тариф показывает последние 30 дней, остальное открывает Plus.
 struct ShoppingHistoryView: View {
     let members: [MemberRecord]
     @Binding var path: [ShoppingRoute]
@@ -9,6 +9,15 @@ struct ShoppingHistoryView: View {
     @Query(filter: #Predicate<ShoppingListRecord> { $0.isArchived && $0.deletedAt == nil },
            sort: \ShoppingListRecord.updatedAt, order: .reverse) private var lists: [ShoppingListRecord]
     @Query(filter: #Predicate<ShoppingItemRecord> { $0.deletedAt == nil }) private var items: [ShoppingItemRecord]
+    @Query private var families: [FamilyRecord]
+    @State private var paywallReason: PaywallReason?
+
+    static let freeHistoryDays = 30
+    private var isPremium: Bool { families.first?.isPremium ?? false }
+    private var cutoff: Date { Calendar.current.date(byAdding: .day, value: -Self.freeHistoryDays, to: .now) ?? .distantPast }
+    /// Что показываем: на free — только последние 30 дней.
+    private var visibleLists: [ShoppingListRecord] { isPremium ? lists : lists.filter { $0.updatedAt >= cutoff } }
+    private var hiddenCount: Int { lists.count - visibleLists.count }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -19,14 +28,14 @@ struct ShoppingHistoryView: View {
             .padding(.horizontal, RYSpacing.screen).padding(.top, 8)
             RYScreenHeader(title: "История")
 
-            if lists.isEmpty {
+            if visibleLists.isEmpty && hiddenCount == 0 {
                 RYEmptyState(systemImage: "clock.arrow.circlepath", title: "История пуста",
                              message: "Завершённые списки появятся здесь после нажатия «Начать новый список».")
                     .frame(maxHeight: .infinity)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: RYSpacing.m) {
-                        ForEach(lists) { list in
+                        ForEach(visibleLists) { list in
                             let listItems = items.filter { $0.listId == list.id }
                             VStack(alignment: .leading, spacing: 5) {
                                 RYGroupCaption(list.updatedAt.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "ru_RU"))))
@@ -51,6 +60,7 @@ struct ShoppingHistoryView: View {
                                 }
                             }
                         }
+                        if hiddenCount > 0 { hiddenNotice }
                     }
                     .padding(.horizontal, RYSpacing.screen)
                     .padding(.bottom, RYSpacing.s)
@@ -60,5 +70,17 @@ struct ShoppingHistoryView: View {
         }
         .background(RYColor.background)
         .toolbar(.hidden, for: .navigationBar)
+        .paywall(reason: $paywallReason)
+    }
+
+    /// Старые списки скрыты на бесплатном тарифе.
+    private var hiddenNotice: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            RYNotice(systemImage: "clock.arrow.circlepath", title: "Старые списки скрыты",
+                     text: "На бесплатном тарифе история хранится \(Self.freeHistoryDays) дней. Ещё \(hiddenCount) \(OverviewView.plural(hiddenCount, "список", "списка", "списков")) — в HomeFold Plus.")
+            Button { paywallReason = .shoppingLists } label: { Text("Открыть всю историю") }
+                .buttonStyle(.rySecondary).accessibilityIdentifier("history.upgrade")
+        }
+        .accessibilityIdentifier("history.hidden")
     }
 }

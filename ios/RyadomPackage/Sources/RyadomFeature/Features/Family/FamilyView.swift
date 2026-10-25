@@ -18,6 +18,7 @@ struct FamilyView: View {
     @State private var showRemoval = false
     @State private var errorText: String?
     @State private var avatarTarget: MemberRecord?
+    @State private var paywallReason: PaywallReason?
 
     /// Сначала участники, затем приглашённые.
     private var members: [MemberRecord] { allMembers.filter { !$0.isInvited } + allMembers.filter(\.isInvited) }
@@ -68,6 +69,7 @@ struct FamilyView: View {
             Button("Отмена", role: .cancel) {}
         }
         .avatarEditing(target: $avatarTarget)
+        .paywall(reason: $paywallReason)
         .sheet(isPresented: $showAdd) { AddMemberSheet(limit: limit) }
         .ryConfirm(isPresented: $showRemoval, systemImage: "person.badge.minus",
                    title: pendingRemoval?.isInvited == true ? "Отозвать приглашение?" : "Убрать из семьи?",
@@ -156,7 +158,7 @@ struct FamilyView: View {
 
     @ViewBuilder private var addBar: some View {
         if isAdmin {
-            Button { showAdd = true } label: { Text("Добавить участника") }
+            Button(action: startAdd) { Text("Добавить участника") }
                 .buttonStyle(.ryPrimary)
                 .accessibilityIdentifier("family.add")
                 .padding(.horizontal, RYSpacing.screen).padding(.vertical, 8)
@@ -172,6 +174,11 @@ struct FamilyView: View {
     }
 
     // MARK: Действия
+
+    /// На бесплатном тарифе лимит участников исчерпан — вместо формы предлагаем Plus.
+    private func startAdd() {
+        if !(family?.isPremium ?? false) && members.count >= limit { paywallReason = .members } else { showAdd = true }
+    }
 
     private func rename() {
         guard let family else { return }

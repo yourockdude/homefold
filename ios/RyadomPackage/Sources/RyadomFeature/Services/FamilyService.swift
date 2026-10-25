@@ -93,6 +93,27 @@ public final class FamilyService {
         try context.save()
     }
 
+    /// Выставляет тариф семьи по подписке этого устройства. Подписку оформляет и подтверждает администратор.
+    /// `entitlement == nil` — подписка закончилась: тариф снимается, только если выставляли его мы же.
+    /// Последнее слово всегда за сервером: JWS уходит в очередь для `POST /billing/verify`.
+    public func applyPlus(_ entitlement: EntitlementInfo?, to family: FamilyRecord, by actorId: UUID?) throws {
+        try requireAdmin(actorId, in: family.id)
+        if let entitlement {
+            guard !family.isPremium else { return }
+            family.plan = "plus"
+            family.planIsLocal = true
+            family.updatedAt = .now
+            enqueue(.subscription, id: family.id, .upsert, version: family.version,
+                    SubscriptionPayload(productId: entitlement.productId, signedTransaction: entitlement.signedTransaction))
+        } else {
+            guard family.isPremium, family.planIsLocal else { return }
+            family.plan = "free"
+            family.planIsLocal = false
+            family.updatedAt = .now
+        }
+        try context.save()
+    }
+
     /// Убирает участника из семьи или отзывает приглашение.
     public func remove(_ member: MemberRecord, by actorId: UUID?) throws {
         try requireAdmin(actorId, in: member.familyId)
@@ -110,6 +131,7 @@ public final class FamilyService {
     private struct RenameFamilyPayload: Encodable { let name: String }
     private struct InvitePayload: Encodable { let id: UUID; let displayName: String }
     private struct EmptyBody: Encodable {}
+    private struct SubscriptionPayload: Encodable { let productId: String; let signedTransaction: String }
     private struct AvatarPayload: Encodable { let avatar: Data? }
 
     private func clean(_ text: String) -> String { text.trimmingCharacters(in: .whitespacesAndNewlines) }

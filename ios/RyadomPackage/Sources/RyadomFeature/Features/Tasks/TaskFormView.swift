@@ -22,6 +22,8 @@ struct TaskFormView: View {
     @State private var submitted = false
     @State private var showAssigneeSheet = false
     @State private var assigneeSelection: UUID?
+    @State private var paywallReason: PaywallReason?
+    @Query private var families: [FamilyRecord]
     @FocusState private var titleFocused: Bool
 
     private let calendar = Calendar.current
@@ -66,6 +68,7 @@ struct TaskFormView: View {
                 draft.assigneeId = assigneeSelection
             }
         }
+        .paywall(reason: $paywallReason)
         .onAppear(perform: load)
     }
 
@@ -129,6 +132,12 @@ struct TaskFormView: View {
                     }
                 }
                 .accessibilityIdentifier("task.recurrence")
+                .onChange(of: draft.recurrence) { old, new in
+                    // Повторы — только в Plus: выбор откатываем и показываем пейвол.
+                    guard new != .none, !(families.first?.isPremium ?? false) else { return }
+                    draft.recurrence = old
+                    paywallReason = .recurringTasks
+                }
             }
         }
     }

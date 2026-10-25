@@ -32,6 +32,7 @@ struct DocumentFormView: View {
     @State private var showScanner = false
     @State private var importError: String?
     @State private var limitMessage: String?
+    @State private var paywallReason: PaywallReason?
     @State private var scanUnavailable = false
     @FocusState private var titleFocused: Bool
 
@@ -64,7 +65,11 @@ struct DocumentFormView: View {
                         onCancel: onClose, onConfirm: submit) {
             if isCreate { sourceSection }
             if let importError { RYStatusBanner(kind: .error, text: importError) }
-            if let limitMessage { RYStatusBanner(kind: .error, text: limitMessage) }
+            if let limitMessage {
+                RYStatusBanner(kind: .error, text: limitMessage)
+                Button { paywallReason = .documents } label: { Text("Подключить HomeFold Plus") }
+                    .buttonStyle(.rySecondary).accessibilityIdentifier("document.upgrade")
+            }
             titleField
             detailsGroup
             if draft.access == .selected { recipientChips }
@@ -72,6 +77,7 @@ struct DocumentFormView: View {
             RYNotice(systemImage: "lock", title: Self.accessTitle(draft, members: members, me: session.userId),
                      text: "Файл хранится в зашифрованном виде. Права доступа проверяет сервер.")
         }
+        .paywall(reason: $paywallReason)
         .confirmationDialog("Выбрать файл", isPresented: $showSourceDialog, titleVisibility: .visible) {
             Button("Из «Файлов»") { showFileImporter = true }
             Button("Из «Фото»") { showPhotoPicker = true }

@@ -116,6 +116,11 @@ public struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardVisible = false }
         .task(id: session.userId) { await refreshTasks() }
+        .task { await session.subscription.start() }
+        .task { await session.subscription.observeChanges() }
+        .onChange(of: session.subscription.entitlement) { _, _ in session.reconcilePlan(context: context) }
+        .onChange(of: session.subscription.hasCheckedEntitlement) { _, _ in session.reconcilePlan(context: context) }
+        .onChange(of: session.familyId) { _, _ in session.reconcilePlan(context: context) }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await refreshTasks() } }
             if phase == .background { session.documentsLock.lock() }
