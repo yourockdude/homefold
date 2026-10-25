@@ -135,31 +135,15 @@ struct CategoryCard: View {
     }
 }
 
-/// Иллюстрация пустого хранилища: папка с документом и замком.
+/// Иллюстрация пустого хранилища: синяя папка с документами (PNG с прозрачным фоном, `DocumentsEmpty`).
 struct DocumentsIllustration: View {
     var body: some View {
-        ZStack {
-            Circle().fill(RYColor.accentTint).frame(width: 190, height: 190)
-            RoundedRectangle(cornerRadius: 14).fill(RYColor.accent.opacity(0.35)).frame(width: 150, height: 96).offset(x: -4, y: 20)
-            RoundedRectangle(cornerRadius: 10).fill(RYColor.surface).frame(width: 86, height: 100)
-                .overlay(alignment: .topLeading) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Image(systemName: "doc.badge.checkmark").font(.system(size: 20, weight: .light)).foregroundStyle(RYColor.accent)
-                        Capsule().fill(RYColor.accentTint).frame(width: 56, height: 5)
-                        Capsule().fill(RYColor.accentTint).frame(width: 40, height: 5)
-                    }
-                    .padding(12)
-                }
-                .rotationEffect(.degrees(6)).offset(x: 6, y: -14)
-            RoundedRectangle(cornerRadius: 14).fill(RYColor.accentFill).frame(width: 150, height: 78).offset(y: 40)
-            Image(systemName: "lock").font(.system(size: 17, weight: .light)).foregroundStyle(RYColor.peachInk)
-                .frame(width: 44, height: 44).background(RYColor.surface, in: Circle())
-                .overlay(Circle().stroke(RYColor.peach, lineWidth: 3)).offset(x: 66, y: 46)
-            Circle().fill(RYColor.accent.opacity(0.4)).frame(width: 9, height: 9).offset(x: -90, y: -50)
-            Circle().fill(RYColor.peachInk.opacity(0.6)).frame(width: 6, height: 6).offset(x: 88, y: -34)
-        }
-        .frame(height: 200)
-        .accessibilityHidden(true)
+        Image("DocumentsEmpty", bundle: .module)
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: 260)
+            .frame(height: 210)
+            .accessibilityHidden(true)
     }
 }
 
