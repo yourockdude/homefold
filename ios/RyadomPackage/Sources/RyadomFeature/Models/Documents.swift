@@ -1,15 +1,31 @@
 import Foundation
 import SwiftData
 
+/// Значения `rawValue` совпадают с кодами категорий в API.
 public enum DocumentCategory: String, Codable, CaseIterable, Sendable {
-    case personal = "Личное"
-    case health = "Здоровье"
-    case home = "Дом"
-    case travel = "Поездки"
+    case personal, health, home, travel
+
+    public var title: String {
+        switch self {
+        case .personal: "Личное"
+        case .health: "Здоровье"
+        case .home: "Дом"
+        case .travel: "Поездки"
+        }
+    }
+
+    public var tone: AvatarTone {
+        switch self {
+        case .personal: .mint
+        case .health: .peach
+        case .home: .sky
+        case .travel: .lilac
+        }
+    }
 
     public var systemImage: String {
         switch self {
-        case .personal: "person.text.rectangle"
+        case .personal: "person.crop.rectangle"
         case .health: "heart.text.square"
         case .home: "house"
         case .travel: "airplane"
@@ -51,6 +67,8 @@ public final class DocumentRecord {
     public var accessRaw: String
     public var sharedWith: [UUID]
     public var mimeType: String
+    /// Исходное имя файла («spravka.pdf»).
+    public var fileName: String = ""
     public var sizeBytes: Int
     /// Имя файла в защищённом локальном каталоге; nil — файла на устройстве нет.
     public var localFileName: String?
@@ -64,7 +82,8 @@ public final class DocumentRecord {
     public init(id: UUID = UUID(), familyId: UUID, authorId: UUID, ownerId: UUID?, title: String,
                 category: DocumentCategory, number: String = "", expiresAt: Date? = nil,
                 access: DocumentAccess = .family, sharedWith: [UUID] = [], mimeType: String,
-                sizeBytes: Int, localFileName: String?, createdAt: Date = .now) {
+                sizeBytes: Int, localFileName: String?, fileName: String = "", createdAt: Date = .now) {
+        self.fileName = fileName
         self.id = id
         self.familyId = familyId
         self.authorId = authorId
