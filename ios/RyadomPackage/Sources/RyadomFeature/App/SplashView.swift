@@ -41,8 +41,12 @@ struct SplashBackground: View {
         let primary = RYColor.accentFill
         let light = RYColor.accent
         let sky = RYToken.Palette.skyBlue.strong
+        // Розовое свечение, как на скате крыши логотипа: пиковый цвет логотипа (240, 132, 248),
+        // в верхнем правом углу. Сглаживание сетки растягивает угол, поэтому цвет смешан со светлым синим:
+        // розовое занимает небольшую часть экрана, как на логотипе.
+        let pink = light.mix(with: Color(red: 240 / 255, green: 132 / 255, blue: 248 / 255), by: 0.6)
         return [
-            ink, primary, light,
+            ink, primary, pink,
             primary, sky, primary,
             ink, primary, light,
         ]
