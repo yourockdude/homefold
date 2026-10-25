@@ -29,6 +29,10 @@ public final class TaskSeriesRecord {
     public var recurrenceRaw: String
     /// Минуты до начала; nil — без напоминания.
     public var reminderMinutes: Int?
+    /// Метка дела («Дети», «Дом»…); пустая строка — без метки.
+    public var tag: String = ""
+    /// Пункты чек-листа, которые копируются в каждое выполнение.
+    public var checklistTemplate: [String] = []
     public var createdAt: Date
     public var updatedAt: Date
     public var version: Int
@@ -37,7 +41,10 @@ public final class TaskSeriesRecord {
 
     public init(id: UUID = UUID(), familyId: UUID, authorId: UUID, title: String, assigneeId: UUID?,
                 place: String = "", note: String = "", startDate: Date, hasTime: Bool,
-                recurrence: Recurrence = .none, reminderMinutes: Int? = 30, createdAt: Date = .now) {
+                recurrence: Recurrence = .none, reminderMinutes: Int? = 30, tag: String = "",
+                checklistTemplate: [String] = [], createdAt: Date = .now) {
+        self.tag = tag
+        self.checklistTemplate = checklistTemplate
         self.id = id
         self.familyId = familyId
         self.authorId = authorId
@@ -82,6 +89,9 @@ public final class TaskOccurrenceRecord {
     public var reminderMinutes: Int?
     public var completedAt: Date?
     public var completedById: UUID?
+    public var tag: String = ""
+    /// Выполнение правили отдельно — правка серии его не трогает.
+    public var isDetached: Bool = false
     public var createdAt: Date
     public var updatedAt: Date
     public var version: Int
@@ -90,7 +100,8 @@ public final class TaskOccurrenceRecord {
 
     public init(id: UUID = UUID(), familyId: UUID, seriesId: UUID, authorId: UUID, title: String,
                 assigneeId: UUID?, place: String = "", note: String = "", dueAt: Date, hasTime: Bool,
-                reminderMinutes: Int? = 30, createdAt: Date = .now) {
+                reminderMinutes: Int? = 30, tag: String = "", createdAt: Date = .now) {
+        self.tag = tag
         self.id = id
         self.familyId = familyId
         self.seriesId = seriesId
