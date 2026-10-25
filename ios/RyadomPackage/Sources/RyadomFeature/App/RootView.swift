@@ -23,9 +23,8 @@ public struct RootView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             // Резерв под плавающую панель: кнопки экранов встают над ней, прокрутка не уходит под неё.
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                Color.clear.frame(height: keyboardVisible ? 0 : RYSpacing.tabBarReserve)
-            }
+            // Обычный отступ, а не safeAreaInset: NavigationStack не передаёт внутрь вставки предка.
+            .padding(.bottom, keyboardVisible ? 0 : RYSpacing.tabBarReserve)
             if !keyboardVisible { MainTabBar(selection: $tab).padding(.bottom, 2) }
         }
         .background(RYColor.background.ignoresSafeArea())
