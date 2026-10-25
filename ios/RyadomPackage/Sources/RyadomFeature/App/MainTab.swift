@@ -27,6 +27,8 @@ public enum MainTab: String, CaseIterable, Identifiable, Sendable {
 /// Плавающая панель вкладок: матовая капсула 66 pt, активная вкладка — бледно-зелёная капсула.
 struct MainTabBar: View {
     @Binding var selection: MainTab
+    /// Под диалогом панель затемняется вместе с экраном.
+    var isDimmed = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -56,6 +58,8 @@ struct MainTabBar: View {
         .padding(5)
         .frame(height: 66)
         .ryGlass(in: Capsule())
+        .overlay { if isDimmed { Capsule().fill(RYColor.scrim).allowsHitTesting(false) } }
+        .animation(.easeOut(duration: 0.2), value: isDimmed)
         .padding(.horizontal, 16)
     }
 }

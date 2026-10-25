@@ -52,20 +52,46 @@ struct RYConfirmDialog: View {
     }
 }
 
+/// Признак «на экране показан диалог»: корневой экран затемняет по нему плавающую панель вкладок.
+@Observable
+@MainActor
+final class DialogDimming {
+    var isActive = false
+}
+
+private struct ConfirmModifier: ViewModifier {
+    @Binding var isPresented: Bool
+    let title: String
+    let message: String
+    let confirmTitle: String
+    let extraTitle: String?
+    let onExtra: (() -> Void)?
+    let onConfirm: () -> Void
+    @Environment(DialogDimming.self) private var dimming: DialogDimming?
+
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                if isPresented {
+                    RYConfirmDialog(title: title, message: message, confirmTitle: confirmTitle,
+                                    extraTitle: extraTitle,
+                                    onExtra: onExtra.map { extra in { isPresented = false; extra() } },
+                                    onConfirm: { isPresented = false; onConfirm() },
+                                    onCancel: { isPresented = false })
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: isPresented)
+            .onChange(of: isPresented) { _, shown in dimming?.isActive = shown }
+            .onDisappear { if isPresented { dimming?.isActive = false } }
+    }
+}
+
 extension View {
     /// Подтверждение в виде алерта. `systemImage` оставлен для совместимости вызовов и не отображается.
     func ryConfirm(isPresented: Binding<Bool>, systemImage: String = "trash", title: String, message: String,
                    confirmTitle: String, extraTitle: String? = nil, onExtra: (() -> Void)? = nil,
                    onConfirm: @escaping () -> Void) -> some View {
-        overlay {
-            if isPresented.wrappedValue {
-                RYConfirmDialog(title: title, message: message, confirmTitle: confirmTitle,
-                                extraTitle: extraTitle,
-                                onExtra: onExtra.map { extra in { isPresented.wrappedValue = false; extra() } },
-                                onConfirm: { isPresented.wrappedValue = false; onConfirm() },
-                                onCancel: { isPresented.wrappedValue = false })
-            }
-        }
-        .animation(.easeOut(duration: 0.2), value: isPresented.wrappedValue)
+        modifier(ConfirmModifier(isPresented: isPresented, title: title, message: message, confirmTitle: confirmTitle,
+                                 extraTitle: extraTitle, onExtra: onExtra, onConfirm: onConfirm))
     }
 }

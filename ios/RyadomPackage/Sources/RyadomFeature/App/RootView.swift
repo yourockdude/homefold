@@ -5,6 +5,8 @@ public struct RootView: View {
     @State private var tab: MainTab = .overview
     @State private var session = AppSession()
     @State private var keyboardVisible = false
+    /// Диалоги экранов сообщают сюда, чтобы затемнить и плавающую панель вкладок, как в макете.
+    @State private var dimming = DialogDimming()
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @Query private var members: [MemberRecord]
@@ -25,7 +27,7 @@ public struct RootView: View {
             // Резерв под плавающую панель: кнопки экранов встают над ней, прокрутка не уходит под неё.
             // Обычный отступ, а не safeAreaInset: NavigationStack не передаёт внутрь вставки предка.
             .padding(.bottom, keyboardVisible ? 0 : RYSpacing.tabBarReserve)
-            if !keyboardVisible { MainTabBar(selection: $tab).padding(.bottom, 2) }
+            if !keyboardVisible { MainTabBar(selection: $tab, isDimmed: dimming.isActive).padding(.bottom, 2) }
         }
         .background(RYColor.background.ignoresSafeArea())
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
@@ -38,6 +40,7 @@ public struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in Task { await refreshTasks() } }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in Task { await refreshTasks() } }
         .environment(session)
+        .environment(dimming)
         .onChange(of: members.map(\.id), initial: true) { _, _ in bootstrapSession() }
         .preferredColorScheme(.light)
     }
