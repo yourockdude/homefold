@@ -33,9 +33,11 @@ struct RYSheetScaffold<Content: View, Footer: View>: View {
             }
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
+            // Футер — обычный нижний блок, а не safeAreaInset: с ним система при фокусе на поле
+            // сдвигала содержимое вверх, и поле уезжало под шапку.
+            footer
         }
         .background(RYColor.background)
-        .safeAreaInset(edge: .bottom, spacing: 0) { footer }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(RYColor.background)

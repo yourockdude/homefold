@@ -190,11 +190,7 @@ private struct AddMemberSheet: View {
                      text: "Участник получит ссылку, откроет её на своём телефоне и войдёт в семью. Приглашение действует 7 дней.")
             Text("В семье до \(limit) участников.").ryFont(.caption).foregroundStyle(RYColor.muted)
         }
-        .task {
-            // Фокус после анимации шита: иначе клавиатура сдвигает содержимое под шапку.
-            try? await Task.sleep(for: .milliseconds(450))
-            focused = true
-        }
+        .onAppear { focused = true }
     }
 
     private func submit() {
