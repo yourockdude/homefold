@@ -93,7 +93,7 @@ struct OverviewView: View {
     private var profileButtonLabel: some View {
         ZStack(alignment: .bottomTrailing) {
             if let me {
-                AvatarView(name: me.displayName, tone: me.tone, diameter: 36)
+                AvatarView(member: me, diameter: 36)
             } else {
                 Image(systemName: "person.crop.circle").font(.system(size: 30, weight: .light)).foregroundStyle(RYColor.accent)
                     .frame(width: 36, height: 36)

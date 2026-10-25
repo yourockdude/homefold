@@ -9,6 +9,7 @@ public enum FamilyError: Error, Equatable, LocalizedError {
     case notFound
     /// Достигнут лимит участников тарифа.
     case memberLimit(Int)
+    case invalidImage
 
     public var errorDescription: String? {
         switch self {
@@ -18,6 +19,7 @@ public enum FamilyError: Error, Equatable, LocalizedError {
         case .lastAdmin: "Единственного администратора убрать нельзя."
         case .notFound: "Участника уже нет в семье."
         case .memberLimit(let limit): "В вашем тарифе до \(limit) участников."
+        case .invalidImage: "Не удалось открыть фото. Попробуйте другое."
         }
     }
 }
@@ -77,6 +79,20 @@ public final class FamilyService {
         return member
     }
 
+    /// Ставит или убирает (`nil`) фото профиля. Своё фото меняет любой участник, чужое — администратор.
+    /// `photo` — любое изображение: оно кадрируется в квадрат и сжимается.
+    public func setAvatar(_ photo: Data?, for member: MemberRecord, by actorId: UUID?) throws {
+        guard let actorId, actorId == member.id || isAdmin(actorId, in: member.familyId) else { throw FamilyError.notAdmin }
+        var prepared: Data?
+        if let photo {
+            guard let jpeg = AvatarImage.prepare(photo) else { throw FamilyError.invalidImage }
+            prepared = jpeg
+        }
+        member.avatarData = prepared
+        enqueue(.member, id: member.id, .upsert, version: 0, AvatarPayload(avatar: prepared))
+        try context.save()
+    }
+
     /// Убирает участника из семьи или отзывает приглашение.
     public func remove(_ member: MemberRecord, by actorId: UUID?) throws {
         try requireAdmin(actorId, in: member.familyId)
@@ -94,12 +110,17 @@ public final class FamilyService {
     private struct RenameFamilyPayload: Encodable { let name: String }
     private struct InvitePayload: Encodable { let id: UUID; let displayName: String }
     private struct EmptyBody: Encodable {}
+    private struct AvatarPayload: Encodable { let avatar: Data? }
 
     private func clean(_ text: String) -> String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
 
     private func members(of familyId: UUID) -> [MemberRecord] {
         let descriptor = FetchDescriptor<MemberRecord>(predicate: #Predicate { $0.familyId == familyId })
         return (try? context.fetch(descriptor)) ?? []
+    }
+
+    private func isAdmin(_ userId: UUID, in familyId: UUID) -> Bool {
+        members(of: familyId).contains { $0.id == userId && $0.isAdmin }
     }
 
     private func requireAdmin(_ actorId: UUID?, in familyId: UUID) throws {

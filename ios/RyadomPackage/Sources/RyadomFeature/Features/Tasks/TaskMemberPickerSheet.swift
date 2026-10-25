@@ -56,7 +56,7 @@ struct TaskMemberPickerSheet: View {
         Button { draft = id } label: {
             HStack(spacing: 12) {
                 if let member {
-                    AvatarView(name: member.displayName, tone: member.tone, diameter: 36)
+                    AvatarView(member: member, diameter: 36)
                 } else {
                     Image(systemName: "person.2").font(.system(size: 15, weight: .light)).foregroundStyle(RYColor.accent)
                         .frame(width: 36, height: 36).background(RYColor.accentTint, in: Circle())

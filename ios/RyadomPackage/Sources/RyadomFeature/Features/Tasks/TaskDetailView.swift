@@ -179,7 +179,7 @@ struct TaskDetailView: View {
     private func infoGroup(_ task: TaskOccurrenceRecord) -> some View {
         RYListGroup {
             HStack(spacing: 12) {
-                if let assignee { AvatarView(name: assignee.displayName, tone: assignee.tone, diameter: 32) }
+                if let assignee { AvatarView(member: assignee, diameter: 32) }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(assignee?.displayName ?? "Любой участник").ryFont(.body).foregroundStyle(RYColor.ink)
                     Text("Ответственный").ryFont(.subhead).foregroundStyle(RYColor.muted)
@@ -332,7 +332,7 @@ struct TaskDetailView: View {
         let author = members.first { $0.id == task.authorId }
         return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                if let author { AvatarView(name: author.displayName, tone: author.tone, diameter: 22) }
+                if let author { AvatarView(member: author, diameter: 22) }
                 Text("\(author?.displayName ?? "Участник") · \(RussianDate.time(task.updatedAt))")
                     .ryFont(.subhead).foregroundStyle(RYColor.muted)
             }

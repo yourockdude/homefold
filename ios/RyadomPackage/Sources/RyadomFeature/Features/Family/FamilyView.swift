@@ -17,6 +17,7 @@ struct FamilyView: View {
     @State private var pendingRemoval: MemberRecord?
     @State private var showRemoval = false
     @State private var errorText: String?
+    @State private var avatarTarget: MemberRecord?
 
     /// Сначала участники, затем приглашённые.
     private var members: [MemberRecord] { allMembers.filter { !$0.isInvited } + allMembers.filter(\.isInvited) }
@@ -66,6 +67,7 @@ struct FamilyView: View {
             Button("Сохранить", action: rename)
             Button("Отмена", role: .cancel) {}
         }
+        .avatarEditing(target: $avatarTarget)
         .sheet(isPresented: $showAdd) { AddMemberSheet(limit: limit) }
         .ryConfirm(isPresented: $showRemoval, systemImage: "person.badge.minus",
                    title: pendingRemoval?.isInvited == true ? "Отозвать приглашение?" : "Убрать из семьи?",
@@ -101,7 +103,7 @@ struct FamilyView: View {
     private func memberRow(_ member: MemberRecord) -> some View {
         let isMe = member.id == session.userId
         return RYListRow(isMe ? "\(member.displayName) (вы)" : member.displayName, subtitle: subtitle(member), leading: {
-            AvatarView(name: member.displayName, tone: member.tone, diameter: 32).opacity(member.isInvited ? 0.55 : 1)
+            avatar(for: member, isMe: isMe)
         }, trailing: {
             HStack(spacing: 14) {
                 if let url = member.inviteURL.flatMap(URL.init(string:)) {
@@ -123,6 +125,28 @@ struct FamilyView: View {
             }
         })
         .accessibilityElement(children: .contain)
+    }
+
+    /// Аватар; свой (и любой — для администратора) можно сменить по нажатию.
+    @ViewBuilder private func avatar(for member: MemberRecord, isMe: Bool) -> some View {
+        let picture = AvatarView(member: member, diameter: 32).opacity(member.isInvited ? 0.55 : 1)
+        if isMe || isAdmin {
+            Button { avatarTarget = member } label: {
+                picture.overlay(alignment: .bottomTrailing) {
+                    Image(systemName: "camera.fill").font(.system(size: 7, weight: .bold))
+                        .foregroundStyle(RYColor.onAccent)
+                        .frame(width: 14, height: 14)
+                        .background(RYColor.accentFill, in: Circle())
+                        .overlay(Circle().stroke(RYColor.surface, lineWidth: 1.5))
+                        .offset(x: 3, y: 3)
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Изменить фото: \(member.displayName)")
+            .accessibilityIdentifier("family.avatar.\(member.displayName)")
+        } else {
+            picture
+        }
     }
 
     private func subtitle(_ member: MemberRecord) -> String {

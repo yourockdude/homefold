@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import UIKit
 
 /// Вымышленные данные семьи Смирновых для локальной разработки и скриншотов.
 /// Включается аргументом запуска `-RYDemo`; в Release недоступно.
@@ -17,6 +18,21 @@ public enum DemoData {
 
     public static var isRequested: Bool { ProcessInfo.processInfo.arguments.contains("-RYDemo") }
 
+    /// Нарисованное фото для проверки аватаров: градиент и «солнце».
+    static func sampleAvatar(hue: CGFloat) -> Data? {
+        let size = CGSize(width: 600, height: 400)
+        let image = UIGraphicsImageRenderer(size: size).image { ctx in
+            let colors = [UIColor(hue: hue, saturation: 0.55, brightness: 0.95, alpha: 1).cgColor,
+                          UIColor(hue: hue + 0.12, saturation: 0.7, brightness: 0.6, alpha: 1).cgColor]
+            let gradient = CGGradient(colorsSpace: nil, colors: colors as CFArray, locations: [0, 1])!
+            ctx.cgContext.drawLinearGradient(gradient, start: .zero, end: CGPoint(x: size.width, y: size.height), options: [])
+            UIColor.white.withAlphaComponent(0.85).setFill()
+            ctx.cgContext.fillEllipse(in: CGRect(x: 230, y: 90, width: 140, height: 140))
+            ctx.cgContext.fillEllipse(in: CGRect(x: 170, y: 250, width: 260, height: 200))
+        }
+        return image.jpegData(compressionQuality: 0.9).flatMap(AvatarImage.prepare)
+    }
+
     @MainActor
     public static func seed(into context: ModelContext) {
         let familyId = UUID()
@@ -25,6 +41,12 @@ public enum DemoData {
         context.insert(MemberRecord(id: anna, familyId: familyId, displayName: "Анна", role: "admin", toneIndex: 0))
         context.insert(MemberRecord(id: mikhail, familyId: familyId, displayName: "Михаил", role: "member", toneIndex: 1))
         context.insert(MemberRecord(id: sonya, familyId: familyId, displayName: "Соня", role: "member", toneIndex: 2))
+        if ProcessInfo.processInfo.arguments.contains("-RYDemoAvatars"),
+           let members = try? context.fetch(FetchDescriptor<MemberRecord>()) {
+            for member in members where member.displayName != "Соня" {
+                member.avatarData = sampleAvatar(hue: member.displayName == "Анна" ? 0.02 : 0.58)
+            }
+        }
 
         let list = ShoppingListRecord(familyId: familyId, authorId: anna)
         context.insert(list)

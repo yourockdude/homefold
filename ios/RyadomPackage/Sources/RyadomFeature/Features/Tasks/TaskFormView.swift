@@ -89,7 +89,7 @@ struct TaskFormView: View {
                 showAssigneeSheet = true
             } label: {
                 HStack(spacing: 12) {
-                    if let assignee { AvatarView(name: assignee.displayName, tone: assignee.tone, diameter: 32) }
+                    if let assignee { AvatarView(member: assignee, diameter: 32) }
                     else { Image(systemName: "person").font(.system(size: 18, weight: .light)).foregroundStyle(RYColor.accent).frame(width: 32) }
                     Text("Ответственный").ryFont(.body).foregroundStyle(RYColor.ink)
                     Spacer(minLength: 8)

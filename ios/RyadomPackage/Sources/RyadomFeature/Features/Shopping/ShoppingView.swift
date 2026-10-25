@@ -247,7 +247,7 @@ struct ShoppingView: View {
                     .foregroundStyle(RYColor.danger).accessibilityLabel("Не удалось синхронизировать")
             }
             if let m = members.first(where: { $0.id == item.assigneeId }) {
-                AvatarView(name: m.displayName, tone: m.tone, diameter: 26)
+                AvatarView(member: m, diameter: 26)
             }
         }
     }

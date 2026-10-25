@@ -31,6 +31,8 @@ public final class MemberRecord {
     public var isInvited: Bool = false
     /// Ссылка-приглашение. Выдаёт сервер и показывает один раз; до синхронизации nil.
     public var inviteURL: String?
+    /// Фото профиля: квадратный JPEG ~320 px. nil — показывается буква на цветном фоне.
+    @Attribute(.externalStorage) public var avatarData: Data?
 
     public init(id: UUID, familyId: UUID, displayName: String, role: String, toneIndex: Int, isInvited: Bool = false) {
         self.isInvited = isInvited

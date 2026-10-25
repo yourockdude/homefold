@@ -19,6 +19,7 @@ struct SettingsView: View {
     @State private var showDiscard = false
     @State private var showRename = false
     @State private var nameDraft = ""
+    @State private var avatarTarget: MemberRecord?
 
     private let leadOptions: [(Int, String)] = [
         (0, "В момент срока"), (10, "За 10 минут"), (30, "За 30 минут"), (60, "За час"), (1440, "За день"),
@@ -53,6 +54,7 @@ struct SettingsView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) { saveBar }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear(perform: load)
+        .avatarEditing(target: $avatarTarget)
         .confirmationDialog("Выйти без сохранения?", isPresented: $showDiscard, titleVisibility: .visible) {
             Button("Не сохранять", role: .destructive) { dismiss() }
             Button("Остаться", role: .cancel) {}
@@ -85,7 +87,21 @@ struct SettingsView: View {
     private var profileGroup: some View {
         RYListGroup {
             RYListRow(me?.displayName ?? "Профиль", subtitle: roleText(me), leading: {
-                if let me { AvatarView(name: me.displayName, tone: me.tone, diameter: 32) }
+                if let me {
+                    Button { avatarTarget = me } label: {
+                        AvatarView(member: me, diameter: 32).overlay(alignment: .bottomTrailing) {
+                            Image(systemName: "camera.fill").font(.system(size: 7, weight: .bold))
+                                .foregroundStyle(RYColor.onAccent)
+                                .frame(width: 14, height: 14)
+                                .background(RYColor.accentFill, in: Circle())
+                                .overlay(Circle().stroke(RYColor.surface, lineWidth: 1.5))
+                                .offset(x: 3, y: 3)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Изменить фото профиля")
+                    .accessibilityIdentifier("settings.avatar")
+                }
             }, trailing: {
                 Button("Изменить") { nameDraft = me?.displayName ?? ""; showRename = true }
                     .ryFont(.callout).foregroundStyle(RYColor.accent)

@@ -149,7 +149,7 @@ struct ItemFormView: View {
         Button(action: action) {
             HStack(spacing: 5) {
                 if let member {
-                    AvatarView(name: member.displayName, tone: member.tone, diameter: 24)
+                    AvatarView(member: member, diameter: 24)
                 } else {
                     Image(systemName: "person.2").font(.system(size: 12, weight: .light)).foregroundStyle(RYColor.accent)
                         .frame(width: 24, height: 24).background(RYColor.accentTint, in: Circle())

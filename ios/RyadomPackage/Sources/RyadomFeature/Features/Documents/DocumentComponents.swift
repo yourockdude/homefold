@@ -179,7 +179,7 @@ struct DocumentPersonRow: View {
 
     var body: some View {
         RYListRow(title, subtitle: subtitle, leading: {
-            if let member { AvatarView(name: member.displayName, tone: member.tone, diameter: 32) }
+            if let member { AvatarView(member: member, diameter: 32) }
             else { Circle().fill(RYColor.accentTint).frame(width: 32, height: 32) }
         }, trailing: { EmptyView() })
         .accessibilityElement(children: .combine)

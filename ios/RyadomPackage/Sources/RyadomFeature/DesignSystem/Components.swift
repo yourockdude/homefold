@@ -27,20 +27,36 @@ public struct AvatarView: View {
     let name: String
     let tone: AvatarTone
     var diameter: CGFloat = 26
+    var imageData: Data?
 
-    public init(name: String, tone: AvatarTone, diameter: CGFloat = 26) {
+    public init(name: String, tone: AvatarTone, diameter: CGFloat = 26, imageData: Data? = nil) {
         self.name = name
         self.tone = tone
         self.diameter = diameter
+        self.imageData = imageData
     }
 
     public var body: some View {
-        Text(name.prefix(1).uppercased())
-            .font(.system(size: diameter * 0.43, weight: .semibold))
-            .foregroundStyle(tone.ink)
-            .frame(width: diameter, height: diameter)
-            .background(tone.background, in: Circle())
-            .accessibilityLabel(name)
+        Group {
+            if let image = AvatarImage.decoded(imageData) {
+                Image(uiImage: image).resizable().scaledToFill()
+            } else {
+                Text(name.prefix(1).uppercased())
+                    .font(.system(size: diameter * 0.43, weight: .semibold))
+                    .foregroundStyle(tone.ink)
+            }
+        }
+        .frame(width: diameter, height: diameter)
+        .background(tone.background)
+        .clipShape(Circle())
+        .accessibilityLabel(name)
+    }
+}
+
+extension AvatarView {
+    /// Аватар участника семьи: загруженное фото или буква.
+    init(member: MemberRecord, diameter: CGFloat = 26) {
+        self.init(name: member.displayName, tone: member.tone, diameter: diameter, imageData: member.avatarData)
     }
 }
 

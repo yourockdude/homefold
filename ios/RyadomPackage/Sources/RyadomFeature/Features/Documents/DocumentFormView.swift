@@ -167,7 +167,7 @@ struct DocumentFormView: View {
             }
         } label: {
             HStack(spacing: 12) {
-                if let owner { AvatarView(name: owner.displayName, tone: owner.tone, diameter: 34) }
+                if let owner { AvatarView(member: owner, diameter: 34) }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Кому принадлежит").ryFont(.body).foregroundStyle(RYColor.ink)
                     Text(owner?.displayName ?? "Выберите участника").ryFont(.subhead).foregroundStyle(RYColor.muted)
@@ -212,7 +212,7 @@ struct DocumentFormView: View {
                         if on { draft.selectedUserIds.remove(m.id) } else { draft.selectedUserIds.insert(m.id) }
                     } label: {
                         HStack(spacing: 6) {
-                            AvatarView(name: m.displayName, tone: m.tone, diameter: 24)
+                            AvatarView(member: m, diameter: 24)
                             Text(m.displayName).ryFont(.body).foregroundStyle(RYColor.ink)
                             if on { Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(RYColor.accent) }
                         }
