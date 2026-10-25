@@ -9,6 +9,7 @@ import { FamilyCtx } from '../common/context';
 import { AppError, Err } from '../common/errors';
 import { assertMember, defined, guardExisting, requireText, UpsertResult } from '../common/entity';
 import { decodeCursor, encodeCursor } from '../common/pagination';
+import { isValidDate } from '../common/dates';
 import { CreateDocumentDto, UpdateDocumentDto } from './documents.dto';
 
 export const UPLOAD_URL_TTL_SEC = 900;
@@ -68,6 +69,7 @@ export class DocumentsService {
 
   private async resolveSharing(ctx: FamilyCtx, dto: UpdateDocumentDto, current?: DocWithPerms) {
     await assertMember(this.prisma, ctx.familyId, dto.ownerId);
+    if (dto.expiresAt && !isValidDate(dto.expiresAt)) throw Err.validation('Некорректная дата окончания срока действия');
     const access = dto.access ?? current?.access ?? 'author_only';
     let selected = dto.selectedUserIds;
     if (access === 'selected') {

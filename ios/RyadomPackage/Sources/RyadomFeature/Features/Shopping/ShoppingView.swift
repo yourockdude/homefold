@@ -67,7 +67,9 @@ struct ShoppingView: View {
     }
 
     private var clearMessage: String {
-        let names = bought.map(\.name).joined(separator: " и ")
+        let names = bought.enumerated().map { index, item in
+            index == 0 ? item.name : item.name.prefix(1).lowercased() + item.name.dropFirst()
+        }.joined(separator: " и ")
         return "\(names) будут удалены из общего списка. Останется \(active.count) \(Self.goods(active.count)) — все ещё нужно купить. Отменить очистку нельзя."
     }
 

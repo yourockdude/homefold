@@ -5,7 +5,9 @@ export const addDays = (s: string, n: number) => fmt(new Date(toDate(s).getTime(
 export const todayUtc = () => fmt(new Date());
 
 export function isValidDate(s: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(s) && fmt(toDate(s)) === s;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const d = toDate(s);
+  return !Number.isNaN(d.getTime()) && fmt(d) === s;
 }
 
 const daysInMonth = (y: number, m: number) => new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
