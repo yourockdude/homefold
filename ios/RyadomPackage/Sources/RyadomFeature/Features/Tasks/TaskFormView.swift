@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-/// Создание дела, правка одного выполнения и явная правка серии.
+/// Создание дела, правка одного выполнения и явная правка серии — модальный лист.
 struct TaskFormView: View {
     enum Mode: Hashable {
         case create(Date)
@@ -12,10 +12,10 @@ struct TaskFormView: View {
     let mode: Mode
     let members: [MemberRecord]
     let familyName: String
-    @Binding var path: [TaskRoute]
 
     @Environment(AppSession.self) private var session
     @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
 
     @State private var draft = TaskDraft(start: .now)
     @State private var loaded = false
@@ -34,6 +34,7 @@ struct TaskFormView: View {
     private var service: TaskService? { session.taskService(context: context) }
     private var isCreate: Bool { if case .create = mode { true } else { false } }
     private var isSeriesEdit: Bool { if case .editSeries = mode { true } else { false } }
+    private var isEditOccurrence: Bool { if case .editOccurrence = mode { true } else { false } }
     private var screenTitle: String {
         switch mode {
         case .create: "Новое дело"
@@ -42,135 +43,93 @@ struct TaskFormView: View {
         }
     }
     private var titleError: String? { submitted && draft.problem == .emptyTitle ? "Введите название дела." : nil }
+    private var assignee: MemberRecord? { members.first { $0.id == draft.assigneeId } }
 
     var body: some View {
-        VStack(spacing: 0) {
-            topBar
-            ScrollView {
-                VStack(alignment: .leading, spacing: RYSpacing.s) {
-                    Text("Для семьи \(RussianNames.familyGenitive(familyName))").ryFont(.caption).foregroundStyle(RYColor.muted)
-                    if isSeriesEdit { seriesNotice }
-                    titleField
-                    assigneeField
-                    dateTimeRow
-                    if !isEditOccurrence { recurrenceField }
-                    placeField
-                    noteField
-                    if isCreate { checklistField }
-                    reminderField
-                    tagField
-                    reminderFootnote
-                }
-                .padding(.horizontal, RYSpacing.screen)
-                .padding(.bottom, RYSpacing.m)
+        RYSheetScaffold(title: screenTitle, confirmTitle: isCreate ? "Создать" : "Сохранить",
+                        confirmIdentifier: "task.submit", onCancel: { dismiss() }, onConfirm: submit) {
+            Text("Для семьи \(RussianNames.familyGenitive(familyName))").ryFont(.callout).foregroundStyle(RYColor.muted)
+            if isSeriesEdit {
+                RYNotice(systemImage: "repeat", text: "Изменения применятся к этому и следующим делам серии. Выполненные и отдельно изменённые дела останутся как были.")
             }
-            .scrollDismissesKeyboard(.interactively)
-        }
-        .background(RYColor.background)
-        .toolbar(.hidden, for: .navigationBar)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            Button(action: submit) {
-                Label(isCreate ? "Создать дело" : "Сохранить", systemImage: isCreate ? "plus" : "checkmark")
-            }
-            .buttonStyle(.ryPrimary)
-            .padding(.horizontal, RYSpacing.screen).padding(.vertical, RYSpacing.s)
-            .background(RYColor.background)
-            .accessibilityIdentifier("task.submit")
+            titleField
+            mainGroup
+            placeField
+            noteField
+            if isCreate { checklistField }
+            extrasGroup
+            reminderNotice
         }
         .sheet(isPresented: $showAssigneeSheet) {
-            MemberPickerSheet(title: "Кто возьмёт дело?", subtitle: "Выберите одного участника семьи.",
-                              members: members, currentUserId: session.userId, selection: $assigneeSelection) {
+            TaskMemberPickerSheet(navTitle: "Ответственный", heading: "Кто возьмёт дело?", subtitle: pickerSubtitle,
+                                  members: members, currentUserId: session.userId, selection: $assigneeSelection) {
                 draft.assigneeId = assigneeSelection
             }
         }
         .onAppear(perform: load)
     }
 
-    private var isEditOccurrence: Bool { if case .editOccurrence = mode { true } else { false } }
-
-    // MARK: Части формы
-
-    private var topBar: some View {
-        HStack(spacing: RYSpacing.s) {
-            Button(action: close) { Image(systemName: "arrow.left").font(.system(size: 18)).foregroundStyle(RYColor.ink) }
-                .accessibilityLabel("Назад")
-            Text(screenTitle).ryFont(.section).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
-            Spacer()
-            Button(action: close) {
-                Image(systemName: "xmark").font(.system(size: 14, weight: .semibold)).foregroundStyle(RYColor.ink)
-                    .frame(width: 40, height: 40).background(RYColor.surface, in: Circle())
-            }
-            .accessibilityLabel("Закрыть")
-        }
-        .padding(.horizontal, RYSpacing.screen).padding(.top, RYSpacing.s).padding(.bottom, RYSpacing.m)
-    }
-
-    private var seriesNotice: some View {
-        RYStatusBanner(kind: .info, text: "Изменения применятся к этому и следующим делам серии. Выполненные и отдельно изменённые дела останутся как были.")
-    }
+    // MARK: Поля
 
     private var titleField: some View {
         VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Что нужно сделать" + (titleError != nil ? " *" : ""))
+            RYFieldLabel("Что нужно сделать · обязательно")
             TextField("Например, полить растения", text: $draft.title)
                 .focused($titleFocused).ryFont(.body).foregroundStyle(RYColor.ink)
                 .ryField(isError: titleError != nil, isFocused: titleFocused)
                 .accessibilityIdentifier("task.title")
-            if let titleError { Text(titleError).ryFont(.caption).foregroundStyle(RYColor.danger) }
+            if let titleError { Text(titleError).ryFont(.subhead).foregroundStyle(RYColor.danger) }
         }
     }
 
-    private var assigneeField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Ответственный")
+    private var mainGroup: some View {
+        RYListGroup {
             Button {
                 assigneeSelection = draft.assigneeId
                 showAssigneeSheet = true
             } label: {
-                RYSelectLabel(value: members.first { $0.id == draft.assigneeId }?.displayName ?? "Выберите участника")
+                HStack(spacing: 12) {
+                    if let assignee { AvatarView(name: assignee.displayName, tone: assignee.tone, diameter: 32) }
+                    else { Image(systemName: "person").font(.system(size: 18, weight: .light)).foregroundStyle(RYColor.accent).frame(width: 32) }
+                    Text("Ответственный").ryFont(.body).foregroundStyle(RYColor.ink)
+                    Spacer(minLength: 8)
+                    Text(assignee?.displayName ?? "Выбрать").ryFont(.body).foregroundStyle(RYColor.accent)
+                }
+                .frame(minHeight: 56)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("task.assignee")
-        }
-    }
-
-    private var dateTimeRow: some View {
-        HStack(alignment: .top, spacing: RYSpacing.s) {
-            VStack(alignment: .leading, spacing: 6) {
-                RYFieldLabel("Дата")
+            RYListDivider()
+            RYValueRow(title: "Дата", systemImage: "calendar") {
                 RYDateField(label: "Дата", value: RussianDate.dayMonth(draft.start), date: dateBinding,
-                            components: .date, identifier: "task.date")
+                            components: .date, identifier: "task.date", inline: true)
             }
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    RYFieldLabel("Время")
-                    Spacer()
-                    Button(draft.hasTime ? "Убрать" : "Указать") {
-                        draft.hasTime.toggle()
-                        if draft.hasTime { applyDefaultTime() }
+            RYListDivider()
+            RYValueRow(title: "Время", systemImage: "clock") {
+                HStack(spacing: 10) {
+                    if draft.hasTime {
+                        RYDateField(label: "Время", value: RussianDate.time(draft.start), date: timeBinding,
+                                    components: .hourAndMinute, identifier: "task.time", inline: true)
                     }
-                    .ryFont(.caption).foregroundStyle(RYColor.accent)
-                    .accessibilityIdentifier("task.timeToggle")
-                }
-                if draft.hasTime {
-                    RYDateField(label: "Время", value: RussianDate.time(draft.start), date: timeBinding,
-                                components: .hourAndMinute, identifier: "task.time")
-                } else {
-                    RYSelectLabel(value: "Без времени", systemImage: "sun.max")
+                    Toggle("Указать время", isOn: $draft.hasTime).labelsHidden().tint(RYColor.accent)
+                        .accessibilityIdentifier("task.timeToggle")
+                        .onChange(of: draft.hasTime) { _, on in if on { applyDefaultTime() } }
                 }
             }
-        }
-    }
-
-    private var recurrenceField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Повторять")
-            Menu {
-                Picker("Повторять", selection: $draft.recurrence) {
-                    ForEach(Recurrence.allCases, id: \.self) { Text($0.title(for: draft.start)).tag($0) }
+            if !isEditOccurrence {
+                RYListDivider()
+                Menu {
+                    Picker("Повторять", selection: $draft.recurrence) {
+                        ForEach(Recurrence.allCases, id: \.self) { Text($0.title(for: draft.start)).tag($0) }
+                    }
+                } label: {
+                    RYValueRow(title: "Повторять", subtitle: draft.recurrence.title(for: draft.start), systemImage: "repeat") {
+                        Image(systemName: "chevron.up.chevron.down").font(.system(size: 13, weight: .medium))
+                    }
                 }
-            } label: { RYSelectLabel(value: draft.recurrence.title(for: draft.start)) }
                 .accessibilityIdentifier("task.recurrence")
+            }
         }
     }
 
@@ -193,65 +152,82 @@ struct TaskFormView: View {
     }
 
     private var checklistField: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             RYFieldLabel("Чек-лист · необязательно")
-            ForEach(draft.checklist.indices, id: \.self) { index in
-                HStack {
-                    TextField("Пункт", text: $draft.checklist[index]).ryFont(.body).foregroundStyle(RYColor.ink)
-                        .accessibilityIdentifier("task.check.\(index)")
-                    Button { draft.checklist.remove(at: index) } label: {
-                        Image(systemName: "minus.circle").foregroundStyle(RYColor.muted)
+            RYListGroup {
+                ForEach(draft.checklist.indices, id: \.self) { index in
+                    HStack(spacing: 12) {
+                        RYCheckbox(isOn: false)
+                        TextField("Пункт", text: $draft.checklist[index]).ryFont(.body).foregroundStyle(RYColor.ink)
+                            .accessibilityIdentifier("task.check.\(index)")
+                        Button { draft.checklist.remove(at: index) } label: {
+                            Image(systemName: "minus.circle").foregroundStyle(RYColor.muted).frame(width: 32, height: 44)
+                        }
+                        .accessibilityLabel("Удалить пункт")
                     }
-                    .accessibilityLabel("Удалить пункт")
+                    .frame(minHeight: 48)
+                    RYListDivider()
                 }
-                .ryField()
+                Button { draft.checklist.append("") } label: {
+                    Label("Добавить пункт", systemImage: "plus").ryFont(.body).foregroundStyle(RYColor.accent)
+                        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                        .contentShape(Rectangle())
+                }
+                .accessibilityIdentifier("task.addCheck")
             }
-            Button { draft.checklist.append("") } label: {
-                Label("Добавить пункт", systemImage: "plus").ryFont(.body).foregroundStyle(RYColor.accent)
-                    .frame(minHeight: 40)
-            }
-            .accessibilityIdentifier("task.addCheck")
         }
     }
 
-    private var reminderField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Напоминание")
+    private var extrasGroup: some View {
+        RYListGroup {
             Menu {
                 Picker("Напоминание", selection: $draft.reminderMinutes) {
                     ForEach(reminderOptions, id: \.1) { Text($0.1).tag($0.0) }
                 }
             } label: {
-                RYSelectLabel(value: reminderOptions.first { $0.0 == draft.reminderMinutes }?.1 ?? "Без напоминания")
+                RYValueRow(title: "Напоминание", systemImage: "bell") {
+                    HStack(spacing: 6) {
+                        Text(reminderOptions.first { $0.0 == draft.reminderMinutes }?.1 ?? "Без напоминания")
+                        Image(systemName: "chevron.up.chevron.down").font(.system(size: 13, weight: .medium))
+                    }
+                }
             }
             .disabled(!draft.hasTime)
             .opacity(draft.hasTime ? 1 : 0.5)
             .accessibilityIdentifier("task.reminder")
-        }
-    }
-
-    private var tagField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Метка · необязательно")
+            RYListDivider()
             Menu {
                 Picker("Метка", selection: $draft.tag) {
                     ForEach(tagOptions, id: \.self) { Text($0.isEmpty ? "Без метки" : $0).tag($0) }
                 }
-            } label: { RYSelectLabel(value: draft.tag.isEmpty ? "Без метки" : draft.tag) }
-                .accessibilityIdentifier("task.tag")
+            } label: {
+                RYValueRow(title: "Метка", systemImage: "tag") {
+                    HStack(spacing: 6) {
+                        Text(draft.tag.isEmpty ? "Без метки" : draft.tag)
+                        Image(systemName: "chevron.up.chevron.down").font(.system(size: 13, weight: .medium))
+                    }
+                }
+            }
+            .accessibilityIdentifier("task.tag")
         }
     }
 
-    @ViewBuilder private var reminderFootnote: some View {
+    @ViewBuilder private var reminderNotice: some View {
         if draft.hasTime, let minutes = draft.reminderMinutes {
             let fire = draft.start.addingTimeInterval(-TimeInterval(minutes) * 60)
-            let who = members.first { $0.id == draft.assigneeId }.map { RussianNames.dative($0.displayName) } ?? "всем"
-            let lead = minutes == 0 ? "Напомнить в момент срока" : "Напомнить за \(Self.minutesText(minutes))"
-            Text("\(lead) · \(who) \(Self.relativeDay(fire, calendar: calendar)) в \(RussianDate.time(fire))")
-                .ryFont(.caption).foregroundStyle(RYColor.muted)
+            let who = assignee.map { RussianNames.dative($0.displayName) } ?? "всем"
+            RYNotice(systemImage: "bell",
+                     title: minutes == 0 ? "Напомнить в момент срока" : "Напомнить за \(Self.minutesText(minutes))",
+                     text: "\(who.capitalizedFirst) \(Self.relativeDay(fire, calendar: calendar)) в \(RussianDate.time(fire))")
         } else if !draft.hasTime {
-            Text("Без времени напоминание не отправляется.").ryFont(.caption).foregroundStyle(RYColor.muted)
+            Text("Без времени напоминание не отправляется.").ryFont(.subhead).foregroundStyle(RYColor.muted)
         }
+    }
+
+    private var pickerSubtitle: String {
+        let name = draft.title.trimmingCharacters(in: .whitespaces).isEmpty ? "Новое дело" : draft.title
+        let when = draft.hasTime ? "\(RussianDate.dayMonth(draft.start)), \(RussianDate.time(draft.start))" : RussianDate.dayMonth(draft.start)
+        return "\(name) · \(when)\nВыберите одного участника семьи."
     }
 
     // MARK: Привязки даты и времени
@@ -310,10 +286,8 @@ struct TaskFormView: View {
         case .editOccurrence(let id): if let occ = occurrence(id) { service?.update(occ, with: draft) }
         case .editSeries(let id): if let occ = occurrence(id) { service?.updateSeries(from: occ, with: draft) }
         }
-        close()
+        dismiss()
     }
-
-    private func close() { if !path.isEmpty { path.removeLast() } }
 
     static func minutesText(_ minutes: Int) -> String {
         switch minutes {

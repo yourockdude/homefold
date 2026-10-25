@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Недельная лента дат: неделя с понедельника, выбранный день — тёмно-зелёная пилюля.
+/// Недельная лента дат: неделя с понедельника, выбранный день — зелёная вертикальная капсула.
 struct WeekStrip: View {
     @Binding var selected: Date
     var calendar: Calendar = .current
@@ -11,20 +11,23 @@ struct WeekStrip: View {
     }
 
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 0) {
             ForEach(days, id: \.self) { day in
                 let isSelected = calendar.isDate(day, inSameDayAs: selected)
+                let isToday = calendar.isDateInToday(day)
                 Button { selected = calendar.startOfDay(for: day) } label: {
-                    VStack(spacing: 7) {
+                    VStack(spacing: 6) {
                         Text(RussianDate.shortWeekday(day, calendar: calendar))
-                            .font(.system(size: 9)).foregroundStyle(isSelected ? Color(hex: 0xDCE8D9) : RYColor.muted)
+                            .font(.system(size: 11)).foregroundStyle(isSelected ? .white.opacity(0.85) : RYColor.muted)
                         Text("\(calendar.component(.day, from: day))")
-                            .ryFont(.section).fontWeight(.medium).foregroundStyle(isSelected ? .white : RYColor.ink)
+                            .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
+                            .foregroundStyle(isSelected ? .white : (isToday ? RYColor.accent : RYColor.ink))
                     }
-                    .frame(maxWidth: .infinity, minHeight: 64)
-                    .background(isSelected ? RYColor.accent : RYColor.background, in: RoundedRectangle(cornerRadius: RYRadius.card))
-                    .overlay(RoundedRectangle(cornerRadius: RYRadius.card)
-                        .stroke(calendar.isDateInToday(day) && !isSelected ? RYColor.accent.opacity(0.4) : .clear, lineWidth: 1))
+                    .frame(maxWidth: .infinity, minHeight: 66)
+                    .background {
+                        if isSelected { Capsule().fill(RYColor.accent).padding(.horizontal, 2) }
+                    }
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(RussianDate.weekdayDayMonth(day, calendar: calendar))

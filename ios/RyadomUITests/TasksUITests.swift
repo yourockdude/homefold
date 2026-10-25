@@ -22,7 +22,7 @@ final class TasksUITests: XCTestCase {
     func testCreateTask() {
         app.buttons["tasks.add"].tap()
         let title = app.textFields["task.title"]
-        XCTAssertTrue(title.waitForExistence(timeout: 3))
+        XCTAssertTrue(title.waitForExistence(timeout: 5), "лист создания должен открыться")
         title.typeText("Купить подарок")
         app.buttons["task.submit"].tap()
         XCTAssertTrue(app.staticTexts["4 дела"].waitForExistence(timeout: 3))
@@ -30,6 +30,7 @@ final class TasksUITests: XCTestCase {
 
     func testEmptyTitleShowsError() {
         app.buttons["tasks.add"].tap()
+        XCTAssertTrue(app.buttons["task.submit"].waitForExistence(timeout: 5))
         app.buttons["task.submit"].tap()
         XCTAssertTrue(app.staticTexts["Введите название дела."].waitForExistence(timeout: 2))
     }
@@ -56,9 +57,10 @@ final class TasksUITests: XCTestCase {
 
     func testOverdueRescheduleKeepsTaskOpen() {
         openDetail("Продлить страховку квартиры")
-        XCTAssertTrue(app.staticTexts["Выберите новый срок"].waitForExistence(timeout: 2))
+        let panel = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Выберите новый срок'")).firstMatch
+        XCTAssertTrue(panel.waitForExistence(timeout: 2))
         app.buttons["task.saveReschedule"].tap()
-        XCTAssertFalse(app.staticTexts["Выберите новый срок"].waitForExistence(timeout: 1))
+        XCTAssertFalse(panel.waitForExistence(timeout: 1))
         XCTAssertTrue(app.buttons["task.complete"].exists, "перенос не должен отмечать дело выполненным")
     }
 
