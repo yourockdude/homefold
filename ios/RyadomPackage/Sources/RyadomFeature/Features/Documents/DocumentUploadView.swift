@@ -61,7 +61,7 @@ struct DocumentUploadView: View {
 
     @ViewBuilder
     private func runningBody(_ progress: DocumentUploadCoordinator.Progress) -> some View {
-        Text("Сохраняем важное").font(.system(size: 28, weight: .bold)).foregroundStyle(RYColor.ink)
+        Text("Сохраняем важное").ryFont(.heading).foregroundStyle(RYColor.ink)
             .accessibilityAddTraits(.isHeader)
         Text("Не закрывайте приложение до завершения загрузки.").ryFont(.callout).foregroundStyle(RYColor.muted)
         if let doc {

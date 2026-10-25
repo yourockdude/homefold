@@ -99,89 +99,50 @@ public enum RYRadius {
     public static let pill: CGFloat = 100
 }
 
-/// Размеры шрифта из макета. Заголовки — системный шрифт (SF Pro) Bold; масштабируются с Dynamic Type.
+/// Смысловые стили текста приложения. Каждый указывает на шрифтовой токен из Figma (`RYType`);
+/// чтобы перенастроить типографику, меняется только это соответствие.
 public enum RYFontStyle {
-    /// 27 bold — логотип.
+    /// Логотип.
     case brand
-    /// 34 bold — заголовок экрана.
+    /// Заголовок экрана.
     case title
-    /// 28 bold — крупные числа.
+    /// Крупные числа.
     case number
-    /// 24 bold — название на обложке.
+    /// Название на обложке, заголовки состояний.
     case heading
-    /// 21 bold — заголовок раздела.
+    /// Заголовок раздела.
     case section
-    /// 17 semibold — заголовок строки / кнопки.
+    /// Заголовок строки, подпись кнопки.
     case headline
-    /// 17 regular — основной текст строки.
+    /// Основной текст строки.
     case body
-    /// 17 medium.
+    /// Основной текст, начертание полужирное.
     case bodyMedium
-    /// 15 regular — вторичные подписи, действия-ссылки.
+    /// Вторичные подписи, действия-ссылки.
     case callout
-    /// 13 regular — подписи под строкой.
+    /// Подписи под строкой.
     case subhead
-    /// 12 regular — мелкие подписи, заголовки групп.
+    /// Мелкие подписи, заголовки групп.
     case caption
-    /// 10 — подписи вкладок.
+    /// Подписи вкладок.
     case micro
 
-    var size: CGFloat {
+    public var token: RYFontToken {
         switch self {
-        case .brand: 27
-        case .title: 34
-        case .number: 28
-        case .heading: 24
-        case .section: 21
-        case .headline, .body, .bodyMedium: 17
-        case .callout: 15
-        case .subhead: 13
-        case .caption: 12
-        case .micro: 10
+        case .brand, .number, .heading: RYType.h3B
+        case .title: RYType.h2B
+        case .section: RYType.h4B
+        case .headline, .bodyMedium: RYType.bodyMB
+        case .body: RYType.bodyMN
+        case .callout: RYType.bodySN
+        case .subhead, .caption: RYType.bodyXSN
+        case .micro: RYType.bodyXXSN
         }
-    }
-
-    var weight: Font.Weight {
-        switch self {
-        case .brand, .title, .number, .heading, .section: .bold
-        case .headline: .semibold
-        case .bodyMedium: .medium
-        default: .regular
-        }
-    }
-
-    var relativeTo: Font.TextStyle {
-        switch self {
-        case .brand, .title: .largeTitle
-        case .number, .heading: .title
-        case .section: .title3
-        case .headline, .body, .bodyMedium: .body
-        case .callout: .callout
-        case .subhead: .footnote
-        case .caption: .caption
-        case .micro: .caption2
-        }
-    }
-}
-
-private struct RYFontModifier: ViewModifier {
-    let style: RYFontStyle
-    @ScaledMetric private var size: CGFloat
-
-    init(style: RYFontStyle) {
-        self.style = style
-        self._size = ScaledMetric(wrappedValue: style.size, relativeTo: style.relativeTo)
-    }
-
-    func body(content: Content) -> some View {
-        content.font(.system(size: size, weight: style.weight))
     }
 }
 
 public extension View {
-    func ryFont(_ style: RYFontStyle) -> some View {
-        modifier(RYFontModifier(style: style))
-    }
+    func ryFont(_ style: RYFontStyle) -> some View { ryFont(style.token) }
 }
 
 public extension Color {

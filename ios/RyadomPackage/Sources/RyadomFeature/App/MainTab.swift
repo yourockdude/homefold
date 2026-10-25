@@ -42,7 +42,7 @@ struct MainTabBar: View {
                             .font(.system(size: 20, weight: .light))
                             .frame(height: 24)
                         Text(tab.title)
-                            .font(.system(size: 10, weight: selected ? .semibold : .medium))
+                            .ryFont(selected ? RYType.bodyXXSB : RYType.bodyXXSM)
                     }
                     .foregroundStyle(selected ? RYColor.accent : RYColor.muted)
                     .frame(maxWidth: .infinity, minHeight: 56)

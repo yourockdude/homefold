@@ -42,7 +42,7 @@ struct RYConfirmDialog: View {
         VStack(spacing: 0) {
             Rectangle().fill(RYColor.separator).frame(height: 0.5)
             Button(action: action) {
-                Text(title).font(.system(size: 17, weight: weight)).foregroundStyle(color)
+                Text(title).ryFont(weight == .semibold ? RYFontStyle.headline : RYFontStyle.body).foregroundStyle(color)
                     .frame(maxWidth: .infinity, minHeight: 48)
                     .contentShape(Rectangle())
             }

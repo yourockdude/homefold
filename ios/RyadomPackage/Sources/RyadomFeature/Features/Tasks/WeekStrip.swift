@@ -18,9 +18,9 @@ struct WeekStrip: View {
                 Button { selected = calendar.startOfDay(for: day) } label: {
                     VStack(spacing: 6) {
                         Text(RussianDate.shortWeekday(day, calendar: calendar))
-                            .font(.system(size: 11)).foregroundStyle(isSelected ? RYColor.onAccent.opacity(0.85) : RYColor.muted)
+                            .ryFont(.micro).foregroundStyle(isSelected ? RYColor.onAccent.opacity(0.85) : RYColor.muted)
                         Text("\(calendar.component(.day, from: day))")
-                            .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
+                            .ryFont(isSelected ? RYType.h4M : RYType.h4N)
                             .foregroundStyle(isSelected ? RYColor.onAccent : (isToday ? RYColor.accent : RYColor.ink))
                     }
                     .frame(maxWidth: .infinity, minHeight: 66)

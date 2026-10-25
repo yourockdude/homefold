@@ -49,7 +49,7 @@ struct DocumentDetailView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 14) {
                         if justAdded || doc.uploadState != .synced { addedBanner(doc) }
-                        Text(doc.title).font(.system(size: 30, weight: .bold)).foregroundStyle(RYColor.ink)
+                        Text(doc.title).ryFont(.title).foregroundStyle(RYColor.ink)
                             .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
                         metaLine(doc)
                         previewCard(doc)

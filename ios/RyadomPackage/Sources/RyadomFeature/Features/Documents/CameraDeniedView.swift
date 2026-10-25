@@ -31,7 +31,7 @@ struct CameraDeniedView: View {
                     Image(systemName: "camera").font(.system(size: 44, weight: .ultraLight)).foregroundStyle(RYColor.accent)
                         .overlay { Rectangle().fill(RYColor.accent).frame(width: 56, height: 2).rotationEffect(.degrees(-40)) }
                         .padding(.top, 6).accessibilityHidden(true)
-                    Text("Нужен доступ к камере").font(.system(size: 26, weight: .bold)).foregroundStyle(RYColor.ink)
+                    Text("Нужен доступ к камере").ryFont(.heading).foregroundStyle(RYColor.ink)
                         .multilineTextAlignment(.center)
                     Text("Разрешите приложению «рядом» использовать камеру в настройках телефона. Тогда вы сможете сканировать документы.")
                         .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)

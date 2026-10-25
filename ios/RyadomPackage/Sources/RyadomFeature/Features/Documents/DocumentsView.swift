@@ -106,7 +106,7 @@ struct DocumentsView: View {
     private var emptyStorage: some View {
         VStack(spacing: RYSpacing.s) {
             DocumentsIllustration()
-            Text("Важное найдёт\nсвоё место").font(.system(size: 28, weight: .bold)).foregroundStyle(RYColor.ink)
+            Text("Важное найдёт\nсвоё место").ryFont(.heading).foregroundStyle(RYColor.ink)
                 .multilineTextAlignment(.center).accessibilityLabel("Важное найдёт своё место")
             Text("Полисы, паспорта и справки — храните всё в одном месте, чтобы не искать в семейной переписке.")
                 .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
@@ -166,7 +166,7 @@ struct DocumentsView: View {
             VStack(spacing: RYSpacing.m) {
                 Image(systemName: "magnifyingglass").font(.system(size: 40, weight: .light)).foregroundStyle(RYColor.accent)
                     .padding(.top, RYSpacing.l)
-                Text("Ничего не нашлось").font(.system(size: 28, weight: .bold)).foregroundStyle(RYColor.ink)
+                Text("Ничего не нашлось").ryFont(.heading).foregroundStyle(RYColor.ink)
                 Text("По запросу «\(query)» нет документов. Попробуйте другое название или имя участника семьи.")
                     .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
                 Text("Например: «Полис», «Соня» или «Паспорт». Все \(DocumentFormat.files(docs.count)) остаются в хранилище.")
