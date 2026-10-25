@@ -32,6 +32,9 @@ export function toDocumentDto(doc: DocWithPerms) {
   return { ...rest, selectedUserIds: permissions.map((p) => p.userId) };
 }
 
+const searchText = (title: string, number: string | null | undefined, fileName: string) =>
+  [title, number ?? '', fileName].join(' ').toLocaleLowerCase('ru-RU');
+
 const MAGIC: Record<string, (b: Buffer) => boolean> = {
   'application/pdf': (b) => b.subarray(0, 4).toString('latin1') === '%PDF',
   'image/jpeg': (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
@@ -100,11 +103,13 @@ export class DocumentsService {
       throw Err.premium('documents', 'Не хватает места для документов. Подключите «рядом Плюс» или удалите ненужные файлы');
     }
     const { access, selected } = await this.resolveSharing(ctx, dto);
+    const title = requireText(dto.title, 'Название');
     const doc = await this.prisma.document.create({
       data: {
         id: dto.id, familyId: ctx.familyId, authorId: ctx.userId,
-        title: requireText(dto.title, 'Название'), category: dto.category ?? 'personal', ownerId: dto.ownerId ?? ctx.userId,
+        title, category: dto.category ?? 'personal', ownerId: dto.ownerId ?? ctx.userId,
         number: dto.number?.trim() || null, expiresAt: dto.expiresAt ?? null, access,
+        searchText: searchText(title, dto.number?.trim(), dto.fileName),
         fileName: dto.fileName, mimeType: dto.mimeType, sizeBytes: dto.sizeBytes,
         objectKey: `families/${ctx.familyId}/documents/${dto.id}`,
         uploadExpiresAt: new Date(Date.now() + PENDING_UPLOAD_TTL_MS),
@@ -161,12 +166,14 @@ export class DocumentsService {
       expiresAt: dto.expiresAt,
       access: sharing.changed ? sharing.access : undefined,
     });
+    const next = { title: (data.title as string | undefined) ?? current.title, number: 'number' in data ? (data.number as string | null) : current.number };
+    const withSearch = { ...data, searchText: searchText(next.title, next.number, current.fileName) };
     const updated = await this.prisma.$transaction(async (tx) => {
       if (sharing.changed) {
         await tx.documentPermission.deleteMany({ where: { documentId: id } });
         if (sharing.selected.length) await tx.documentPermission.createMany({ data: sharing.selected.map((userId) => ({ documentId: id, userId })) });
       }
-      return tx.document.update({ where: { id }, data: { ...data, version: { increment: 1 } }, include: { permissions: true } });
+      return tx.document.update({ where: { id }, data: { ...withSearch, version: { increment: 1 } }, include: { permissions: true } });
     });
     // Запись в журнале: у тех, кто потерял доступ, следующий pull вернёт tombstone — локальная копия очистится.
     await this.changes.record(ctx.familyId, 'document', id);
@@ -204,7 +211,7 @@ export class DocumentsService {
       { OR: [{ authorId: ctx.userId }, { status: 'ready', access: 'family' }, { status: 'ready', access: 'selected', permissions: { some: { userId: ctx.userId } } }] },
     ];
     if (search) {
-      and.push({ OR: [{ title: { contains: search, mode: 'insensitive' } }, { number: { contains: search, mode: 'insensitive' } }, { fileName: { contains: search, mode: 'insensitive' } }] });
+      and.push({ searchText: { contains: search.toLocaleLowerCase('ru-RU') } });
     }
     if (cut) and.push({ OR: [{ createdAt: { lt: cut.createdAt } }, { createdAt: cut.createdAt, id: { lt: cut.id } }] });
     const rows = await this.prisma.document.findMany({

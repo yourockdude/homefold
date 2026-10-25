@@ -263,6 +263,8 @@ model Document {
   mimeType    String
   sizeBytes   Int
   objectKey   String      @unique
+  /// Нижний регистр: поиск не зависит от локали БД (ILIKE по кириллице зависит от неё).
+  searchText  String      @default("")
   status      DocStatus   @default(pending_upload)
   uploadExpiresAt DateTime?
   permissions DocumentPermission[]
