@@ -20,16 +20,12 @@ struct DocumentListView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: RYSpacing.s) {
-                Button { if !path.isEmpty { path.removeLast() } } label: {
-                    Image(systemName: "arrow.left").font(.system(size: 18)).foregroundStyle(RYColor.ink)
-                }
-                .accessibilityLabel("Назад")
-                Text(category?.title ?? "Все файлы").ryFont(.section).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
+            HStack {
+                RYBackButton("Документы") { if !path.isEmpty { path.removeLast() } }
                 Spacer()
-                Text(DocumentFormat.files(shown.count)).ryFont(.caption).foregroundStyle(RYColor.muted)
             }
-            .padding(.horizontal, RYSpacing.screen).padding(.vertical, RYSpacing.m)
+            .padding(.horizontal, RYSpacing.screen).padding(.top, 8).padding(.bottom, 4)
+            RYScreenHeader(title: category?.title ?? "Все файлы", subtitle: DocumentFormat.files(shown.count))
 
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
@@ -47,12 +43,8 @@ struct DocumentListView: View {
                                  message: "В этой категории нет документов. Добавьте первый с помощью кнопки «+» на экране документов.")
                         .padding(.top, RYSpacing.l)
                 } else {
-                    VStack(spacing: 0) {
-                        ForEach(shown) { doc in DocumentRow(doc: doc) { path.append(.detail(doc.id, added: false)) } }
-                    }
-                    .padding(.horizontal, 14).padding(.vertical, 4)
-                    .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
-                    .padding(.horizontal, RYSpacing.screen)
+                    DocumentList(docs: shown) { path.append(.detail($0.id, added: false)) }
+                        .padding(.horizontal, RYSpacing.screen)
                 }
             }
             .scrollIndicators(.hidden)
@@ -63,8 +55,8 @@ struct DocumentListView: View {
 
     private func chip(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(title).ryFont(.caption).fontWeight(.medium).foregroundStyle(selected ? .white : RYColor.muted)
-                .padding(.horizontal, 14).frame(minHeight: 36)
+            Text(title).ryFont(.callout).fontWeight(.medium).foregroundStyle(selected ? .white : RYColor.muted)
+                .padding(.horizontal, 16).frame(minHeight: 36)
                 .background(selected ? RYColor.accent : RYColor.surface, in: Capsule())
         }
         .buttonStyle(.plain)

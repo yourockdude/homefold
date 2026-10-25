@@ -3,7 +3,8 @@ import SwiftData
 import PhotosUI
 import UniformTypeIdentifiers
 
-/// Новый документ и правка метаданных существующего.
+/// Новый документ и правка метаданных существующего — модальный лист. После «Загрузить» тот же лист
+/// показывает прогресс загрузки (`DocumentUploadView`).
 struct DocumentFormView: View {
     enum Mode: Hashable { case create, edit(UUID) }
 
@@ -14,12 +15,16 @@ struct DocumentFormView: View {
     let members: [MemberRecord]
     let familyName: String
     let isPremium: Bool
-    @Binding var path: [DocumentRoute]
+    let storedCount: Int
+    var onClose: () -> Void
+    var onScanDenied: () -> Void
+    var onFinished: (UUID) -> Void
 
     @Environment(AppSession.self) private var session
     @Environment(\.modelContext) private var context
 
     @State private var submitted = false
+    @State private var uploadingId: UUID?
     @State private var showSourceDialog = false
     @State private var showFileImporter = false
     @State private var showPhotoPicker = false
@@ -37,36 +42,35 @@ struct DocumentFormView: View {
     private var fileError: String? { submitted && isCreate && pickedFile == nil ? "Выберите файл или отсканируйте документ." : nil }
 
     var body: some View {
-        VStack(spacing: 0) {
-            topBar
-            ScrollView {
-                VStack(alignment: .leading, spacing: RYSpacing.s) {
-                    if isCreate { sourceSection }
-                    if let importError { RYStatusBanner(kind: .error, text: importError) }
-                    if let limitMessage { RYStatusBanner(kind: .error, text: limitMessage) }
-                    titleField
-                    categoryField
-                    ownerField
-                    numberField
-                    expiryField
-                    accessField
-                    accessNotice
-                }
-                .padding(.horizontal, RYSpacing.screen)
-                .padding(.bottom, RYSpacing.m)
+        Group {
+            if let uploadingId {
+                DocumentUploadView(documentId: uploadingId, members: members, storedCount: storedCount,
+                                   onCancel: { session.uploads?.cancel(uploadingId); onClose() },
+                                   onFinished: { onFinished(uploadingId) })
+            } else {
+                form
             }
-            .scrollDismissesKeyboard(.interactively)
         }
-        .background(RYColor.background)
-        .toolbar(.hidden, for: .navigationBar)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            Button(action: submit) {
-                Label(isCreate ? "Загрузить документ" : "Сохранить", systemImage: isCreate ? "square.and.arrow.up" : "checkmark")
-            }
-            .buttonStyle(.ryPrimary)
-            .padding(.horizontal, RYSpacing.screen).padding(.vertical, RYSpacing.s)
-            .background(RYColor.background)
-            .accessibilityIdentifier("document.submit")
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(RYColor.background)
+        .presentationCornerRadius(RYRadius.sheet)
+        .interactiveDismissDisabled(uploadingId != nil)
+    }
+
+    private var form: some View {
+        RYSheetScaffold(title: isCreate ? "Новый документ" : "Редактировать документ",
+                        confirmTitle: isCreate ? "Загрузить" : "Сохранить", confirmIdentifier: "document.submit",
+                        onCancel: onClose, onConfirm: submit) {
+            if isCreate { sourceSection }
+            if let importError { RYStatusBanner(kind: .error, text: importError) }
+            if let limitMessage { RYStatusBanner(kind: .error, text: limitMessage) }
+            titleField
+            detailsGroup
+            if draft.access == .selected { recipientChips }
+            if let recipientsError { Text(recipientsError).ryFont(.subhead).foregroundStyle(RYColor.danger) }
+            RYNotice(systemImage: "lock", title: Self.accessTitle(draft, members: members, me: session.userId),
+                     text: "Файл хранится в зашифрованном виде. Права доступа проверяет сервер.")
         }
         .confirmationDialog("Выбрать файл", isPresented: $showSourceDialog, titleVisibility: .visible) {
             Button("Из «Файлов»") { showFileImporter = true }
@@ -90,131 +94,111 @@ struct DocumentFormView: View {
 
     // MARK: Части формы
 
-    private var topBar: some View {
-        HStack(spacing: RYSpacing.s) {
-            Button(action: close) { Image(systemName: "arrow.left").font(.system(size: 18)).foregroundStyle(RYColor.ink) }
-                .accessibilityLabel("Назад")
-            Text(isCreate ? "Новый документ" : "Редактировать документ").ryFont(.section).foregroundStyle(RYColor.ink)
-                .accessibilityAddTraits(.isHeader)
-            Spacer()
-            Button(action: close) {
-                Image(systemName: "xmark").font(.system(size: 14, weight: .semibold)).foregroundStyle(RYColor.ink)
-                    .frame(width: 40, height: 40).background(RYColor.surface, in: Circle())
-            }
-            .accessibilityLabel("Закрыть")
-        }
-        .padding(.horizontal, RYSpacing.screen).padding(.top, RYSpacing.s).padding(.bottom, RYSpacing.m)
-    }
-
     private var sourceSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            RYFieldLabel("Откуда добавить")
-            HStack(spacing: RYSpacing.s) {
-                sourceTile(title: "Сканировать", systemImage: "camera", selected: false, action: scanTapped)
-                    .accessibilityIdentifier("document.scan")
-                sourceTile(title: "Выбрать файл", systemImage: "doc.text", selected: pickedFile != nil) { showSourceDialog = true }
-                    .accessibilityIdentifier("document.pickFile")
+        VStack(alignment: .leading, spacing: RYSpacing.s) {
+            HStack(spacing: 10) {
+                Button(action: scanTapped) { Text("Сканировать") }
+                    .buttonStyle(.rySecondary).accessibilityIdentifier("document.scan")
+                Button { showSourceDialog = true } label: { Text("Выбрать файл") }
+                    .buttonStyle(.rySecondary).accessibilityIdentifier("document.pickFile")
             }
             if let file = pickedFile {
-                Text("Выбран: \(file.fileName) · \(file.kind.shortTitle) · \(DocumentFormat.size(file.sizeBytes))")
-                    .ryFont(.micro).foregroundStyle(RYColor.muted)
-            } else {
-                Text("PDF, JPG и PNG · до 25 МБ").ryFont(.micro).foregroundStyle(fileError == nil ? RYColor.muted : RYColor.danger)
+                RYListGroup {
+                    RYListRow(file.fileName, subtitle: "\(file.kind.shortTitle) · \(DocumentFormat.size(file.sizeBytes)) · выбран",
+                              leading: {
+                        Image(systemName: "doc.text").font(.system(size: 20, weight: .light)).foregroundStyle(RYColor.accent).frame(width: 24)
+                    }, trailing: { EmptyView() })
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Выбран: \(file.fileName) · \(file.kind.shortTitle) · \(DocumentFormat.size(file.sizeBytes))")
             }
-            if let fileError { Text(fileError).ryFont(.caption).foregroundStyle(RYColor.danger) }
+            Text("PDF, JPG или PNG · до 25 МБ").ryFont(.subhead).foregroundStyle(fileError == nil ? RYColor.muted : RYColor.danger)
+            if let fileError { Text(fileError).ryFont(.subhead).foregroundStyle(RYColor.danger) }
         }
-    }
-
-    private func sourceTile(title: String, systemImage: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            VStack(spacing: 12) {
-                Image(systemName: systemImage).font(.system(size: 17, weight: .light))
-                Text(title).ryFont(.caption).fontWeight(.medium)
-            }
-            .foregroundStyle(selected ? RYColor.accent : RYColor.ink)
-            .frame(maxWidth: .infinity, minHeight: 74)
-            .background(selected ? RYColor.accentTint : RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
-            .overlay(RoundedRectangle(cornerRadius: RYRadius.card).stroke(selected ? RYColor.accent : RYColor.border, lineWidth: selected ? 1.3 : 1))
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private var titleField: some View {
         VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Название" + (titleError != nil ? " *" : ""))
+            RYFieldLabel("Название · обязательно")
             TextField("Например, полис ДМС", text: $draft.title)
                 .focused($titleFocused).ryFont(.body).foregroundStyle(RYColor.ink)
                 .ryField(isError: titleError != nil, isFocused: titleFocused)
                 .accessibilityIdentifier("document.title")
-            if let titleError { Text(titleError).ryFont(.caption).foregroundStyle(RYColor.danger) }
+            if let titleError { Text(titleError).ryFont(.subhead).foregroundStyle(RYColor.danger) }
         }
     }
 
-    private var categoryField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Категория")
-            Menu {
-                Picker("Категория", selection: $draft.category) {
-                    ForEach(DocumentCategory.allCases, id: \.self) { Text($0.title).tag($0) }
-                }
-            } label: { RYSelectLabel(value: draft.category.title) }
-                .accessibilityIdentifier("document.category")
-        }
-    }
-
-    private var ownerField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Кому принадлежит")
-            Menu {
-                Picker("Кому принадлежит", selection: $draft.ownerId) {
-                    ForEach(members) { Text($0.displayName).tag(Optional($0.id)) }
-                }
-            } label: { RYSelectLabel(value: members.first { $0.id == draft.ownerId }?.displayName ?? "Выберите участника") }
-                .accessibilityIdentifier("document.owner")
-        }
-    }
-
-    private var numberField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Номер · необязательно")
-            TextField("Номер документа", text: $draft.number).ryFont(.body).foregroundStyle(RYColor.ink).ryField()
-                .accessibilityIdentifier("document.number")
-        }
-    }
-
-    private var expiryField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                RYFieldLabel("Срок действия · необязательно")
-                Spacer()
-                Button(draft.expiresAt == nil ? "Указать" : "Убрать") {
-                    draft.expiresAt = draft.expiresAt == nil ? Calendar.current.date(byAdding: .year, value: 1, to: .now) : nil
-                }
-                .ryFont(.caption).foregroundStyle(RYColor.accent)
-                .accessibilityIdentifier("document.expiryToggle")
+    private var detailsGroup: some View {
+        RYListGroup {
+            RYValueRow(title: "Категория", systemImage: draft.category.systemImage) {
+                Menu {
+                    Picker("Категория", selection: $draft.category) {
+                        ForEach(DocumentCategory.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }
+                } label: { Text(draft.category.title) }
+                    .accessibilityIdentifier("document.category")
             }
-            if draft.expiresAt != nil {
-                RYDateField(label: "Срок действия", value: draft.expiresAt.map { DocumentFormat.fullDate($0) } ?? "",
-                            date: Binding(get: { draft.expiresAt ?? .now }, set: { draft.expiresAt = $0 }),
-                            components: .date, identifier: "document.expiry")
+            RYListDivider()
+            ownerRow
+            RYListDivider()
+            RYValueRow(title: "Номер") {
+                TextField("Не указан", text: $draft.number).multilineTextAlignment(.trailing)
+                    .accessibilityIdentifier("document.number")
+            }
+            RYListDivider()
+            expiryRow
+            RYListDivider()
+            RYValueRow(title: "Доступ", systemImage: "person.2") {
+                Menu {
+                    Picker("Доступ", selection: $draft.access) {
+                        ForEach(DocumentAccess.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }
+                } label: { Text(draft.access.shortTitle) }
+                    .accessibilityIdentifier("document.access")
+            }
+        }
+    }
+
+    private var ownerRow: some View {
+        let owner = members.first { $0.id == draft.ownerId }
+        return Menu {
+            Picker("Кому принадлежит", selection: $draft.ownerId) {
+                ForEach(members) { Text($0.displayName).tag(Optional($0.id)) }
+            }
+        } label: {
+            HStack(spacing: 12) {
+                if let owner { AvatarView(name: owner.displayName, tone: owner.tone, diameter: 34) }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Кому принадлежит").ryFont(.body).foregroundStyle(RYColor.ink)
+                    Text(owner?.displayName ?? "Выберите участника").ryFont(.subhead).foregroundStyle(RYColor.muted)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.up.chevron.down").font(.system(size: 12, weight: .medium)).foregroundStyle(RYColor.accent)
+            }
+            .padding(.vertical, 8)
+            .frame(minHeight: 60)
+            .contentShape(Rectangle())
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("document.owner")
+    }
+
+    private var expiryRow: some View {
+        RYValueRow(title: "Срок действия", systemImage: "calendar") {
+            if draft.expiresAt == nil {
+                Button("Не указан") { draft.expiresAt = Calendar.current.date(byAdding: .year, value: 1, to: .now) }
+                    .foregroundStyle(RYColor.muted).accessibilityIdentifier("document.expiryToggle")
             } else {
-                RYSelectLabel(value: "Не указан", systemImage: "calendar")
-            }
-        }
-    }
-
-    private var accessField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RYFieldLabel("Доступ")
-            Menu {
-                Picker("Доступ", selection: $draft.access) {
-                    ForEach(DocumentAccess.allCases, id: \.self) { Text($0.title).tag($0) }
+                HStack(spacing: 10) {
+                    RYDateField(label: "Срок действия", value: draft.expiresAt.map { DocumentFormat.fullDate($0) } ?? "",
+                                date: Binding(get: { draft.expiresAt ?? .now }, set: { draft.expiresAt = $0 }),
+                                components: .date, identifier: "document.expiry", inline: true)
+                    Button { draft.expiresAt = nil } label: {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(RYColor.muted)
+                    }
+                    .accessibilityLabel("Убрать срок действия").accessibilityIdentifier("document.expiryToggle")
                 }
-            } label: { RYSelectLabel(value: draft.access.title) }
-                .accessibilityIdentifier("document.access")
-            if draft.access == .selected { recipientChips }
-            if let recipientsError { Text(recipientsError).ryFont(.caption).foregroundStyle(RYColor.danger) }
+            }
         }
     }
 
@@ -228,13 +212,13 @@ struct DocumentFormView: View {
                         if on { draft.selectedUserIds.remove(m.id) } else { draft.selectedUserIds.insert(m.id) }
                     } label: {
                         HStack(spacing: 6) {
-                            AvatarView(name: m.displayName, tone: m.tone, diameter: 22)
+                            AvatarView(name: m.displayName, tone: m.tone, diameter: 24)
                             Text(m.displayName).ryFont(.body).foregroundStyle(RYColor.ink)
-                            if on { Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(RYColor.accent) }
+                            if on { Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(RYColor.accent) }
                         }
-                        .padding(.horizontal, 10).frame(minHeight: 40)
+                        .padding(.horizontal, 12).frame(minHeight: 44)
                         .background(on ? RYColor.accentTint : RYColor.surface, in: Capsule())
-                        .overlay(Capsule().stroke(on ? RYColor.accent : RYColor.border, lineWidth: 1))
+                        .overlay(Capsule().stroke(on ? RYColor.accent : .clear, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(m.displayName)
@@ -243,11 +227,6 @@ struct DocumentFormView: View {
             }
         }
         .scrollIndicators(.hidden)
-    }
-
-    private var accessNotice: some View {
-        DocumentNotice(systemImage: "lock", title: Self.accessTitle(draft, members: members, me: session.userId),
-                       text: "Файл хранится в зашифрованном виде. Права доступа проверяет сервер.")
     }
 
     /// «Доступ: Анна, Михаил и Соня»
@@ -268,11 +247,11 @@ struct DocumentFormView: View {
         importError = nil
         switch CameraAccess.current {
         case .unsupported: scanUnavailable = true
-        case .denied: path.append(.cameraDenied)
+        case .denied: onScanDenied()
         case .authorized: showScanner = true
         case .notDetermined:
             Task {
-                if await CameraAccess.request() { showScanner = true } else { path.append(.cameraDenied) }
+                if await CameraAccess.request() { showScanner = true } else { onScanDenied() }
             }
         }
     }
@@ -321,10 +300,10 @@ struct DocumentFormView: View {
                 pickedFile = nil
                 if let uploads = session.uploads {
                     uploads.start(doc.id)
-                    path = Array(path.dropLast()) + [.upload(doc.id)]
+                    uploadingId = doc.id
                 } else {
                     // Нет сервера или входа: файл сохранён на устройстве, отправится при синхронизации.
-                    path = Array(path.dropLast()) + [.detail(doc.id, added: true)]
+                    onFinished(doc.id)
                 }
             } catch DocumentServiceError.limitReached(let reason) {
                 limitMessage = reason == .fileCount
@@ -335,9 +314,18 @@ struct DocumentFormView: View {
             }
         case .edit(let id):
             guard let doc = (try? context.fetch(FetchDescriptor<DocumentRecord>(predicate: #Predicate { $0.id == id })))?.first else { return }
-            do { try service?.update(doc, with: draft); close() } catch { importError = "Менять документ может только его автор." }
+            do { try service?.update(doc, with: draft); onClose() } catch { importError = "Менять документ может только его автор." }
         }
     }
+}
 
-    private func close() { if !path.isEmpty { path.removeLast() } }
+extension DocumentAccess {
+    /// Короткая подпись для значения в строке: «Всей семье».
+    var shortTitle: String {
+        switch self {
+        case .authorOnly: "Только автор"
+        case .selected: "Выбранным"
+        case .family: "Всей семье"
+        }
+    }
 }

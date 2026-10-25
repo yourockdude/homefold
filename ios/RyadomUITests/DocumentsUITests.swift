@@ -25,7 +25,7 @@ final class DocumentsUITests: XCTestCase {
         field.tap()
         field.typeText("Свидетельство")
         XCTAssertTrue(app.staticTexts["Ничего не нашлось"].waitForExistence(timeout: 3))
-        app.buttons["Очистить поиск"].firstMatch.tap()
+        app.buttons["documents.clearSearch"].tap()
         XCTAssertTrue(app.buttons["category.personal"].waitForExistence(timeout: 3))
     }
 
@@ -56,7 +56,7 @@ final class DocumentsUITests: XCTestCase {
     func testAddDocumentUploadsAndShowsSuccess() {
         let app = launch(["-RYPrefillFile"])
         app.buttons["documents.plus"].tap()
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Выбран: spravka.pdf'")).firstMatch.waitForExistence(timeout: 3))
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH 'Выбран: spravka.pdf'")).firstMatch.waitForExistence(timeout: 3))
         app.buttons["document.submit"].tap()
         XCTAssertTrue(app.staticTexts["Сохраняем важное"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Документ загружен"].waitForExistence(timeout: 15))
@@ -93,10 +93,20 @@ final class DocumentsUITests: XCTestCase {
         XCTAssertTrue(app.buttons["camera.pickFile"].exists)
     }
 
+    func testEditSheetOpensFromDetailMenu() {
+        let app = launch()
+        app.buttons["document.row.Полис ДМС · Соня"].tap()
+        XCTAssertTrue(app.buttons["document.menu"].waitForExistence(timeout: 3))
+    }
+
     func testDetailShowsMetadata() {
         let app = launch()
         app.buttons["document.row.Полис ДМС · Соня"].tap()
-        XCTAssertTrue(app.staticTexts["7428 1053 609"].waitForExistence(timeout: 3))
+        let number = app.buttons["document.number"]
+        XCTAssertTrue(number.waitForExistence(timeout: 3))
+        XCTAssertEqual(number.label, "Номер скрыт", "номер документа скрыт по умолчанию")
+        number.tap()
+        XCTAssertEqual(number.label, "Номер: 7428 1053 609")
         XCTAssertTrue(app.staticTexts["31 августа 2027"].exists)
         XCTAssertTrue(app.staticTexts["Доступен семье Смирновых"].exists)
         XCTAssertTrue(app.buttons["document.share"].exists)

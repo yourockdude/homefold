@@ -209,7 +209,9 @@ struct DocumentServiceTests {
         #expect(DocumentFormat.files(1) == "1 файл")
         #expect(DocumentFormat.files(6) == "6 файлов")
         #expect(DocumentFormat.documents(3) == "3 документа")
-        #expect(DocumentFormat.eta(5) == "осталось около 5 секунд")
+        #expect(DocumentFormat.eta(5) == "около 5 секунд")
+        #expect(DocumentFormat.masked("7428 1053 609") == "•••• •••• 609")
+        #expect(DocumentFormat.masked("12") == "••")
     }
 }
 

@@ -21,6 +21,7 @@ struct DocumentDetailView: View {
     @State private var shareItem: ShareItem?
     @State private var isPreparing = false
     @State private var errorMessage: String?
+    @State private var revealNumber = false
 
     init(documentId: UUID, justAdded: Bool, members: [MemberRecord], familyName: String, allDocs: [DocumentRecord],
          path: Binding<[DocumentRoute]>, onEdit: @escaping (DocumentRecord) -> Void) {
@@ -39,19 +40,20 @@ struct DocumentDetailView: View {
     private var isAuthor: Bool { doc?.authorId == session.userId }
     private var kind: DocumentFileKind { doc.flatMap { DocumentFileKind(mimeType: $0.mimeType) } ?? .pdf }
     private var openTitle: String { kind == .pdf ? "Открыть PDF" : "Открыть фото" }
+    private var service: DocumentService? { session.documentService(context: context, isPremium: false) }
 
     var body: some View {
         VStack(spacing: 0) {
             if let doc {
                 topBar(doc)
                 ScrollView {
-                    VStack(alignment: .leading, spacing: RYSpacing.m) {
-                        if justAdded { addedBanner(doc) }
-                        Text(doc.title).font(.system(size: 28, weight: .semibold)).foregroundStyle(RYColor.ink)
+                    VStack(alignment: .leading, spacing: 14) {
+                        if justAdded || doc.uploadState != .synced { addedBanner(doc) }
+                        Text(doc.title).font(.system(size: 30, weight: .bold)).foregroundStyle(RYColor.ink)
                             .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
                         metaLine(doc)
                         previewCard(doc)
-                        infoCard(doc)
+                        infoGroup(doc)
                         accessLine(doc)
                         if let errorMessage { RYStatusBanner(kind: .error, text: errorMessage) }
                     }
@@ -76,185 +78,142 @@ struct DocumentDetailView: View {
         .task(id: lock.isContentVisible) { await loadPreview() }
     }
 
-    private var service: DocumentService? { session.documentService(context: context, isPremium: false) }
-
     // MARK: Верх
 
     private func topBar(_ doc: DocumentRecord) -> some View {
-        HStack(spacing: RYSpacing.s) {
-            Button { if !path.isEmpty { path.removeLast() } } label: {
-                Image(systemName: "arrow.left").font(.system(size: 18)).foregroundStyle(RYColor.ink)
-            }
-            .accessibilityLabel("Назад")
-            Text("Документ").ryFont(.section).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
+        HStack {
+            RYBackButton("Документы") { if !path.isEmpty { path.removeLast() } }
             Spacer()
             if isAuthor {
                 Menu {
                     Button { onEdit(doc) } label: { Label("Редактировать", systemImage: "pencil") }
                     Button(role: .destructive) { confirmDelete = true } label: { Label("Удалить", systemImage: "trash") }
-                } label: {
-                    Image(systemName: "ellipsis").font(.system(size: 15, weight: .semibold)).foregroundStyle(RYColor.ink)
-                        .frame(width: 40, height: 40).background(RYColor.surface, in: Circle())
-                }
-                .accessibilityLabel("Действия с документом")
-                .accessibilityIdentifier("document.menu")
+                } label: { RYGlassCircleLabel(systemImage: "ellipsis") }
+                    .accessibilityLabel("Действия с документом")
+                    .accessibilityIdentifier("document.menu")
             }
         }
-        .padding(.horizontal, RYSpacing.screen).padding(.top, RYSpacing.s).padding(.bottom, RYSpacing.s)
+        .padding(.horizontal, RYSpacing.screen).padding(.top, 8).padding(.bottom, 10)
     }
 
     @ViewBuilder
     private func addedBanner(_ doc: DocumentRecord) -> some View {
         if doc.uploadState == .synced {
             let inCategory = allDocs.filter { $0.category == doc.category }.count
-            DocumentNotice(systemImage: "checkmark.circle", title: "Документ загружен",
-                           text: "В хранилище \(DocumentFormat.files(allDocs.count)) · \(doc.category.title): \(inCategory)")
+            RYNotice(systemImage: "checkmark.circle", title: "Документ загружен",
+                     text: "В хранилище \(DocumentFormat.files(allDocs.count)) · \(doc.category.title): \(inCategory)")
                 .accessibilityIdentifier("document.added")
         } else {
-            DocumentNotice(systemImage: "arrow.triangle.2.circlepath", title: "Сохранено на устройстве",
-                           text: "Ожидает синхронизации: файл отправится в хранилище семьи, когда появится связь.")
+            RYNotice(systemImage: "arrow.triangle.2.circlepath", title: "Ожидает синхронизации",
+                     text: "Файл сохранён на устройстве и отправится в хранилище семьи, когда появится связь.")
                 .accessibilityIdentifier("document.pending")
         }
     }
 
     private func metaLine(_ doc: DocumentRecord) -> some View {
-        HStack(spacing: 10) {
-            Text(doc.category.title).font(.system(size: 11, weight: .semibold)).foregroundStyle(RYColor.accent)
-                .padding(.horizontal, 10).padding(.vertical, 6).background(RYColor.accentTint, in: Capsule())
-            Text([DocumentFormat.kind(doc), pageCount.map { "\($0) \(OverviewView.plural($0, "страница", "страницы", "страниц"))" },
-                  DocumentFormat.size(doc.sizeBytes)].compactMap { $0 }.joined(separator: " · "))
-                .ryFont(.micro).foregroundStyle(RYColor.muted)
-        }
+        Text([doc.category.title, DocumentFormat.kind(doc),
+              pageCount.map { "\($0) \(OverviewView.plural($0, "страница", "страницы", "страниц"))" },
+              DocumentFormat.size(doc.sizeBytes)].compactMap { $0 }.joined(separator: " · "))
+            .ryFont(.subhead).foregroundStyle(RYColor.muted)
     }
 
     // MARK: Предпросмотр
 
     @ViewBuilder
     private func previewCard(_ doc: DocumentRecord) -> some View {
-        ZStack(alignment: .bottomTrailing) {
+        Group {
             if lock.isContentVisible, let preview {
                 Button { open(doc) } label: {
-                    Image(uiImage: preview).resizable().scaledToFit().frame(maxWidth: .infinity)
-                        .frame(height: 200).padding(.vertical, 12)
+                    ZStack(alignment: .top) {
+                        Color(hex: 0xE7EBE8)
+                        Image(uiImage: preview).resizable().scaledToFit().frame(width: 230)
+                            .clipShape(RoundedRectangle(cornerRadius: 5)).padding(.top, 14)
+                    }
+                    .frame(height: 210).clipped()
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Предпросмотр документа")
-                Image(systemName: "arrow.up.left.and.arrow.down.right").font(.system(size: 13)).foregroundStyle(RYColor.accent)
-                    .frame(width: 36, height: 36).background(.white, in: Circle()).padding(12).allowsHitTesting(false)
             } else {
                 VStack(spacing: 10) {
-                    Image(systemName: "lock").font(.system(size: 22, weight: .light)).foregroundStyle(RYColor.accent)
-                    Text("Предпросмотр скрыт").ryFont(.body).fontWeight(.medium).foregroundStyle(RYColor.ink)
-                    Text("Откройте \(kind == .pdf ? "PDF" : "фото"), чтобы увидеть документ").ryFont(.micro).foregroundStyle(RYColor.muted)
+                    Image(systemName: "lock").font(.system(size: 24, weight: .light)).foregroundStyle(RYColor.accent)
+                    Text("Предпросмотр скрыт").ryFont(.bodyMedium).foregroundStyle(RYColor.ink)
+                    Text("Откройте \(kind == .pdf ? "PDF" : "фото"), чтобы увидеть документ").ryFont(.subhead).foregroundStyle(RYColor.muted)
                 }
-                .frame(maxWidth: .infinity).frame(height: 200)
+                .frame(maxWidth: .infinity).frame(height: 150)
+                .background(Color(hex: 0xE7EBE8))
                 .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("document.previewHidden")
             }
         }
-        .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: RYRadius.cover))
+        .clipShape(RoundedRectangle(cornerRadius: RYRadius.cover))
     }
 
     // MARK: Метаданные
 
-    private func infoCard(_ doc: DocumentRecord) -> some View {
+    private func infoGroup(_ doc: DocumentRecord) -> some View {
         let owner = members.first { $0.id == doc.ownerId }
         let author = members.first { $0.id == doc.authorId }
-        return VStack(spacing: 0) {
-            if justAdded {
-                addedRows(doc, owner: owner, author: author)
-            } else {
-                infoRow("Кому принадлежит") { Text(owner?.displayName ?? "Не указано").fontWeight(.semibold) }
-                if !doc.number.isEmpty { Divider().overlay(RYColor.border); infoRow("Номер") { Text(doc.number).fontWeight(.semibold) } }
-                if let expires = doc.expiresAt {
-                    Divider().overlay(RYColor.border)
-                    infoRow("Действует до") {
-                        Text(DocumentFormat.fullDate(expires)).fontWeight(.semibold)
-                            .foregroundStyle(expires < .now ? RYColor.danger : RYColor.ink)
+        let added = justAdded ? DocumentFormat.fullDate(doc.createdAt) : RussianDate.dayMonth(doc.createdAt)
+        return RYListGroup {
+            DocumentPersonRow(member: owner, title: owner?.displayName ?? "Не указано", subtitle: "Кому принадлежит")
+            if !doc.number.isEmpty {
+                RYListDivider()
+                RYValueRow(title: "Номер") {
+                    Button { revealNumber.toggle() } label: {
+                        Text(revealNumber ? doc.number : DocumentFormat.masked(doc.number)).ryFont(.callout)
                     }
-                }
-                Divider().overlay(RYColor.border)
-                infoRow("Добавлено") {
-                    HStack(spacing: 8) {
-                        if let author { AvatarView(name: author.displayName, tone: author.tone, diameter: 22) }
-                        Text("\(author?.displayName ?? "Участник") · \(RussianDate.dayMonth(doc.createdAt))").fontWeight(.medium)
-                    }
+                    .accessibilityLabel(revealNumber ? "Номер: \(doc.number)" : "Номер скрыт")
+                    .accessibilityHint(revealNumber ? "Скрыть номер" : "Показать номер")
+                    .accessibilityIdentifier("document.number")
                 }
             }
+            if let expires = doc.expiresAt {
+                RYListDivider()
+                RYListRow("Действует до", subtitle: DocumentFormat.fullDate(expires), minHeight: 56,
+                          leading: { Image(systemName: "calendar").font(.system(size: 20, weight: .light)).foregroundStyle(RYColor.accent).frame(width: 24) },
+                          trailing: {
+                    if expires < .now { Text("истёк").ryFont(.callout).foregroundStyle(RYColor.danger) }
+                })
+                .accessibilityElement(children: .combine)
+            }
+            RYListDivider()
+            DocumentPersonRow(member: author, title: "\(author?.displayName ?? "Участник") · \(added)",
+                              subtitle: Calendar.current.isDateInToday(doc.createdAt) ? "Добавлено сегодня" : "Добавлено")
         }
-        .padding(.horizontal, RYSpacing.m).padding(.vertical, 6)
-        .frame(maxWidth: .infinity)
-        .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
-    }
-
-    private func addedRows(_ doc: DocumentRecord, owner: MemberRecord?, author: MemberRecord?) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 12) {
-                if let owner { AvatarView(name: owner.displayName, tone: owner.tone, diameter: 36) }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(owner?.displayName ?? "Не указано").ryFont(.body).fontWeight(.medium).foregroundStyle(RYColor.ink)
-                    Text("Кому принадлежит").ryFont(.micro).foregroundStyle(RYColor.muted)
-                }
-            }
-            HStack(spacing: 12) {
-                Image(systemName: "person.2").font(.system(size: 16, weight: .light)).foregroundStyle(RYColor.accent).frame(width: 36)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(doc.access.title).ryFont(.body).fontWeight(.medium).foregroundStyle(RYColor.ink)
-                    Text(DocumentFormView.accessTitle(DocumentDraft(doc), members: members, me: doc.authorId)).ryFont(.micro).foregroundStyle(RYColor.muted)
-                }
-            }
-            HStack(spacing: 12) {
-                Image(systemName: "doc.text").font(.system(size: 16, weight: .light)).foregroundStyle(RYColor.accent).frame(width: 36)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(author?.displayName ?? "Участник") · \(DocumentFormat.fullDate(doc.createdAt))").ryFont(.body).fontWeight(.medium).foregroundStyle(RYColor.ink)
-                    Text(Calendar.current.isDateInToday(doc.createdAt) ? "Добавлено сегодня" : "Добавлено").ryFont(.micro).foregroundStyle(RYColor.muted)
-                }
-            }
-        }
-        .padding(.vertical, 10).frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func infoRow<V: View>(_ label: String, @ViewBuilder value: () -> V) -> some View {
-        HStack {
-            Text(label).ryFont(.body).foregroundStyle(RYColor.muted)
-            Spacer(minLength: 12)
-            value().ryFont(.body).foregroundStyle(RYColor.ink).multilineTextAlignment(.trailing)
-        }
-        .frame(minHeight: 44)
-        .accessibilityElement(children: .combine)
     }
 
     private func accessLine(_ doc: DocumentRecord) -> some View {
         let text: String
         switch doc.access {
-        case .family: text = "Доступен семье \(RussianNames.familyGenitive(familyName))"
+        case .family: text = justAdded
+            ? DocumentFormView.accessTitle(DocumentDraft(doc), members: members, me: doc.authorId)
+            : "Доступен семье \(RussianNames.familyGenitive(familyName))"
         case .authorOnly: text = "Доступен только автору"
         case .selected: text = DocumentFormView.accessTitle(DocumentDraft(doc), members: members, me: doc.authorId).replacingOccurrences(of: "Доступ:", with: "Доступен:")
         }
-        return Label(text, systemImage: "lock").ryFont(.caption).foregroundStyle(RYColor.muted)
+        return DocumentAccessLine(text: text)
     }
 
     // MARK: Нижние кнопки
 
     @ViewBuilder
     private func bottomBar(_ doc: DocumentRecord) -> some View {
-        VStack(spacing: RYSpacing.xs) {
+        VStack(spacing: 4) {
             if justAdded {
-                Button { open(doc) } label: { Label(openTitle, systemImage: "doc.text") }
-                    .buttonStyle(.ryPrimary).accessibilityIdentifier("document.open")
                 Button("Вернуться к документам") { path = [] }
-                    .ryFont(.bodyMedium).foregroundStyle(RYColor.accent).frame(minHeight: 40)
-                    .accessibilityIdentifier("document.backToList")
+                    .buttonStyle(.ryLink).accessibilityIdentifier("document.backToList")
+                Button { open(doc) } label: { Text(openTitle) }
+                    .buttonStyle(.ryPrimary).accessibilityIdentifier("document.open")
             } else {
-                HStack(spacing: RYSpacing.s) {
-                    Button { open(doc) } label: { Label(openTitle, systemImage: "doc.text") }
+                HStack(spacing: 10) {
+                    Button { open(doc) } label: { Text(openTitle) }
                         .buttonStyle(.ryPrimary).accessibilityIdentifier("document.open")
-                    Button { Task { await share(doc) } } label: { Label("Поделиться", systemImage: "square.and.arrow.up") }
+                    Button { Task { await share(doc) } } label: { Text("Поделиться") }
                         .buttonStyle(.rySecondary).disabled(isPreparing).accessibilityIdentifier("document.share")
                 }
             }
         }
-        .padding(.horizontal, RYSpacing.screen).padding(.vertical, RYSpacing.s)
+        .padding(.horizontal, RYSpacing.screen).padding(.top, 8).padding(.bottom, 4)
         .background(RYColor.background)
     }
 
@@ -271,7 +230,7 @@ struct DocumentDetailView: View {
         errorMessage = nil
         Task {
             guard await lock.unlock() else { return }
-            if session.documentService(context: context, isPremium: false)?.fileURL(for: doc) != nil || session.uploads == nil {
+            if service?.fileURL(for: doc) != nil || session.uploads == nil {
                 path.append(.viewer(doc.id))
             } else {
                 await fetchThenOpen(doc)

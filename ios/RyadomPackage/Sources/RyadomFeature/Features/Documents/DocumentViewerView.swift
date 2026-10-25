@@ -25,15 +25,11 @@ struct DocumentViewerView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: RYSpacing.s) {
-                Button { if !path.isEmpty { path.removeLast() } } label: {
-                    Image(systemName: "arrow.left").font(.system(size: 18)).foregroundStyle(RYColor.ink)
-                }
-                .accessibilityLabel("Назад")
-                Text(doc?.title ?? "Документ").ryFont(.section).foregroundStyle(RYColor.ink).lineLimit(1)
-                    .accessibilityAddTraits(.isHeader)
+                RYBackButton("Документ") { if !path.isEmpty { path.removeLast() } }
                 Spacer()
+                Text(doc?.title ?? "").ryFont(.callout).foregroundStyle(RYColor.muted).lineLimit(1)
             }
-            .padding(.horizontal, RYSpacing.screen).padding(.vertical, RYSpacing.m)
+            .padding(.horizontal, RYSpacing.screen).padding(.top, 8).padding(.bottom, 10)
 
             Group {
                 if !session.documentsLock.isContentVisible {

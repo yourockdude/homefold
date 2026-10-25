@@ -3,69 +3,69 @@ import SwiftUI
 /// Нет доступа к камере: объясняет, как включить, и предлагает выбрать файл вместо скана.
 struct CameraDeniedView: View {
     @Binding var draft: DocumentDraft
-    let pickedFile: ImportedFile?
+    @Binding var pickedFile: ImportedFile?
     let storedCount: Int
     let members: [MemberRecord]
-    @Binding var pendingFilePicker: Bool
+    var onPickFile: () -> Void
     @Binding var path: [DocumentRoute]
 
     @Environment(\.openURL) private var openURL
 
+    private var ownerLine: String {
+        guard let owner = members.first(where: { $0.id == draft.ownerId }) else { return "" }
+        return "Принадлежит \(RussianNames.dative(owner.displayName)) · "
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: RYSpacing.s) {
-                Button(action: close) { Image(systemName: "arrow.left").font(.system(size: 18)).foregroundStyle(RYColor.ink) }
-                    .accessibilityLabel("Назад")
-                Text("Сканировать документ").ryFont(.section).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
+            HStack {
+                RYBackButton("Документы") { if !path.isEmpty { path.removeLast() } }
                 Spacer()
-                Button(action: close) {
-                    Image(systemName: "xmark").font(.system(size: 14, weight: .semibold)).foregroundStyle(RYColor.ink)
-                        .frame(width: 40, height: 40).background(RYColor.surface, in: Circle())
-                }
-                .accessibilityLabel("Закрыть")
             }
-            .padding(.horizontal, RYSpacing.screen).padding(.top, RYSpacing.s).padding(.bottom, RYSpacing.m)
+            .padding(.horizontal, RYSpacing.screen).padding(.top, 8).padding(.bottom, 10)
 
             ScrollView {
-                VStack(spacing: RYSpacing.m) {
-                    Image(systemName: "camera").font(.system(size: 26, weight: .light)).foregroundStyle(RYColor.accent)
-                        .overlay { Rectangle().fill(RYColor.accent).frame(width: 34, height: 1.5).rotationEffect(.degrees(-45)) }
-                        .frame(width: 64, height: 64).background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: 20))
-                        .accessibilityHidden(true)
-                    Text("Нужен доступ к камере").font(.system(size: 26, weight: .semibold)).foregroundStyle(RYColor.ink)
-                        .multilineTextAlignment(.center).accessibilityAddTraits(.isHeader)
+                VStack(spacing: RYSpacing.s) {
+                    Text("Сканирование").ryFont(.title).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Image(systemName: "camera").font(.system(size: 44, weight: .ultraLight)).foregroundStyle(RYColor.accent)
+                        .overlay { Rectangle().fill(RYColor.accent).frame(width: 56, height: 2).rotationEffect(.degrees(-40)) }
+                        .padding(.top, 6).accessibilityHidden(true)
+                    Text("Нужен доступ к камере").font(.system(size: 26, weight: .bold)).foregroundStyle(RYColor.ink)
+                        .multilineTextAlignment(.center)
                     Text("Разрешите приложению «рядом» использовать камеру в настройках телефона. Тогда вы сможете сканировать документы.")
                         .ryFont(.body).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
-                    DocumentNotice(systemImage: "shield", title: "Настройки → рядом → Камера",
-                                   text: "Включите доступ и вернитесь в приложение. Камера используется только для сканирования.")
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Ваши данные сохранены").ryFont(.micro).foregroundStyle(RYColor.muted)
-                        RYFieldLabel("Название документа")
-                        Text(draft.title.isEmpty ? "Без названия" : draft.title).ryFont(.body).foregroundStyle(RYColor.ink).ryField()
-                        Text("\(draft.category.title) · \(Self.accessLine(draft)) · \(pickedFile == nil ? "Файл ещё не выбран" : "Файл выбран") · в хранилище \(DocumentFormat.files(storedCount))")
-                            .ryFont(.micro).foregroundStyle(RYColor.muted)
+                    RYNotice(systemImage: "checkmark.shield", title: "Настройки → рядом → Камера",
+                             text: "Включите доступ и вернитесь в приложение. Камера используется только для сканирования.")
+                    RYListGroup {
+                        RYListRow(draft.title.isEmpty ? "Без названия" : draft.title,
+                                  subtitle: "Ваши данные сохранены · \(draft.category.title)", minHeight: 56,
+                                  leading: { Image(systemName: "doc.text").font(.system(size: 20, weight: .light)).foregroundStyle(RYColor.accent).frame(width: 24) },
+                                  trailing: { EmptyView() })
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(ownerLine)\(CameraDeniedView.accessLine(draft))")
+                        Text("\(pickedFile == nil ? "Файл ещё не выбран" : "Файл выбран") · в хранилище \(DocumentFormat.files(storedCount))")
+                    }
+                    .ryFont(.subhead).foregroundStyle(RYColor.muted).frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal, RYSpacing.screen)
+                .padding(.bottom, RYSpacing.m)
             }
             .scrollIndicators(.hidden)
         }
         .background(RYColor.background)
         .toolbar(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: RYSpacing.xs) {
+            VStack(spacing: 10) {
                 Button {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
-                } label: { Label("Открыть настройки", systemImage: "gearshape") }
+                } label: { Text("Открыть настройки") }
                     .buttonStyle(.ryPrimary).accessibilityIdentifier("camera.openSettings")
-                Button {
-                    pendingFilePicker = true
-                    close()
-                } label: { Label("Выбрать файл вместо скана", systemImage: "doc.text") }
+                Button(action: onPickFile) { Text("Выбрать файл вместо скана") }
                     .buttonStyle(.rySecondary).accessibilityIdentifier("camera.pickFile")
             }
-            .padding(.horizontal, RYSpacing.screen).padding(.vertical, RYSpacing.s)
+            .padding(.horizontal, RYSpacing.screen).padding(.bottom, 4).padding(.top, 8)
             .background(RYColor.background)
         }
     }
@@ -77,6 +77,4 @@ struct CameraDeniedView: View {
         case .selected: "доступ выбранным участникам"
         }
     }
-
-    private func close() { if !path.isEmpty { path.removeLast() } }
 }
