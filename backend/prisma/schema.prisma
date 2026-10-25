@@ -1,0 +1,341 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  member
+}
+
+enum ListStatus {
+  active
+  archived
+}
+
+enum RepeatRule {
+  none
+  daily
+  weekly
+  monthly
+}
+
+enum TaskStatus {
+  open
+  done
+}
+
+enum DocCategory {
+  personal
+  health
+  home
+  travel
+}
+
+enum DocAccess {
+  author_only
+  selected
+  family
+}
+
+enum DocStatus {
+  pending_upload
+  ready
+}
+
+enum SubStatus {
+  active
+  grace
+  expired
+  revoked
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
+
+  sessions   Session[]
+  membership FamilyMember?
+  settings   NotificationSettings?
+  devices    DeviceToken[]
+}
+
+model LoginCode {
+  id         String    @id @default(uuid()) @db.Uuid
+  email      String
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([email, createdAt])
+}
+
+model Session {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
+  refreshHash String    @unique
+  /// Предыдущий хеш: повторное предъявление означает кражу — сессия отзывается.
+  prevHash    String?
+  deviceName  String?
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Family {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  createdById String   @db.Uuid
+  createdAt   DateTime @default(now())
+
+  members       FamilyMember[]
+  invitations   Invitation[]
+  subscription  Subscription?
+}
+
+model FamilyMember {
+  id          String   @id @default(uuid()) @db.Uuid
+  familyId    String   @db.Uuid
+  userId      String   @unique @db.Uuid
+  role        Role     @default(member)
+  displayName String
+  color       Int      @default(0)
+  joinedAt    DateTime @default(now())
+  family      Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([familyId])
+}
+
+model Invitation {
+  id          String    @id @default(uuid()) @db.Uuid
+  familyId    String    @db.Uuid
+  invitedById String    @db.Uuid
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  usedAt      DateTime?
+  usedById    String?   @db.Uuid
+  createdAt   DateTime  @default(now())
+  family      Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@index([familyId])
+}
+
+model ShoppingList {
+  id         String     @id @db.Uuid
+  familyId   String     @db.Uuid
+  authorId   String     @db.Uuid
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now()) @updatedAt
+  version    Int        @default(1)
+  deletedAt  DateTime?
+  name       String
+  status     ListStatus @default(active)
+  archivedAt DateTime?
+  items      ShoppingItem[]
+
+  @@index([familyId, status])
+}
+
+model ShoppingItem {
+  id            String    @id @db.Uuid
+  familyId      String    @db.Uuid
+  authorId      String    @db.Uuid
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  version       Int       @default(1)
+  deletedAt     DateTime?
+  listId        String    @db.Uuid
+  name          String
+  quantity      Float     @default(1)
+  unit          String    @default("шт")
+  category      String    @default("Другое")
+  assigneeId    String?   @db.Uuid
+  note          String?
+  purchased     Boolean   @default(false)
+  purchasedById String?   @db.Uuid
+  purchasedAt   DateTime?
+  list          ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@index([familyId])
+  @@index([listId])
+}
+
+model TaskSeries {
+  id              String     @id @db.Uuid
+  familyId        String     @db.Uuid
+  authorId        String     @db.Uuid
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @default(now()) @updatedAt
+  version         Int        @default(1)
+  deletedAt       DateTime?
+  title           String
+  assigneeId      String?    @db.Uuid
+  startDate       String     // YYYY-MM-DD, локальная дата семьи
+  time            String?    // HH:mm
+  timezone        String     @default("Europe/Moscow")
+  place           String?
+  note            String?
+  repeat          RepeatRule @default(daily)
+  reminderMinutes Int?       @default(30)
+  checklist       Json       @default("[]")
+  occurrences     TaskOccurrence[]
+
+  @@index([familyId])
+}
+
+model TaskOccurrence {
+  id              String     @id @db.Uuid
+  familyId        String     @db.Uuid
+  authorId        String     @db.Uuid
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @default(now()) @updatedAt
+  version         Int        @default(1)
+  deletedAt       DateTime?
+  seriesId        String?    @db.Uuid
+  /// Дата по правилу серии; по ней отличаем «перенесённое» выполнение от исходного.
+  originalDate    String?
+  /// Выполнение менялось отдельно — изменения серии его не затрагивают.
+  overridden      Boolean    @default(false)
+  title           String
+  assigneeId      String?    @db.Uuid
+  date            String
+  time            String?
+  timezone        String     @default("Europe/Moscow")
+  place           String?
+  note            String?
+  reminderMinutes Int?       @default(30)
+  status          TaskStatus @default(open)
+  completedById   String?    @db.Uuid
+  completedAt     DateTime?
+  series          TaskSeries? @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  checklist       ChecklistItem[]
+
+  @@unique([seriesId, originalDate])
+  @@index([familyId, date])
+}
+
+model ChecklistItem {
+  id           String    @id @db.Uuid
+  familyId     String    @db.Uuid
+  authorId     String    @db.Uuid
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  version      Int       @default(1)
+  deletedAt    DateTime?
+  occurrenceId String    @db.Uuid
+  title        String
+  done         Boolean   @default(false)
+  position     Int       @default(0)
+  occurrence   TaskOccurrence @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)
+
+  @@index([occurrenceId])
+}
+
+model Document {
+  id          String      @id @db.Uuid
+  familyId    String      @db.Uuid
+  authorId    String      @db.Uuid
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
+  version     Int         @default(1)
+  deletedAt   DateTime?
+  title       String
+  category    DocCategory @default(personal)
+  /// Владелец документа (чей это документ) — не то же самое, что право доступа.
+  ownerId     String?     @db.Uuid
+  number      String?
+  expiresAt   String?     // YYYY-MM-DD
+  access      DocAccess   @default(author_only)
+  fileName    String
+  mimeType    String
+  sizeBytes   Int
+  objectKey   String      @unique
+  status      DocStatus   @default(pending_upload)
+  uploadExpiresAt DateTime?
+  permissions DocumentPermission[]
+
+  @@index([familyId])
+}
+
+model DocumentPermission {
+  documentId String   @db.Uuid
+  userId     String   @db.Uuid
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@id([documentId, userId])
+}
+
+model DeviceToken {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  token       String   @unique
+  environment String   @default("production")
+  updatedAt   DateTime @default(now()) @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model NotificationSettings {
+  userId             String  @id @db.Uuid
+  taskReminders      Boolean @default(true)
+  shoppingPush       Boolean @default(true)
+  quietHoursEnabled  Boolean @default(false)
+  quietStart         String  @default("22:00")
+  quietEnd           String  @default("08:00")
+  timezone           String  @default("Europe/Moscow")
+  documentsProtection Boolean @default(false)
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id                    String    @id @default(uuid()) @db.Uuid
+  familyId              String    @unique @db.Uuid
+  originalTransactionId String    @unique
+  productId             String
+  status                SubStatus
+  expiresAt             DateTime
+  autoRenew             Boolean   @default(true)
+  environment           String    @default("Production")
+  purchasedById         String?   @db.Uuid
+  lastSignedAt          DateTime?
+  updatedAt             DateTime  @default(now()) @updatedAt
+  createdAt             DateTime  @default(now())
+  family                Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+}
+
+model AppleNotification {
+  uuid      String   @id
+  type      String
+  createdAt DateTime @default(now())
+}
+
+model SyncOperation {
+  opId      String   @id @db.Uuid
+  userId    String   @db.Uuid
+  familyId  String   @db.Uuid
+  result    Json
+  createdAt DateTime @default(now())
+}
+
+model Change {
+  seq       BigInt   @id @default(autoincrement())
+  familyId  String   @db.Uuid
+  entity    String
+  entityId  String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  @@index([familyId, seq])
+}
