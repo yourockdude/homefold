@@ -24,6 +24,7 @@ TARGETED_DEVICE_FAMILY = 1,2
 // Info PLIST
 // ==========================================
 GENERATE_INFOPLIST_FILE = YES
+INFOPLIST_FILE = LaunchScreen/Info.plist
 INFOPLIST_KEY_NSCameraUsageDescription = Камера нужна только для сканирования документов.
 INFOPLIST_KEY_NSFaceIDUsageDescription = Face ID защищает доступ к документам вашей семьи.
 INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationLandscapeRight UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait

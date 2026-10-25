@@ -51,15 +51,21 @@ enum SVGPath {
     }
 }
 
-/// Логотип: росток + слово «рядом».
+/// Логотип: росток + слово «рядом». На сплэше — крупный и белый.
 struct BrandMark: View {
+    enum Style { case compact, splash }
+
+    var style: Style = .compact
+    var color: Color = RYColor.accent
+
     var body: some View {
-        HStack(spacing: 7) {
+        let scale: CGFloat = style == .splash ? 1.9 : 1
+        HStack(spacing: 7 * scale) {
             SproutShape()
-                .stroke(RYColor.accent, style: StrokeStyle(lineWidth: 1.6, lineJoin: .round))
-                .frame(width: 22, height: 15.3)
-                .offset(y: -3)
-            Text("рядом").ryFont(.brand).foregroundStyle(RYColor.accent)
+                .stroke(color, style: StrokeStyle(lineWidth: 1.6 * scale, lineCap: .round, lineJoin: .round))
+                .frame(width: 22 * scale, height: 15.3 * scale)
+                .offset(y: -3 * scale)
+            Text("рядом").ryFont(style == .splash ? RYType.h1B : RYType.h3B).foregroundStyle(color)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("рядом")

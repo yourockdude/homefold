@@ -14,9 +14,50 @@ public struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Query private var members: [MemberRecord]
 
+    /// Этапы сплэша: показан → растворяется → убран из иерархии.
+    private enum SplashPhase { case visible, dissolving, gone }
+    @State private var splash: SplashPhase = RootView.showsSplash ? .visible : .gone
+
     public init() {}
 
+    /// Сплэш показывается всегда, кроме отладочных запусков (`-RYDemo` без `-RYShowSplash`, `-RYSkipSplash`):
+    /// иначе он перекрывал бы экраны в UI-тестах.
+    static var showsSplash: Bool {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("-RYSkipSplash") { return false }
+        if args.contains("-RYDemo") && !args.contains("-RYShowSplash") { return false }
+        #endif
+        return true
+    }
+
     public var body: some View {
+        ZStack {
+            appContent
+                .opacity(splash == .visible ? 0 : 1)
+                .scaleEffect(splash == .visible ? 0.97 : 1)
+                .accessibilityHidden(splash != .gone)
+            if splash != .gone {
+                SplashView()
+                    .opacity(splash == .visible ? 1 : 0)
+                    .blur(radius: splash == .visible ? 0 : 16)
+                    .scaleEffect(splash == .visible ? 1 : 1.06)
+                    .zIndex(10)
+            }
+        }
+        .task { await runSplash() }
+    }
+
+    /// Держит сплэш, затем плавно растворяет его: фон размывается и гаснет, а рабочие экраны проявляются под ним.
+    private func runSplash() async {
+        guard splash == .visible else { return }
+        try? await Task.sleep(for: .seconds(1.9))
+        withAnimation(.easeInOut(duration: reduceMotion ? 0.3 : 0.9)) { splash = .dissolving }
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.4 : 1.0))
+        splash = .gone
+    }
+
+    private var appContent: some View {
         ZStack(alignment: .bottom) {
             // Переход между вкладками: старый экран растворяется со сдвигом в сторону, откуда уходим,
             // новый появляется со стороны выбора. Экран неактивной вкладки не остаётся в дереве доступности.

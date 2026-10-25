@@ -62,7 +62,6 @@ struct OverviewView: View {
 
     private var header: some View {
         HStack {
-            BrandMark()
             Spacer()
             HStack(spacing: 4) {
                 ForEach(members.prefix(4)) { AvatarView(name: $0.displayName, tone: $0.tone, diameter: 32) }
