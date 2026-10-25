@@ -1,6 +1,6 @@
 import { Global, Injectable, Module } from '@nestjs/common';
 import { mkdir, readFile, rm, stat, open, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { SignJWT, jwtVerify } from 'jose';
@@ -130,7 +130,7 @@ export class S3Storage extends Storage {
       provide: Storage,
       useFactory: () => {
         const cfg = loadConfig();
-        return cfg.storage.driver === 's3' ? new S3Storage() : new LocalStorage(join(process.cwd(), cfg.storage.localDir), cfg.publicBaseUrl, cfg.jwtSecret + ':storage');
+        return cfg.storage.driver === 's3' ? new S3Storage() : new LocalStorage(resolve(cfg.storage.localDir), cfg.publicBaseUrl, cfg.jwtSecret + ':storage');
       },
     },
   ],

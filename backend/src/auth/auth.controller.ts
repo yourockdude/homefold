@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AllowNoFamily, CurrentCtx, Ctx, Public } from '../common/context';
+import { perMinute } from '../common/throttle';
 import { AuthService } from './auth.service';
 import { RefreshDto, RequestCodeDto, VerifyCodeDto } from './auth.dto';
 
@@ -10,13 +11,13 @@ import { RefreshDto, RequestCodeDto, VerifyCodeDto } from './auth.dto';
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
-  @Public() @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Public() @Throttle({ default: { limit: perMinute(10), ttl: 60_000 } })
   @Post('request-code') @HttpCode(200)
   requestCode(@Body() dto: RequestCodeDto) {
     return this.auth.requestCode(dto.email);
   }
 
-  @Public() @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  @Public() @Throttle({ default: { limit: perMinute(20), ttl: 60_000 } })
   @Post('verify') @HttpCode(200)
   verify(@Body() dto: VerifyCodeDto) {
     return this.auth.verifyCode(dto.email, dto.code, dto.deviceName);

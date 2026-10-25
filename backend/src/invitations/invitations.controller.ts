@@ -4,6 +4,7 @@ import { Throttle } from '@nestjs/throttler';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { AdminOnly, AllowNoFamily, CurrentCtx, Ctx, FamilyCtx, Public } from '../common/context';
+import { perMinute } from '../common/throttle';
 import { InvitationsService } from './invitations.service';
 
 class AcceptDto {
@@ -32,7 +33,7 @@ export class InvitationsController {
     return this.invitations.revoke(ctx as FamilyCtx, id);
   }
 
-  @Public() @Throttle({ default: { limit: 20, ttl: 60_000 } }) @Get('preview')
+  @Public() @Throttle({ default: { limit: perMinute(20), ttl: 60_000 } }) @Get('preview')
   preview(@Query('token') token: string) {
     return this.invitations.preview(token ?? '');
   }
