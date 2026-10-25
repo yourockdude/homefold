@@ -2,22 +2,33 @@ import SwiftUI
 import PDFKit
 
 enum DocumentRoute: Hashable {
-    case add
-    case edit(UUID)
     case cameraDenied
-    case upload(UUID)
     case detail(UUID, added: Bool)
     case list(DocumentCategory?)
     case viewer(UUID)
 }
 
+/// Модальные листы формы документа.
+enum DocumentSheet: Identifiable, Hashable {
+    case create
+    case edit(UUID)
+
+    var id: String {
+        switch self {
+        case .create: "create"
+        case .edit(let id): "edit-\(id.uuidString)"
+        }
+    }
+}
+
+/// Поле поиска: серая подложка r13 высотой 44, значок лупы, кнопка очистки.
 struct RYSearchField: View {
     @Binding var text: String
     @FocusState private var focused: Bool
 
     var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "magnifyingglass").font(.system(size: 15, weight: .light)).foregroundStyle(RYColor.muted)
+        HStack(spacing: 9) {
+            Image(systemName: "magnifyingglass").font(.system(size: 16, weight: .regular)).foregroundStyle(RYColor.muted)
             TextField("Найти документ", text: $text)
                 .focused($focused)
                 .ryFont(.body).foregroundStyle(RYColor.ink)
@@ -26,66 +37,75 @@ struct RYSearchField: View {
                 .accessibilityIdentifier("documents.search")
             if !text.isEmpty {
                 Button { text = "" } label: {
-                    Image(systemName: "xmark").font(.system(size: 12, weight: .medium)).foregroundStyle(RYColor.muted)
+                    Image(systemName: "xmark.circle.fill").font(.system(size: 17)).foregroundStyle(RYColor.muted)
                         .frame(width: 30, height: 30)
                 }
                 .accessibilityLabel("Очистить поиск")
             }
         }
-        .padding(.horizontal, 14)
-        .frame(minHeight: 48)
-        .background(text.isEmpty && !focused ? Color(hex: 0xECEFE6) : RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
-        .overlay(RoundedRectangle(cornerRadius: RYRadius.card)
-            .stroke(focused || !text.isEmpty ? RYColor.accent : .clear, lineWidth: 1.3))
+        .padding(.horizontal, 12)
+        .frame(height: 44)
+        .background(Color(hex: 0xE6E7EB), in: RoundedRectangle(cornerRadius: 13))
     }
 }
 
-/// Значок категории: пастельный квадрат с тонкой иконкой.
+/// Значок категории: тонкий контур акцентным цветом, без цветной плашки.
 struct DocumentIcon: View {
     let category: DocumentCategory
-    var width: CGFloat = 42
-    var height: CGFloat = 46
+    var size: CGFloat = 22
 
     var body: some View {
         Image(systemName: category.systemImage)
-            .font(.system(size: width * 0.45, weight: .light))
-            .foregroundStyle(category.tone.ink)
-            .frame(width: width, height: height)
-            .background(category.tone.background, in: RoundedRectangle(cornerRadius: 12))
+            .font(.system(size: size, weight: .light))
+            .foregroundStyle(RYColor.accent)
+            .frame(width: size + 4, height: size + 4)
             .accessibilityHidden(true)
     }
 }
 
+/// Строка документа. Размещается внутри `RYListGroup`, разделители ставит вызывающий код.
 struct DocumentRow: View {
     let doc: DocumentRecord
     var action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 14) {
-                DocumentIcon(category: doc.category)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(doc.title).ryFont(.body).fontWeight(.medium).foregroundStyle(RYColor.ink).multilineTextAlignment(.leading)
-                    Text(DocumentFormat.subtitle(doc)).ryFont(.micro).foregroundStyle(RYColor.muted)
-                    if doc.uploadState != .synced { statusLabel }
+            RYListRow(doc.title, subtitle: DocumentFormat.subtitle(doc),
+                      leading: { DocumentIcon(category: doc.category) },
+                      trailing: {
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("›").ryFont(.callout).foregroundStyle(RYColor.accent)
+                    if doc.uploadState != .synced { statusIcon }
                 }
-                Spacer(minLength: 4)
-                Image(systemName: "chevron.right").font(.system(size: 13)).foregroundStyle(RYColor.muted)
-            }
-            .padding(.vertical, 9)
-            .contentShape(Rectangle())
+            })
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("document.row.\(doc.title)")
     }
 
-    @ViewBuilder private var statusLabel: some View {
-        switch doc.uploadState {
-        case .failed:
-            Label("Не отправлен", systemImage: "exclamationmark.circle").font(.system(size: 10)).foregroundStyle(RYColor.danger)
-        default:
-            Label("Ожидает синхронизации", systemImage: "arrow.triangle.2.circlepath").font(.system(size: 10)).foregroundStyle(RYColor.muted)
+    @ViewBuilder private var statusIcon: some View {
+        if doc.uploadState == .failed {
+            Image(systemName: "exclamationmark.circle").font(.system(size: 12)).foregroundStyle(RYColor.danger)
+                .accessibilityLabel("Не отправлен")
+        } else {
+            Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 11)).foregroundStyle(RYColor.muted)
+                .accessibilityLabel("Ожидает синхронизации")
+        }
+    }
+}
+
+/// Список документов в одной карточке с разделителями.
+struct DocumentList: View {
+    let docs: [DocumentRecord]
+    var onOpen: (DocumentRecord) -> Void
+
+    var body: some View {
+        RYListGroup {
+            ForEach(Array(docs.enumerated()), id: \.element.id) { index, doc in
+                DocumentRow(doc: doc) { onOpen(doc) }
+                if index < docs.count - 1 { RYListDivider() }
+            }
         }
     }
 }
@@ -97,15 +117,13 @@ struct CategoryCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 10) {
-                    Image(systemName: category.systemImage).font(.system(size: 14, weight: .light))
-                        .foregroundStyle(category.tone.ink).frame(width: 30, height: 30)
-                        .background(category.tone.background, in: RoundedRectangle(cornerRadius: 9))
-                    Text(category.title).ryFont(.body).fontWeight(.medium).foregroundStyle(RYColor.ink)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    DocumentIcon(category: category)
+                    Text(category.title).ryFont(.bodyMedium).foregroundStyle(RYColor.ink)
                     Spacer(minLength: 0)
                 }
-                Text(DocumentFormat.documents(count)).ryFont(.micro).foregroundStyle(RYColor.muted)
+                Text(DocumentFormat.documents(count)).ryFont(.subhead).foregroundStyle(RYColor.muted)
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -114,30 +132,6 @@ struct CategoryCard: View {
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("category.\(category.rawValue)")
-    }
-}
-
-/// Информационная плашка с иконкой: защита, доступ.
-struct DocumentNotice: View {
-    let systemImage: String
-    var title: String?
-    let text: String
-    var tint: Color = RYColor.accentTint
-    var ink: Color = RYColor.accent
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: systemImage).font(.system(size: 15, weight: .light)).foregroundStyle(ink).padding(.top, 2)
-            VStack(alignment: .leading, spacing: 4) {
-                if let title { Text(title).ryFont(.caption).fontWeight(.semibold).foregroundStyle(ink) }
-                Text(text).ryFont(.micro).foregroundStyle(ink.opacity(0.9))
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(tint, in: RoundedRectangle(cornerRadius: RYRadius.card))
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -199,3 +193,32 @@ struct ActivityView: UIViewControllerRepresentable {
 }
 
 struct ShareItem: Identifiable { let id = UUID(); let url: URL }
+
+/// Строка группы с аватаром участника (владелец, автор).
+struct DocumentPersonRow: View {
+    let member: MemberRecord?
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        RYListRow(title, subtitle: subtitle, leading: {
+            if let member { AvatarView(name: member.displayName, tone: member.tone, diameter: 32) }
+            else { Circle().fill(RYColor.accentTint).frame(width: 32, height: 32) }
+        }, trailing: { EmptyView() })
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Строка «Доступ: …» с замком под группой метаданных.
+struct DocumentAccessLine: View {
+    let text: String
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "lock").font(.system(size: 14, weight: .light)).foregroundStyle(RYColor.accent).padding(.top, 1)
+            Text(text).ryFont(.subhead).foregroundStyle(RYColor.muted)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 2)
+        .accessibilityElement(children: .combine)
+    }
+}

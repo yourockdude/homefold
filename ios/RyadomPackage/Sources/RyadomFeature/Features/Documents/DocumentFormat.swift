@@ -11,10 +11,10 @@ enum DocumentFormat {
         return "\(bytes) Б"
     }
 
-    static func decimal(_ value: Double) -> String {
+    static func decimal(_ value: Double, digits: Int = 1) -> String {
         let f = NumberFormatter()
         f.locale = Locale(identifier: "ru_RU")
-        f.maximumFractionDigits = 1
+        f.maximumFractionDigits = digits
         f.minimumFractionDigits = 0
         return f.string(from: NSNumber(value: value)) ?? "\(value)"
     }
@@ -45,8 +45,16 @@ enum DocumentFormat {
 
     static func eta(_ seconds: Int?) -> String {
         guard let seconds else { return "считаем время…" }
-        if seconds < 60 { return "осталось около \(seconds) \(OverviewView.plural(seconds, "секунды", "секунд", "секунд"))" }
+        if seconds < 60 { return "около \(seconds) \(OverviewView.plural(seconds, "секунды", "секунд", "секунд"))" }
         let m = Int((Double(seconds) / 60).rounded(.up))
-        return "осталось около \(m) \(OverviewView.plural(m, "минуты", "минут", "минут"))"
+        return "около \(m) \(OverviewView.plural(m, "минуты", "минут", "минут"))"
+    }
+
+    /// «•••• •••• 609»: скрывает все символы, кроме последних трёх; пробелы сохраняются.
+    static func masked(_ number: String) -> String {
+        let chars = Array(number)
+        guard chars.count > 3 else { return String(repeating: "•", count: chars.count) }
+        let visibleFrom = chars.count - 3
+        return String(chars.enumerated().map { index, ch in ch == " " || index >= visibleFrom ? ch : "•" })
     }
 }
