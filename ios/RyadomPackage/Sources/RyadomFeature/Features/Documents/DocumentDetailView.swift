@@ -119,8 +119,8 @@ struct DocumentDetailView: View {
 
     private func metaLine(_ doc: DocumentRecord) -> some View {
         HStack(spacing: 10) {
-            Text(doc.category.title).font(.system(size: 11, weight: .semibold)).foregroundStyle(doc.category.tone.ink)
-                .padding(.horizontal, 10).padding(.vertical, 6).background(doc.category.tone.background, in: Capsule())
+            Text(doc.category.title).font(.system(size: 11, weight: .semibold)).foregroundStyle(RYColor.accent)
+                .padding(.horizontal, 10).padding(.vertical, 6).background(RYColor.accentTint, in: Capsule())
             Text([DocumentFormat.kind(doc), pageCount.map { "\($0) \(OverviewView.plural($0, "страница", "страницы", "страниц"))" },
                   DocumentFormat.size(doc.sizeBytes)].compactMap { $0 }.joined(separator: " · "))
                 .ryFont(.micro).foregroundStyle(RYColor.muted)

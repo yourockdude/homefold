@@ -29,7 +29,7 @@ struct OverviewView: View {
                 cover
                 summary
                 todaySection
-                if let doc = expiringDocuments.first { documentCard(doc) }
+                if let doc = expiringDocuments.first(where: { ($0.expiresAt ?? .distantPast) >= .now }) { documentCard(doc) }
             }
             .padding(.horizontal, RYSpacing.screen)
             .padding(.vertical, RYSpacing.s)
