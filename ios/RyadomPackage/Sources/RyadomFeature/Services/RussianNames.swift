@@ -14,4 +14,11 @@ enum RussianNames {
         default: return name + "у"
         }
     }
+
+    /// «Смирновы» → «Смирновых» для оборотов «семья …». Названия, не оканчивающиеся на «ы»/«и», не меняем.
+    static func familyGenitive(_ name: String) -> String {
+        if name.hasSuffix("ы") { return String(name.dropLast()) + "ых" }
+        if name.hasSuffix("и") { return String(name.dropLast()) + "их" }
+        return name
+    }
 }

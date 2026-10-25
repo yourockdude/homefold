@@ -254,6 +254,8 @@ struct TaskServiceTests {
         #expect(RussianNames.dative("Михаил") == "Михаилу")
         #expect(RussianNames.dative("Мария") == "Марии")
         #expect(RussianNames.dative("Андрей") == "Андрею")
+        #expect(RussianNames.familyGenitive("Смирновы") == "Смирновых")
+        #expect(RussianNames.familyGenitive("Белые") == "Белые")
     }
 
     @Test("Русские формулировки дат")

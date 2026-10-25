@@ -122,14 +122,14 @@ public struct RYCheckbox: View {
 
     public var body: some View {
         RoundedRectangle(cornerRadius: RYRadius.chip)
-            .fill(isOn ? RYColor.accent : RYColor.surface)
+            .fill(isOn ? RYColor.accentTint : RYColor.surface)
             .overlay(
                 RoundedRectangle(cornerRadius: RYRadius.chip)
-                    .stroke(isOn ? RYColor.accent : RYColor.checkBorder, lineWidth: 1.3)
+                    .stroke(isOn ? RYColor.accentTint : RYColor.checkBorder, lineWidth: 1.3)
             )
             .overlay {
                 if isOn {
-                    Image(systemName: "checkmark").font(.system(size: 12, weight: .bold)).foregroundStyle(.white)
+                    Image(systemName: "checkmark").font(.system(size: 12, weight: .bold)).foregroundStyle(RYColor.accent)
                 }
             }
             .frame(width: 23, height: 23)

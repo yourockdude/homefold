@@ -104,7 +104,7 @@ struct ShoppingView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Покупки").ryFont(.title).foregroundStyle(RYColor.ink)
                     .accessibilityAddTraits(.isHeader)
-                Text("Общий список семьи \(families.first?.name ?? "")")
+                Text("Общий список семьи \(RussianNames.familyGenitive(families.first?.name ?? ""))")
                     .ryFont(.caption).foregroundStyle(RYColor.muted)
             }
             Spacer()

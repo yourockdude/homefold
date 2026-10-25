@@ -48,7 +48,7 @@ struct TaskFormView: View {
             topBar
             ScrollView {
                 VStack(alignment: .leading, spacing: RYSpacing.s) {
-                    Text("Для семьи \(familyName)").ryFont(.caption).foregroundStyle(RYColor.muted)
+                    Text("Для семьи \(RussianNames.familyGenitive(familyName))").ryFont(.caption).foregroundStyle(RYColor.muted)
                     if isSeriesEdit { seriesNotice }
                     titleField
                     assigneeField
