@@ -16,6 +16,8 @@ public enum RYIllustrationKind: String, Sendable {
     case calendar = "IllustrationCalendar"
     /// Облако — не удалось загрузить данные.
     case cloud = "IllustrationCloud"
+    /// Микрофон — голосовой ввод.
+    case microphone = "IllustrationMicrophone"
 }
 
 /// Иллюстрация состояния: вписывается в заданную высоту, для VoiceOver скрыта как декоративная.

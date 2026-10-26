@@ -8,6 +8,9 @@ struct RYFieldBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(.horizontal, 16)
+            // Вертикальный отступ нужен многострочным полям: без него текст прижат к верхней кромке.
+            // Однострочные поля остаются высотой 48 за счёт minHeight.
+            .padding(.vertical, 13)
             .frame(minHeight: 48)
             .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.field))
             .overlay(RoundedRectangle(cornerRadius: RYRadius.field)

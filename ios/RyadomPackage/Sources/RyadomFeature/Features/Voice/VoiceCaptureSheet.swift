@@ -82,14 +82,16 @@ struct VoiceCaptureSheet: View {
     // MARK: Запись
 
     private var captureView: some View {
-        VStack(spacing: 18) {
+        VStack(spacing: compact ? 12 : 18) {
             Spacer(minLength: 0)
             microphone
-            statusText
+            if !compact { statusText }
             transcriptField
-            Text("Например: «\(target.example)»")
-                .ryFont(.caption).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
-                .padding(.horizontal, 12)
+            if !compact {
+                Text("Например: «\(target.example)»")
+                    .ryFont(.caption).foregroundStyle(RYColor.muted).multilineTextAlignment(.center)
+                    .padding(.horizontal, 12)
+            }
             if nothingRecognized {
                 RYNotice(systemImage: "questionmark.circle", title: "Ничего не разобрали",
                          text: "Назовите, что купить: «молоко, хлеб, яйца десять штук».")
@@ -106,21 +108,29 @@ struct VoiceCaptureSheet: View {
 
     private var trimmed: String { capture.transcript.trimmingCharacters(in: .whitespacesAndNewlines) }
 
+    /// Пока набирают текст, клавиатура съедает почти половину экрана: микрофон уменьшается, подсказки прячутся,
+    /// чтобы шапка и кнопка оставались на месте.
+    private var compact: Bool { textFocused }
+
     private var microphone: some View {
         Button {
             if capture.isListening { capture.stop() } else { Task { await capture.start() } }
         } label: {
             ZStack {
-                Circle().fill(RYColor.accentFill.opacity(0.14))
-                    .frame(width: 150, height: 150)
-                    .scaleEffect(capture.isListening ? 1 + CGFloat(capture.level) * 0.35 : 1)
-                    .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: capture.level)
-                Circle().fill(RYColor.accentFill.opacity(0.22)).frame(width: 118, height: 118)
-                Circle().fill(RYColor.accentFill).frame(width: 88, height: 88)
-                Image(systemName: capture.isListening ? "waveform" : "mic.fill")
-                    .font(.system(size: 32, weight: .regular)).foregroundStyle(RYColor.onAccent)
-                    .symbolEffect(.variableColor.iterative, isActive: capture.isListening && !reduceMotion)
+                // Круги расходятся от микрофона в такт голосу.
+                Circle().fill(RYColor.accentFill.opacity(capture.isListening ? 0.12 : 0.07))
+                    .frame(width: compact ? 150 : 230, height: compact ? 150 : 230)
+                    .scaleEffect(capture.isListening ? 1 + CGFloat(capture.level) * 0.22 : 1)
+                Circle().fill(RYColor.accentFill.opacity(capture.isListening ? 0.16 : 0.09))
+                    .frame(width: compact ? 118 : 180, height: compact ? 118 : 180)
+                    .scaleEffect(capture.isListening ? 1 + CGFloat(capture.level) * 0.12 : 1)
+                RYIllustration(.microphone, height: compact ? 92 : 150)
+                    .scaleEffect(capture.isListening ? 1 + CGFloat(capture.level) * 0.05 : 1)
+                    .shadow(color: RYColor.accentFill.opacity(capture.isListening ? 0.35 : 0.15), radius: 14, y: 6)
             }
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: capture.level)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: capture.isListening)
+            .animation(reduceMotion ? nil : RYMotion.smooth, value: compact)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(capture.isListening ? "Остановить запись" : "Начать запись")
@@ -143,7 +153,7 @@ struct VoiceCaptureSheet: View {
 
     private var transcriptField: some View {
         TextField("Скажите или напишите", text: $capture.transcript, axis: .vertical)
-            .lineLimit(3...6)
+            .lineLimit(2...6)
             .focused($textFocused)
             .ryFont(.body).foregroundStyle(RYColor.ink)
             .ryField(isFocused: textFocused)
