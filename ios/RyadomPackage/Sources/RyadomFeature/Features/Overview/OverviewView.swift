@@ -10,6 +10,7 @@ struct OverviewView: View {
     var onOpenTasks: () -> Void
     var onOpenDocuments: () -> Void
     var onOpenShopping: () -> Void = {}
+    var onOpenSearch: () -> Void = {}
 
     @Query private var families: [FamilyRecord]
     @Query(filter: #Predicate<MemberRecord> { !$0.isInvited }, sort: \MemberRecord.displayName) private var members: [MemberRecord]
@@ -82,6 +83,8 @@ struct OverviewView: View {
         HStack {
             BrandMark()
             Spacer()
+            RYGlassCircleButton(systemImage: "magnifyingglass", label: "Поиск", action: onOpenSearch)
+                .accessibilityIdentifier("overview.search")
             Button { path.append(.settings) } label: { profileButtonLabel }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Настройки профиля")

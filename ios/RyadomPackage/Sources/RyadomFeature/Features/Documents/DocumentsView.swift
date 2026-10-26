@@ -32,6 +32,13 @@ struct DocumentsView: View {
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: DocumentRoute.self) { route in destination(route) }
         }
+        .task(id: session.pendingDestination) {
+            // Переход из сквозного поиска: открываем документ, если раздел не заблокирован.
+            guard case .document(let id)? = session.pendingDestination else { return }
+            try? await Task.sleep(for: .milliseconds(300))
+            if lock.isContentVisible { path = [.detail(id, added: false)] }
+            session.pendingDestination = nil
+        }
         .sheet(item: $sheet) { item in
             DocumentFormView(mode: item == .create ? .create : .edit(editId(item)), draft: $draft, pickedFile: $pickedFile,
                              pendingFilePicker: $pendingFilePicker, members: members, familyName: familyName,

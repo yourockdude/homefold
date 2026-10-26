@@ -22,6 +22,8 @@ public final class AppSession {
     public let settings = AppSettings()
     /// Подписка HomeFold Plus. В отладочных запусках с `-RYDemo` или `-RYSimulatedStore` магазин симулируется.
     public let subscription: SubscriptionStore
+    /// Куда перейти после выбора результата поиска: раздел-получатель забирает это и открывает экран.
+    public var pendingDestination: SearchDestination?
     public let fileStore = DocumentFileStore()
 
     public init(userId: UUID? = nil, familyId: UUID? = nil, documentsLock: DocumentsLock? = nil) {
@@ -29,6 +31,9 @@ public final class AppSession {
         self.familyId = familyId
         self.documentsLock = documentsLock ?? DocumentsLock(authenticator: AppSession.makeAuthenticator())
         self.subscription = SubscriptionStore(provider: AppSession.makeSubscriptionProvider())
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-RYClearSearchHistory") { SearchHistory.clear() }
+        #endif
     }
 
     private static func makeSubscriptionProvider() -> any SubscriptionProviding {

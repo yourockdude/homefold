@@ -57,6 +57,13 @@ struct ShoppingView: View {
                     ShoppingHistoryView(members: members, path: $path)
                 }
         }
+        .task(id: session.pendingDestination) {
+            // Переход из сквозного поиска: открываем карточку товара.
+            guard case .shoppingItem(let id)? = session.pendingDestination else { return }
+            try? await Task.sleep(for: .milliseconds(300))
+            if let item = allItems.first(where: { $0.id == id }) { formMode = .edit(item) }
+            session.pendingDestination = nil
+        }
         .sheet(item: $formMode) { mode in
             switch mode {
             case .add(let list):

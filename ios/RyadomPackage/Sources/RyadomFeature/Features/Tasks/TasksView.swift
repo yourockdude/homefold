@@ -67,6 +67,13 @@ struct TasksView: View {
                     }
                 }
         }
+        .task(id: session.pendingDestination) {
+            // Переход из сквозного поиска: ждём окончания смены вкладки, затем открываем дело.
+            guard case .task(let id)? = session.pendingDestination else { return }
+            try? await Task.sleep(for: .milliseconds(300))
+            path = [.detail(id)]
+            session.pendingDestination = nil
+        }
         .sheet(item: $sheet) { sheet in
             switch sheet {
             case .create(let date): TaskFormView(mode: .create(date), members: members, familyName: families.first?.name ?? "")

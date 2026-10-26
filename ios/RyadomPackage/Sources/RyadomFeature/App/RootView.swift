@@ -8,6 +8,7 @@ public struct RootView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var session = AppSession()
     @State private var keyboardVisible = false
+    @State private var showSearch = false
     /// Диалоги экранов сообщают сюда, чтобы затемнить и плавающую панель вкладок, как в макете.
     @State private var dimming = DialogDimming()
     @Environment(\.modelContext) private var context
@@ -127,6 +128,10 @@ public struct RootView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in Task { await refreshTasks() } }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in Task { await refreshTasks() } }
+        .fullScreenCover(isPresented: $showSearch) {
+            SearchView(onSelect: openSearchResult, onClose: { showSearch = false })
+                .environment(session)
+        }
         .environment(session)
         .environment(dimming)
         .onChange(of: members.map(\.id), initial: true) { _, _ in bootstrapSession() }
@@ -138,10 +143,22 @@ extension RootView {
     private func screen(for tab: MainTab) -> some View {
         switch tab {
         case .overview:
-            OverviewView(onOpenTasks: { select(.tasks) }, onOpenDocuments: { select(.documents) }, onOpenShopping: { select(.shopping) })
+            OverviewView(onOpenTasks: { select(.tasks) }, onOpenDocuments: { select(.documents) }, onOpenShopping: { select(.shopping) },
+                         onOpenSearch: { showSearch = true })
         case .shopping: ShoppingView()
         case .tasks: TasksView()
         case .documents: DocumentsView()
+        }
+    }
+
+    /// Закрывает поиск и открывает найденное в своём разделе: раздел сам заберёт `pendingDestination`.
+    private func openSearchResult(_ hit: SearchHit) {
+        showSearch = false
+        session.pendingDestination = hit.destination
+        switch hit.kind {
+        case .tasks: select(.tasks)
+        case .shopping: select(.shopping)
+        case .documents: select(.documents)
         }
     }
 
