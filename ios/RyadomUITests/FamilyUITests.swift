@@ -8,7 +8,7 @@ final class FamilyUITests: XCTestCase {
         app.launchArguments = ["-RYFreshInstall", "-RYSkipSplash", "-RYSkipOnboarding"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["Создайте семью"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Добавьте семью"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["tab.overview"].exists)
 
         app.buttons["onboarding.create"].tap()

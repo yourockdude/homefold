@@ -27,7 +27,7 @@ struct FamilyOnboardingView: View {
                 .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Создайте семью").ryFont(.title).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
+                    Text("Добавьте семью").ryFont(.title).foregroundStyle(RYColor.ink).accessibilityAddTraits(.isHeader)
                     Text("Покупки, дела и документы — в одном месте для всех, кто рядом.")
                         .ryFont(.callout).foregroundStyle(RYColor.muted)
                 }
@@ -44,7 +44,7 @@ struct FamilyOnboardingView: View {
                 if let errorText {
                     RYNotice(systemImage: "exclamationmark.triangle", text: errorText, tint: RYColor.danger.opacity(0.12), ink: RYColor.danger)
                 }
-                Button(action: create) { Text("Создать семью") }
+                Button(action: create) { Text("Добавить семью") }
                     .buttonStyle(.ryPrimary).accessibilityIdentifier("onboarding.create")
                 Text("Участников можно пригласить позже — по ссылке.").ryFont(.caption).foregroundStyle(RYColor.muted)
                     .frame(maxWidth: .infinity)

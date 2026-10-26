@@ -23,14 +23,14 @@ final class OnboardingUITests: XCTestCase {
         XCTAssertEqual(app.buttons["onboarding.next"].label, "Начать")
         XCTAssertFalse(app.buttons["onboarding.skip"].exists, "на последнем слайде пропускать нечего")
         app.buttons["onboarding.next"].tap()
-        XCTAssertTrue(app.staticTexts["Создайте семью"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Добавьте семью"].waitForExistence(timeout: 3))
     }
 
     func testSkipGoesToFamilyCreation() {
         let app = launch()
         XCTAssertTrue(app.buttons["onboarding.skip"].waitForExistence(timeout: 5))
         app.buttons["onboarding.skip"].tap()
-        XCTAssertTrue(app.staticTexts["Создайте семью"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Добавьте семью"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.buttons["onboarding.next"].exists)
     }
 
