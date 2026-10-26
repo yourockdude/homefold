@@ -36,6 +36,10 @@ final class SplashUITests: XCTestCase {
 
         let faceID = app.switches["settings.faceID"]
         XCTAssertTrue(faceID.exists)
+        // Блок подписки сверху сдвинул переключатель ниже экрана: прокручиваем до него.
+        var swipes = 0
+        while !faceID.isHittable && swipes < 4 { app.swipeUp(); swipes += 1 }
+        XCTAssertTrue(faceID.isHittable)
         faceID.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.5)).tap()
         XCTAssertTrue(app.buttons["settings.save"].isEnabled)
         app.buttons["settings.save"].tap()
