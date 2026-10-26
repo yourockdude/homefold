@@ -83,8 +83,13 @@ struct OverviewView: View {
 
     private var header: some View {
         HStack {
-            BrandMark(showsPlus: families.first?.accessState() == .subscribed)
-                .animation(RYMotion.snappy, value: families.first?.hasPlan)
+            // В шапке «Обзора» — только дом; название приложения и статус подписки доступны VoiceOver.
+            Image("BrandHouse", bundle: .module)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 44)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(families.first?.accessState() == .subscribed ? "HomeFold Plus" : "HomeFold")
             Spacer()
             RYGlassCircleButton(systemImage: "magnifyingglass", label: "Поиск", action: onOpenSearch)
                 .accessibilityIdentifier("overview.search")
