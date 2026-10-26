@@ -160,13 +160,25 @@ struct OverviewView: View {
         let open = todayTasks.count
         return HStack(spacing: 12) {
             summaryTile(title: "Купить", count: unboughtItems.count,
-                        unit: Self.plural(unboughtItems.count, "продукт", "продукта", "продуктов"), icon: "basket")
+                        unit: Self.plural(unboughtItems.count, "продукт", "продукта", "продуктов"), icon: "basket",
+                        id: "overview.tile.shopping", action: onOpenShopping)
             summaryTile(title: "Сегодня", count: open,
-                        unit: Self.plural(open, "семейное дело", "семейных дела", "семейных дел"), icon: "checkmark.circle")
+                        unit: Self.plural(open, "семейное дело", "семейных дела", "семейных дел"), icon: "checkmark.circle",
+                        id: "overview.tile.tasks", action: onOpenTasks)
         }
     }
 
-    private func summaryTile(title: String, count: Int, unit: String, icon: String) -> some View {
+    /// Плитка-счётчик: нажатие открывает соответствующий раздел.
+    private func summaryTile(title: String, count: Int, unit: String, icon: String, id: String,
+                             action: @escaping () -> Void) -> some View {
+        Button(action: action) { summaryTileContent(title: title, count: count, unit: unit, icon: icon) }
+            .buttonStyle(TileButtonStyle())
+            .accessibilityLabel("\(title): \(count) \(unit)")
+            .accessibilityHint("Открыть раздел")
+            .accessibilityIdentifier(id)
+    }
+
+    private func summaryTileContent(title: String, count: Int, unit: String, icon: String) -> some View {
         VStack(alignment: .leading, spacing: 7) {
             HStack {
                 Text(title).ryFont(.callout).foregroundStyle(RYColor.accent)
@@ -183,7 +195,7 @@ struct OverviewView: View {
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(RYColor.surface, in: RoundedRectangle(cornerRadius: RYRadius.card))
-        .accessibilityElement(children: .combine)
+        .contentShape(RoundedRectangle(cornerRadius: RYRadius.card))
     }
 
     @ViewBuilder private var todaySection: some View {
@@ -376,5 +388,14 @@ struct OverviewView: View {
         case 2...4: return few
         default: return many
         }
+    }
+}
+
+/// Лёгкое нажатие плитки: чуть уменьшается, без смены цвета.
+private struct TileButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }
 }
