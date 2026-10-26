@@ -9,6 +9,8 @@ public struct RootView: View {
     @State private var session = AppSession()
     @State private var keyboardVisible = false
     @State private var showSearch = false
+    /// Текущее время для доступа: обновляется раз в минуту и при возврате в приложение.
+    @State private var now = Date.now
     /// Диалоги экранов сообщают сюда, чтобы затемнить и плавающую панель вкладок, как в макете.
     @State private var dimming = DialogDimming()
     @Environment(\.modelContext) private var context
@@ -69,10 +71,28 @@ public struct RootView: View {
                     .transition(.opacity)
             } else if families.isEmpty {
                 FamilyOnboardingView().transition(.opacity)
+            } else if accessExpired {
+                // Пробный период закончился, подписки нет: содержимого приложения в иерархии нет вовсе
+                // (его не достать ни касанием, ни через VoiceOver), доступен только пейвол.
+                PaywallView(reason: .expired, blocking: true)
+                    .environment(session)
+                    .transition(.opacity)
             } else {
                 mainContent
             }
         }
+        .animation(.easeInOut(duration: 0.3), value: accessExpired)
+        // Подписка и часы работают и под пейволом: уже оформленная подписка найдётся сама, доступ вернётся без касаний.
+        .task { await session.subscription.start() }
+        .task { await session.subscription.observeChanges() }
+        .task { await keepClockFresh() }
+        .task(id: session.familyId) { session.ensureTrialStarted(context: context) }
+        .onChange(of: session.subscription.entitlement) { _, _ in session.reconcilePlan(context: context) }
+        .onChange(of: session.subscription.hasCheckedEntitlement) { _, _ in session.reconcilePlan(context: context) }
+        .onChange(of: session.familyId) { _, _ in session.reconcilePlan(context: context) }
+        .onChange(of: scenePhase) { _, phase in if phase == .active { now = .now } }
+        // Текущий пользователь нужен и пейволу после пробного периода: он решает, кто может оформить подписку.
+        .onChange(of: members.map(\.id), initial: true) { _, _ in bootstrapSession() }
     }
 
     /// Знакомство показывается один раз — новому пользователю, у которого ещё нет семьи.
@@ -117,11 +137,6 @@ public struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardVisible = false }
         .task(id: session.userId) { await refreshTasks() }
-        .task { await session.subscription.start() }
-        .task { await session.subscription.observeChanges() }
-        .onChange(of: session.subscription.entitlement) { _, _ in session.reconcilePlan(context: context) }
-        .onChange(of: session.subscription.hasCheckedEntitlement) { _, _ in session.reconcilePlan(context: context) }
-        .onChange(of: session.familyId) { _, _ in session.reconcilePlan(context: context) }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await refreshTasks() } }
             if phase == .background { session.documentsLock.lock() }
@@ -134,7 +149,6 @@ public struct RootView: View {
         }
         .environment(session)
         .environment(dimming)
-        .onChange(of: members.map(\.id), initial: true) { _, _ in bootstrapSession() }
     }
 }
 
@@ -148,6 +162,16 @@ extension RootView {
         case .shopping: ShoppingView()
         case .tasks: TasksView()
         case .documents: DocumentsView()
+        }
+    }
+
+    private var accessExpired: Bool { families.first?.accessState(now: now) == .expired }
+
+    /// Пробный период заканчивается в конкретную минуту: следим за временем, пока приложение открыто.
+    private func keepClockFresh() async {
+        while !Task.isCancelled {
+            try? await Task.sleep(for: .seconds(60))
+            now = .now
         }
     }
 

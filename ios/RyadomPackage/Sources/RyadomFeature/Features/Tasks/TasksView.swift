@@ -306,22 +306,15 @@ struct TasksView: View {
         return calendar.date(bySettingHour: 18, minute: 0, second: 0, of: selectedDay) ?? selectedDay
     }
 
-    /// Превращает разобранную фразу в черновик дела. Повтор доступен только в Plus.
+    /// Превращает разобранную фразу в черновик дела.
     private func handleVoice(_ parsed: ParsedTask) {
         var draft = TaskDraft(start: parsed.start)
         draft.title = parsed.title
         draft.hasTime = parsed.hasTime
         draft.assigneeId = parsed.assigneeId ?? session.userId
         draft.reminderMinutes = parsed.reminderMinutes ?? session.settings.notifications.defaultReminderMinutes
-        var note: String?
-        if parsed.recurrence != .none {
-            if families.first?.isPremium ?? false {
-                draft.recurrence = parsed.recurrence
-            } else {
-                note = "Повтор «\(parsed.recurrence.title)» доступен в HomeFold Plus — пока дело создастся без повтора."
-            }
-        }
-        pendingVoice = VoiceTaskResult(draft: draft, note: note)
+        draft.recurrence = parsed.recurrence
+        pendingVoice = VoiceTaskResult(draft: draft, note: nil)
     }
 
     /// Второй лист нельзя показать, пока не закрылся первый: открываем форму после закрытия записи.

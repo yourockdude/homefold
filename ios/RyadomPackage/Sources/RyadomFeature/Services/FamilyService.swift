@@ -18,7 +18,7 @@ public enum FamilyError: Error, Equatable, LocalizedError {
         case .cannotRemoveSelf: "Себя из семьи убрать нельзя."
         case .lastAdmin: "Единственного администратора убрать нельзя."
         case .notFound: "Участника уже нет в семье."
-        case .memberLimit(let limit): "В вашем тарифе до \(limit) участников."
+        case .memberLimit(let limit): "В семье может быть не более \(limit) участников."
         case .invalidImage: "Не удалось открыть фото. Попробуйте другое."
         }
     }
@@ -28,14 +28,12 @@ public enum FamilyError: Error, Equatable, LocalizedError {
 /// на сервер они уходят слоем синхронизации (`POST /families`, `/invitations`, `DELETE /families/me/members/{id}`).
 @MainActor
 public final class FamilyService {
-    public static let freeMemberLimit = 3
-    public static let plusMemberLimit = 8
+    /// Участников в семье, включая приглашённых.
+    public static let memberLimit = 8
 
     private let context: ModelContext
 
     public init(context: ModelContext) { self.context = context }
-
-    public static func memberLimit(isPremium: Bool) -> Int { isPremium ? plusMemberLimit : freeMemberLimit }
 
     /// Первая регистрация: создаёт семью и делает текущего пользователя её администратором.
     @discardableResult
@@ -69,8 +67,7 @@ public final class FamilyService {
         let invitedName = clean(name)
         guard !invitedName.isEmpty else { throw FamilyError.emptyName }
         let current = members(of: family.id)
-        let limit = Self.memberLimit(isPremium: family.isPremium)
-        guard current.count < limit else { throw FamilyError.memberLimit(limit) }
+        guard current.count < Self.memberLimit else { throw FamilyError.memberLimit(Self.memberLimit) }
         let member = MemberRecord(id: UUID(), familyId: family.id, displayName: invitedName, role: "member",
                                   toneIndex: current.count, isInvited: true)
         context.insert(member)
@@ -99,14 +96,14 @@ public final class FamilyService {
     public func applyPlus(_ entitlement: EntitlementInfo?, to family: FamilyRecord, by actorId: UUID?) throws {
         try requireAdmin(actorId, in: family.id)
         if let entitlement {
-            guard !family.isPremium else { return }
+            guard !family.hasPlan else { return }
             family.plan = "plus"
             family.planIsLocal = true
             family.updatedAt = .now
             enqueue(.subscription, id: family.id, .upsert, version: family.version,
                     SubscriptionPayload(productId: entitlement.productId, signedTransaction: entitlement.signedTransaction))
         } else {
-            guard family.isPremium, family.planIsLocal else { return }
+            guard family.hasPlan, family.planIsLocal else { return }
             family.plan = "free"
             family.planIsLocal = false
             family.updatedAt = .now

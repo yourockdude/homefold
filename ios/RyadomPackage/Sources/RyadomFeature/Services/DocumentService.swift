@@ -42,21 +42,15 @@ public enum DocumentServiceError: Error, Equatable {
 }
 
 public enum DocumentLimitReason: Equatable, Sendable {
-    case fileCount
     case totalSize
 }
 
-/// Лимиты тарифов на документы. Источник истины — сервер; клиент проверяет заранее, чтобы не гонять файл зря.
+/// Лимит хранилища документов семьи. Источник истины — сервер; клиент проверяет заранее, чтобы не гонять файл зря.
 public enum DocumentLimits {
-    public static let freeFiles = 10
-    public static let freeBytes = 100 * 1024 * 1024
-    public static let plusBytes = 10 * 1024 * 1024 * 1024
+    public static let totalBytes = 10 * 1024 * 1024 * 1024
 
-    public static func check(isPremium: Bool, currentFiles: Int, currentBytes: Int, adding size: Int) -> DocumentLimitReason? {
-        if isPremium { return currentBytes + size > plusBytes ? .totalSize : nil }
-        if currentFiles >= freeFiles { return .fileCount }
-        if currentBytes + size > freeBytes { return .totalSize }
-        return nil
+    public static func check(currentBytes: Int, adding size: Int) -> DocumentLimitReason? {
+        currentBytes + size > totalBytes ? .totalSize : nil
     }
 }
 
@@ -78,15 +72,12 @@ public final class DocumentService {
     private let familyId: UUID
     private let userId: UUID
     private let store: DocumentFileStore
-    private let isPremium: Bool
 
-    public init(context: ModelContext, familyId: UUID, userId: UUID, store: DocumentFileStore = DocumentFileStore(),
-                isPremium: Bool = false) {
+    public init(context: ModelContext, familyId: UUID, userId: UUID, store: DocumentFileStore = DocumentFileStore()) {
         self.context = context
         self.familyId = familyId
         self.userId = userId
         self.store = store
-        self.isPremium = isPremium
     }
 
     // MARK: Лимиты
@@ -98,7 +89,7 @@ public final class DocumentService {
 
     public func limitReason(adding size: Int) -> DocumentLimitReason? {
         let u = usage()
-        return DocumentLimits.check(isPremium: isPremium, currentFiles: u.files, currentBytes: u.bytes, adding: size)
+        return DocumentLimits.check(currentBytes: u.bytes, adding: size)
     }
 
     // MARK: Создание и правка

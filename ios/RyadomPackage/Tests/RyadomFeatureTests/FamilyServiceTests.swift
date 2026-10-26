@@ -43,13 +43,11 @@ struct FamilyServiceTests {
         #expect(throws: FamilyError.notAdmin) { try service.remove(me, by: other.id) }
     }
 
-    @Test func freePlanLimitsMembers() throws {
+    @Test func familyHoldsUpToEightMembersIncludingInvited() throws {
         let (family, me) = try service.createFamily(name: "Смирновы", displayName: "Анна")
-        try service.invite(name: "Михаил", to: family, by: me.id)
-        try service.invite(name: "Соня", to: family, by: me.id)
-        #expect(throws: FamilyError.memberLimit(3)) { try service.invite(name: "Ещё", to: family, by: me.id) }
-        family.plan = "plus"
-        #expect(throws: Never.self) { try service.invite(name: "Ещё", to: family, by: me.id) }
+        for i in 1..<FamilyService.memberLimit { try service.invite(name: "Участник \(i)", to: family, by: me.id) }
+        #expect(members().count == 8)
+        #expect(throws: FamilyError.memberLimit(8)) { try service.invite(name: "Лишний", to: family, by: me.id) }
     }
 
     @Test func removeMemberDeletesAndQueuesOperation() throws {

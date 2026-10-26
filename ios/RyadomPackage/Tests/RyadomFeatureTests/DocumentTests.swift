@@ -74,10 +74,10 @@ struct DocumentServiceTests {
     let user = UUID()
     let other = UUID()
 
-    init(isPremium: Bool = false) {
+    init() {
         context = ModelContext(RyadomSchema.makeContainer(inMemory: true))
         store = DocumentFileStore(directory: FileManager.default.temporaryDirectory.appendingPathComponent("docs-\(UUID().uuidString)"))
-        service = DocumentService(context: context, familyId: family, userId: user, store: store, isPremium: isPremium)
+        service = DocumentService(context: context, familyId: family, userId: user, store: store)
     }
 
     private func draft(_ title: String = "Полис ДМС · Соня") -> DocumentDraft {
@@ -116,18 +116,14 @@ struct DocumentServiceTests {
         #expect(doc.sharedWith == [other])
     }
 
-    @Test("Бесплатный тариф: не больше 10 файлов")
-    func freeFileLimit() throws {
-        for i in 0..<10 { _ = try service.add(draft("Файл \(i)"), file: file()) }
-        #expect(throws: DocumentServiceError.limitReached(.fileCount)) { try service.add(draft("Одиннадцатый"), file: file()) }
-    }
-
-    @Test("Бесплатный тариф: суммарно не больше 100 МБ, Плюс — больше")
-    func freeSizeLimit() {
-        #expect(DocumentLimits.check(isPremium: false, currentFiles: 3, currentBytes: 99 * 1024 * 1024, adding: 2 * 1024 * 1024) == .totalSize)
-        #expect(DocumentLimits.check(isPremium: false, currentFiles: 3, currentBytes: 10, adding: 10) == nil)
-        #expect(DocumentLimits.check(isPremium: true, currentFiles: 50, currentBytes: 5 * 1024 * 1024 * 1024, adding: 1024) == nil)
-        #expect(DocumentLimits.check(isPremium: true, currentFiles: 50, currentBytes: DocumentLimits.plusBytes, adding: 1) == .totalSize)
+    @Test("Лимит хранилища: 10 ГБ на семью, без ограничения числа файлов")
+    func storageLimit() throws {
+        #expect(DocumentLimits.check(currentBytes: 5 * 1024 * 1024 * 1024, adding: 1024) == nil)
+        #expect(DocumentLimits.check(currentBytes: DocumentLimits.totalBytes, adding: 1) == .totalSize)
+        #expect(DocumentLimits.check(currentBytes: 0, adding: DocumentLimits.totalBytes) == nil)
+        // Десять и больше файлов — не проблема, пока хватает места.
+        for i in 0..<12 { _ = try service.add(draft("Файл \(i)"), file: file()) }
+        #expect(service.usage().files == 12)
     }
 
     @Test("Редактировать документ может только автор")

@@ -125,22 +125,31 @@ struct SettingsView: View {
         }
     }
 
-    private var isPlus: Bool { family?.isPremium ?? false }
+    private var access: AccessState? { family?.accessState() }
 
     private var subscriptionGroup: some View {
-        RYListGroup {
-            RYListRow(isPlus ? "HomeFold Plus" : "Бесплатный тариф",
-                      subtitle: isPlus ? "Подключён · до 8 участников, повторы дел, 10 ГБ" : "До 3 участников, 100 МБ для документов",
+        let subscribed = access == .subscribed
+        return RYListGroup {
+            RYListRow(subscribed ? "HomeFold Plus" : "Пробный период",
+                      subtitle: subscriptionSubtitle,
                       leading: {
-                Image(systemName: isPlus ? "checkmark.seal.fill" : "sparkles").font(.system(size: 18, weight: .light))
+                Image(systemName: subscribed ? "checkmark.seal.fill" : "clock").font(.system(size: 18, weight: .light))
                     .foregroundStyle(RYColor.accent).frame(width: 32)
             }, trailing: {
-                Button(isPlus ? "Управлять" : "Подключить") {
-                    if isPlus { showManageSubscription = true } else { paywallReason = .general }
+                Button(subscribed ? "Управлять" : "Подключить") {
+                    if subscribed { showManageSubscription = true } else { paywallReason = .general }
                 }
                 .ryFont(.callout).foregroundStyle(RYColor.accent)
                 .accessibilityIdentifier("settings.subscription")
             })
+        }
+    }
+
+    private var subscriptionSubtitle: String {
+        switch access {
+        case .subscribed: "Подписка действует · до 8 участников, повторы дел, 10 ГБ"
+        case .trial(let days, _)?: "Осталось \(days) \(OverviewView.plural(days, "день", "дня", "дней")), затем нужна подписка"
+        default: "Подключите подписку, чтобы продолжить"
         }
     }
 

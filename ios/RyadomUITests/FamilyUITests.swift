@@ -36,14 +36,12 @@ final class FamilyUITests: XCTestCase {
         XCTAssertTrue(cover.waitForExistence(timeout: 5))
         cover.tap()
         XCTAssertTrue(app.staticTexts["Моя семья"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["3 из 3 участников"].exists || app.staticTexts["family.count"].exists)
+        XCTAssertTrue(app.staticTexts["3 из 8 участников"].waitForExistence(timeout: 3))
 
-        // На free уже 3 из 3: вместо формы открывается пейвол с подсветкой «Участники».
+        // Лимит — 8 участников: форма приглашения открывается сразу.
         app.buttons["family.add"].tap()
-        XCTAssertTrue(app.staticTexts["HomeFold Plus"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["Больше участников в семье"].exists)
-        app.buttons["paywall.close"].tap()
-        XCTAssertFalse(app.textFields["family.add.name"].exists)
+        XCTAssertTrue(app.textFields["family.add.name"].waitForExistence(timeout: 3))
+        app.buttons["sheet.cancel"].tap()
 
         // Освобождаем место: убираем Соню.
         app.buttons["family.remove.Соня"].tap()

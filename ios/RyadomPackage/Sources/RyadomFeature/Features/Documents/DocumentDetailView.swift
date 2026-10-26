@@ -40,7 +40,7 @@ struct DocumentDetailView: View {
     private var isAuthor: Bool { doc?.authorId == session.userId }
     private var kind: DocumentFileKind { doc.flatMap { DocumentFileKind(mimeType: $0.mimeType) } ?? .pdf }
     private var openTitle: String { kind == .pdf ? "Открыть PDF" : "Открыть фото" }
-    private var service: DocumentService? { session.documentService(context: context, isPremium: false) }
+    private var service: DocumentService? { session.documentService(context: context) }
 
     var body: some View {
         VStack(spacing: 0) {

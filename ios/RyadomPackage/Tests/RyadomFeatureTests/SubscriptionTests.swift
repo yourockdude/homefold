@@ -111,7 +111,7 @@ final class FakeSubscriptionProvider: SubscriptionProviding {
         let service = FamilyService(context: context)
         let (family, me) = try service.createFamily(name: "Смирновы", displayName: "Анна")
         try service.applyPlus(granted, to: family, by: me.id)
-        #expect(family.isPremium && family.planIsLocal)
+        #expect(family.hasPlan && family.planIsLocal)
         let op = try #require(outbox().first { $0.entity == .subscription })
         #expect(String(data: op.payload, encoding: .utf8)?.contains("jws.token") == true)
     }
@@ -123,25 +123,16 @@ final class FakeSubscriptionProvider: SubscriptionProviding {
         let member = MemberRecord(id: UUID(), familyId: family.id, displayName: "Соня", role: "member", toneIndex: 1)
         context.insert(member)
         #expect(throws: FamilyError.notAdmin) { try service.applyPlus(granted, to: family, by: member.id) }
-        #expect(!family.isPremium)
+        #expect(!family.hasPlan)
     }
 
-    @Test func plusRaisesMemberLimit() throws {
-        let service = FamilyService(context: context)
-        let (family, me) = try service.createFamily(name: "Смирновы", displayName: "Анна")
-        try service.invite(name: "Михаил", to: family, by: me.id)
-        try service.invite(name: "Соня", to: family, by: me.id)
-        #expect(throws: FamilyError.memberLimit(3)) { try service.invite(name: "Ещё", to: family, by: me.id) }
-        try service.applyPlus(granted, to: family, by: me.id)
-        #expect(throws: Never.self) { try service.invite(name: "Ещё", to: family, by: me.id) }
-    }
 
     @Test func expiredLocalSubscriptionDowngrades() throws {
         let service = FamilyService(context: context)
         let (family, me) = try service.createFamily(name: "Смирновы", displayName: "Анна")
         try service.applyPlus(granted, to: family, by: me.id)
         try service.applyPlus(nil, to: family, by: me.id)
-        #expect(!family.isPremium && !family.planIsLocal)
+        #expect(!family.hasPlan && !family.planIsLocal)
     }
 
     @Test func serverPlanIsNotDowngradedLocally() throws {
@@ -149,6 +140,6 @@ final class FakeSubscriptionProvider: SubscriptionProviding {
         let (family, me) = try service.createFamily(name: "Смирновы", displayName: "Анна")
         family.plan = "plus" // пришёл с сервера
         try service.applyPlus(nil, to: family, by: me.id)
-        #expect(family.isPremium)
+        #expect(family.hasPlan)
     }
 }

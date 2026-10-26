@@ -19,7 +19,7 @@ struct DocumentViewerView: View {
 
     private var doc: DocumentRecord? { matches.first }
     private var fileURL: URL? {
-        doc.flatMap { session.documentService(context: context, isPremium: false)?.fileURL(for: $0) }
+        doc.flatMap { session.documentService(context: context)?.fileURL(for: $0) }
     }
 
     var body: some View {

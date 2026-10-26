@@ -9,6 +9,8 @@ public final class FamilyRecord {
     /// Тариф выставлен локально после покупки на этом устройстве. Пока нет сервера, только такой тариф можно снять,
     /// когда подписка закончилась; тариф, пришедший с сервера, локально не трогаем.
     public var planIsLocal: Bool = false
+    /// Когда начался пробный период (14 дней полного доступа). nil — ещё не зафиксирован.
+    public var trialStartedAt: Date?
     public var version: Int
     public var updatedAt: Date
 
@@ -20,7 +22,6 @@ public final class FamilyRecord {
         self.updatedAt = updatedAt
     }
 
-    public var isPremium: Bool { plan == "plus" }
 }
 
 @Model

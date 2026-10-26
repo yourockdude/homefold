@@ -24,16 +24,28 @@ public final class AppSession {
     public let subscription: SubscriptionStore
     /// Куда перейти после выбора результата поиска: раздел-получатель забирает это и открывает экран.
     public var pendingDestination: SearchDestination?
+    /// Где хранится дата начала пробного периода. Keychain переживает переустановку; в отладочных запусках — память.
+    public let trialStore: any TrialStoring
     public let fileStore = DocumentFileStore()
 
-    public init(userId: UUID? = nil, familyId: UUID? = nil, documentsLock: DocumentsLock? = nil) {
+    public init(userId: UUID? = nil, familyId: UUID? = nil, documentsLock: DocumentsLock? = nil,
+                trialStore: (any TrialStoring)? = nil) {
         self.userId = userId
         self.familyId = familyId
         self.documentsLock = documentsLock ?? DocumentsLock(authenticator: AppSession.makeAuthenticator())
         self.subscription = SubscriptionStore(provider: AppSession.makeSubscriptionProvider())
+        self.trialStore = trialStore ?? AppSession.makeTrialStore()
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("-RYClearSearchHistory") { SearchHistory.clear() }
         #endif
+    }
+
+    private static func makeTrialStore() -> any TrialStoring {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("-RYDemo") || args.contains("-RYFreshInstall") || args.contains("-RYSimulatedStore") { return InMemoryTrialStore() }
+        #endif
+        return KeychainTrialStore()
     }
 
     private static func makeSubscriptionProvider() -> any SubscriptionProviding {
@@ -65,9 +77,9 @@ extension AppSession {
 }
 
 extension AppSession {
-    func documentService(context: ModelContext, isPremium: Bool) -> DocumentService? {
+    func documentService(context: ModelContext) -> DocumentService? {
         guard let familyId, let userId else { return nil }
-        return DocumentService(context: context, familyId: familyId, userId: userId, store: fileStore, isPremium: isPremium)
+        return DocumentService(context: context, familyId: familyId, userId: userId, store: fileStore)
     }
 }
 
@@ -110,5 +122,17 @@ extension AppSession {
         let family = (try? context.fetch(FetchDescriptor<FamilyRecord>(predicate: #Predicate { $0.id == familyId })))?.first
         guard let family else { return }
         try? FamilyService(context: context).applyPlus(subscription.entitlement, to: family, by: userId)
+    }
+}
+
+extension AppSession {
+    /// Фиксирует начало пробного периода для семьи, если его ещё не было. Дата берётся из хранилища: после переустановки
+    /// действует прежняя, а не новая.
+    func ensureTrialStarted(context: ModelContext) {
+        guard let familyId else { return }
+        let family = (try? context.fetch(FetchDescriptor<FamilyRecord>(predicate: #Predicate { $0.id == familyId })))?.first
+        guard let family, family.trialStartedAt == nil else { return }
+        family.trialStartedAt = trialStore.begin(at: .now)
+        try? context.save()
     }
 }

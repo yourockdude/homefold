@@ -14,7 +14,6 @@ struct DocumentFormView: View {
     @Binding var pendingFilePicker: Bool
     let members: [MemberRecord]
     let familyName: String
-    let isPremium: Bool
     let storedCount: Int
     var onClose: () -> Void
     var onScanDenied: () -> Void
@@ -32,12 +31,11 @@ struct DocumentFormView: View {
     @State private var showScanner = false
     @State private var importError: String?
     @State private var limitMessage: String?
-    @State private var paywallReason: PaywallReason?
     @State private var scanUnavailable = false
     @FocusState private var titleFocused: Bool
 
     private var isCreate: Bool { mode == .create }
-    private var service: DocumentService? { session.documentService(context: context, isPremium: isPremium) }
+    private var service: DocumentService? { session.documentService(context: context) }
     private var titleError: String? { submitted && draft.problem == .emptyTitle ? "Введите название документа." : nil }
     private var recipientsError: String? { submitted && draft.problem == .noRecipients ? "Выберите хотя бы одного участника." : nil }
     private var fileError: String? { submitted && isCreate && pickedFile == nil ? "Выберите файл или отсканируйте документ." : nil }
@@ -65,11 +63,7 @@ struct DocumentFormView: View {
                         onCancel: onClose, onConfirm: submit) {
             if isCreate { sourceSection }
             if let importError { RYStatusBanner(kind: .error, text: importError) }
-            if let limitMessage {
-                RYStatusBanner(kind: .error, text: limitMessage)
-                Button { paywallReason = .documents } label: { Text("Подключить HomeFold Plus") }
-                    .buttonStyle(.rySecondary).accessibilityIdentifier("document.upgrade")
-            }
+            if let limitMessage { RYStatusBanner(kind: .error, text: limitMessage) }
             titleField
             detailsGroup
             if draft.access == .selected { recipientChips }
@@ -77,7 +71,6 @@ struct DocumentFormView: View {
             RYNotice(systemImage: "lock", title: Self.accessTitle(draft, members: members, me: session.userId),
                      text: "Файл хранится в зашифрованном виде. Права доступа проверяет сервер.")
         }
-        .paywall(reason: $paywallReason)
         .confirmationDialog("Выбрать файл", isPresented: $showSourceDialog, titleVisibility: .visible) {
             Button("Из «Файлов»") { showFileImporter = true }
             Button("Из «Фото»") { showPhotoPicker = true }
@@ -311,10 +304,8 @@ struct DocumentFormView: View {
                     // Нет сервера или входа: файл сохранён на устройстве, отправится при синхронизации.
                     onFinished(doc.id)
                 }
-            } catch DocumentServiceError.limitReached(let reason) {
-                limitMessage = reason == .fileCount
-                    ? "Бесплатный тариф вмещает до 10 файлов. Удалите ненужный документ или подключите HomeFold Plus."
-                    : "Бесплатный тариф вмещает до 100 МБ. Удалите ненужный документ или подключите HomeFold Plus."
+            } catch DocumentServiceError.limitReached {
+                limitMessage = "В хранилище семьи закончилось место (10 ГБ). Удалите ненужные документы и попробуйте ещё раз."
             } catch {
                 importError = "Не удалось сохранить документ."
             }

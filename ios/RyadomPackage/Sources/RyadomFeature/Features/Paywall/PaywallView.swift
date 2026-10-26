@@ -1,42 +1,35 @@
 import SwiftUI
 import SwiftData
 
-/// Что именно упёрлось в лимит. Эта строка в сравнении тарифов подсвечивается.
+/// Почему показан пейвол.
 enum PaywallReason: String, Identifiable, Hashable {
-    case members, recurringTasks, shoppingLists, documents, general
+    /// Пробный период закончился: приложение закрыто, пока не оформлена подписка.
+    case expired
+    /// Пользователь сам открыл подписку (баннер на «Обзоре», настройки).
+    case general
     var id: String { rawValue }
-
-    var headline: String {
-        switch self {
-        case .members: "Больше участников в семье"
-        case .recurringTasks: "Повторяющиеся дела"
-        case .shoppingLists: "Вся история покупок"
-        case .documents: "Больше места для документов"
-        case .general: "Всё для вашей семьи"
-        }
-    }
 }
 
-/// Строка сравнения тарифов.
-struct PlusFeature: Identifiable {
-    let reason: PaywallReason
+/// Что входит в подписку.
+struct PlusBenefit: Identifiable {
     let systemImage: String
     let title: String
-    let free: String
-    let plus: String
-    var id: String { reason.rawValue }
+    let detail: String
+    var id: String { title }
 
-    static let all: [PlusFeature] = [
-        PlusFeature(reason: .members, systemImage: "person.2", title: "Участники", free: "до 3", plus: "до 8"),
-        PlusFeature(reason: .recurringTasks, systemImage: "repeat", title: "Повторы дел", free: "нет", plus: "есть"),
-        PlusFeature(reason: .shoppingLists, systemImage: "basket", title: "История покупок", free: "30 дней", plus: "вся"),
-        PlusFeature(reason: .documents, systemImage: "folder", title: "Документы", free: "100 МБ", plus: "10 ГБ"),
+    static let all: [PlusBenefit] = [
+        PlusBenefit(systemImage: "person.2", title: "До 8 участников", detail: "Вся семья в одном приложении"),
+        PlusBenefit(systemImage: "repeat", title: "Повторяющиеся дела", detail: "Напоминания по расписанию"),
+        PlusBenefit(systemImage: "basket", title: "Общие списки покупок", detail: "С историей и голосовым вводом"),
+        PlusBenefit(systemImage: "folder", title: "Документы под защитой", detail: "10 ГБ, вход по Face ID"),
     ]
 }
 
 /// Пейвол HomeFold Plus: сравнение тарифов, выбор «год / месяц», покупка и восстановление.
 struct PaywallView: View {
     let reason: PaywallReason
+    /// Без кнопки закрытия: пейвол после окончания пробного периода обойти нельзя.
+    var blocking = false
 
     @Environment(AppSession.self) private var session
     @Environment(\.modelContext) private var context
@@ -66,8 +59,8 @@ struct PaywallView: View {
                 content
             }
         }
-        .overlay(alignment: .topTrailing) { closeButton }
-        .interactiveDismissDisabled(store.phase == .purchasing)
+        .overlay(alignment: .topTrailing) { if !blocking { closeButton } }
+        .interactiveDismissDisabled(blocking || store.phase == .purchasing)
         .task { if store.plans.isEmpty { await store.loadPlans() } }
         .sensoryFeedback(.success, trigger: purchased)
     }
@@ -78,7 +71,7 @@ struct PaywallView: View {
         ScrollView {
             VStack(spacing: 22) {
                 hero
-                comparison
+                benefits
                 if isAdmin { planPicker } else { notAdminNotice }
                 if let message = store.errorMessage { errorBanner(message) }
                 if isAdmin { purchaseButton }
@@ -93,55 +86,44 @@ struct PaywallView: View {
     private var hero: some View {
         VStack(spacing: 10) {
             Image("BrandLogo", bundle: .module).resizable().scaledToFit().frame(height: 84)
-            Text("HomeFold Plus").ryFont(.title).foregroundStyle(RYColor.onAccent)
-                .accessibilityAddTraits(.isHeader)
-            Text(reason.headline).ryFont(.callout).foregroundStyle(RYColor.onAccent.opacity(0.85))
+            Text(reason == .expired ? "Пробный период закончился" : "HomeFold Plus").ryFont(.title)
+                .foregroundStyle(RYColor.onAccent).multilineTextAlignment(.center)
+                .minimumScaleFactor(0.8).accessibilityAddTraits(.isHeader)
+            Text(subtitle).ryFont(.callout).foregroundStyle(RYColor.onAccent.opacity(0.85))
                 .multilineTextAlignment(.center)
         }
     }
 
-    private var comparison: some View {
+    private var subtitle: String {
+        if reason == .expired { return "Подключите HomeFold Plus, чтобы продолжить. Все ваши данные сохранены." }
+        if case .trial(let days, _)? = family?.accessState() {
+            return "Пробный период: осталось \(days) \(OverviewView.plural(days, "день", "дня", "дней"))"
+        }
+        return "Подписка для всей семьи"
+    }
+
+    private var family: FamilyRecord? { families.first }
+
+    private var benefits: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Spacer()
-                column("Бесплатно", emphasized: false)
-                column("Plus", emphasized: true)
-            }
-            .padding(.horizontal, 8).padding(.bottom, 6)
-            ForEach(Array(PlusFeature.all.enumerated()), id: \.element.id) { index, feature in
-                if index > 0 { Rectangle().fill(RYColor.onAccent.opacity(0.14)).frame(height: 0.5).padding(.horizontal, 8) }
-                featureRow(feature)
+            ForEach(Array(PlusBenefit.all.enumerated()), id: \.element.id) { index, benefit in
+                if index > 0 { Rectangle().fill(RYColor.onAccent.opacity(0.14)).frame(height: 0.5).padding(.leading, 46) }
+                HStack(spacing: 14) {
+                    Image(systemName: benefit.systemImage).font(.system(size: 18, weight: .regular))
+                        .foregroundStyle(RYColor.onAccent).frame(width: 32)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(benefit.title).ryFont(.body).foregroundStyle(RYColor.onAccent)
+                        Text(benefit.detail).ryFont(.subhead).foregroundStyle(RYColor.onAccent.opacity(0.75))
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.vertical, 12)
+                .accessibilityElement(children: .combine)
             }
         }
-        .padding(.horizontal, 6).padding(.vertical, 14)
+        .padding(.horizontal, 16).padding(.vertical, 4)
         .background(RYColor.onAccent.opacity(0.14), in: RoundedRectangle(cornerRadius: RYRadius.card))
-        .accessibilityIdentifier("paywall.comparison")
-    }
-
-    private func column(_ title: String, emphasized: Bool) -> some View {
-        Text(title).ryFont(.caption)
-            .foregroundStyle(RYColor.onAccent.opacity(emphasized ? 1 : 0.7))
-            .frame(width: 84)
-    }
-
-    private func featureRow(_ feature: PlusFeature) -> some View {
-        let highlighted = feature.reason == reason
-        return HStack(spacing: 0) {
-            HStack(spacing: 10) {
-                Image(systemName: feature.systemImage).font(.system(size: 16, weight: .regular))
-                    .foregroundStyle(RYColor.onAccent).frame(width: 24)
-                Text(feature.title).ryFont(.body).foregroundStyle(RYColor.onAccent)
-                    .lineLimit(2).minimumScaleFactor(0.85)
-            }
-            Spacer(minLength: 6)
-            Text(feature.free).ryFont(.subhead).foregroundStyle(RYColor.onAccent.opacity(0.7)).frame(width: 84)
-            Text(feature.plus).ryFont(.bodyMedium).foregroundStyle(RYColor.onAccent).frame(width: 84)
-        }
-        .padding(.vertical, 11)
-        .padding(.horizontal, 8)
-        .background(highlighted ? RYColor.onAccent.opacity(0.18) : .clear, in: RoundedRectangle(cornerRadius: 12))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(feature.title): бесплатно \(feature.free), Plus \(feature.plus)")
+        .accessibilityIdentifier("paywall.benefits")
     }
 
     // MARK: Тарифы

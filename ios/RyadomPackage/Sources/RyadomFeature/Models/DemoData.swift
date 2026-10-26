@@ -33,11 +33,28 @@ public enum DemoData {
         return image.jpegData(compressionQuality: 0.9).flatMap(AvatarImage.prepare)
     }
 
+    /// Состояние монетизации для демо: по умолчанию пробный период только начался.
+    /// `-RYTrialDaysLeft N` (N = 0 — уже закончился) и `-RYSubscribed` для проверки экранов.
+    static func applyTrialArguments(to family: FamilyRecord) {
+        let args = ProcessInfo.processInfo.arguments
+        let day: TimeInterval = 86_400
+        if args.contains("-RYSubscribed") { family.plan = "plus"; family.trialStartedAt = .now.addingTimeInterval(-30 * day); return }
+        if let index = args.firstIndex(of: "-RYTrialDaysLeft"), index + 1 < args.count, let left = Int(args[index + 1]) {
+            let elapsed = Double(Monetization.trialDays - min(max(left, 0), Monetization.trialDays))
+            family.trialStartedAt = left <= 0 ? .now.addingTimeInterval(-(Double(Monetization.trialDays) + 1) * day)
+                                              : .now.addingTimeInterval(-elapsed * day - 3_600)
+            return
+        }
+        family.trialStartedAt = .now
+    }
+
     @MainActor
     public static func seed(into context: ModelContext) {
         let familyId = UUID()
         let anna = UUID(), mikhail = UUID(), sonya = UUID()
-        context.insert(FamilyRecord(id: familyId, name: "Смирновы"))
+        let family = FamilyRecord(id: familyId, name: "Смирновы")
+        applyTrialArguments(to: family)
+        context.insert(family)
         context.insert(MemberRecord(id: anna, familyId: familyId, displayName: "Анна", role: "admin", toneIndex: 0))
         context.insert(MemberRecord(id: mikhail, familyId: familyId, displayName: "Михаил", role: "member", toneIndex: 1))
         context.insert(MemberRecord(id: sonya, familyId: familyId, displayName: "Соня", role: "member", toneIndex: 2))

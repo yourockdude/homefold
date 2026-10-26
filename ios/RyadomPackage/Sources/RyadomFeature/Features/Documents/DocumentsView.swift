@@ -42,7 +42,7 @@ struct DocumentsView: View {
         .sheet(item: $sheet) { item in
             DocumentFormView(mode: item == .create ? .create : .edit(editId(item)), draft: $draft, pickedFile: $pickedFile,
                              pendingFilePicker: $pendingFilePicker, members: members, familyName: familyName,
-                             isPremium: families.first?.isPremium ?? false, storedCount: docs.count,
+                             storedCount: docs.count,
                              onClose: { sheet = nil },
                              onScanDenied: { sheet = nil; path.append(.cameraDenied) },
                              onFinished: { id in sheet = nil; path.append(.detail(id, added: true)) })

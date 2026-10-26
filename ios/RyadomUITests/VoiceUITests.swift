@@ -80,16 +80,15 @@ final class VoiceUITests: XCTestCase {
         app.buttons["sheet.cancel"].tap()
     }
 
-    /// На бесплатном тарифе повтор не применяется, вместо него — подсказка и вход в пейвол.
-    func testRecurrenceNeedsPlus() {
+    /// Повтор из фразы попадает в форму.
+    func testRecurrenceFromPhraseIsApplied() {
         let app = launch(phrase: "полить растения каждый день в 19:00")
         app.buttons["tab.tasks"].tap()
         app.buttons["tasks.voice"].tap()
         XCTAssertTrue(app.textFields["task.title"].waitForExistence(timeout: 20))
         waitForValue(app.textFields["task.title"], "Полить растения")
-        XCTAssertTrue(app.staticTexts["Повтор «Ежедневно» доступен в HomeFold Plus — пока дело создастся без повтора."].exists)
-        app.buttons["task.voiceUpgrade"].tap()
-        XCTAssertTrue(app.buttons["paywall.purchase"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Каждый день"].exists, "повтор распознан")
+        app.buttons["sheet.cancel"].tap()
     }
 
     // MARK: Нет микрофона

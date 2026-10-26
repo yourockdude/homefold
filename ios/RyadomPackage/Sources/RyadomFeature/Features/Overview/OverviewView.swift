@@ -24,6 +24,7 @@ struct OverviewView: View {
     private var expiringDocuments: [DocumentRecord]
 
     @State private var path: [OverviewRoute] = []
+    @State private var paywallReason: PaywallReason?
 
     private var state: OverviewLoadState { session.overviewState }
     private var me: MemberRecord? { members.first { $0.id == session.userId } ?? members.first }
@@ -45,6 +46,7 @@ struct OverviewView: View {
         NavigationStack(path: $path) {
             content
                 .toolbar(.hidden, for: .navigationBar)
+                .paywall(reason: $paywallReason)
                 .navigationDestination(for: OverviewRoute.self) { route in
                     switch route {
                     case .settings: SettingsView(onOpenFamily: { path.append(.family(back: "Настройки")) })
@@ -126,6 +128,7 @@ struct OverviewView: View {
 
     @ViewBuilder private var loaded: some View {
         greeting
+        trialBanner
         cover(compact: false)
         summary
         todaySection
@@ -134,6 +137,32 @@ struct OverviewView: View {
                 .ryFont(.caption).foregroundStyle(RYColor.muted)
         }
         if let doc = nextDocument { documentCard(doc) }
+    }
+
+    /// В последнюю неделю пробного периода напоминаем о подписке.
+    @ViewBuilder private var trialBanner: some View {
+        if case .trial(let days, _)? = families.first?.accessState(), days <= Monetization.reminderDays {
+            Button { paywallReason = .general } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "clock").font(.system(size: 18, weight: .regular)).foregroundStyle(RYColor.accent)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Пробный период: \(days) \(Self.plural(days, "день", "дня", "дней"))")
+                            .ryFont(.headline).foregroundStyle(RYColor.accent)
+                        Text("Подключите HomeFold Plus, чтобы не потерять доступ")
+                            .ryFont(.subhead).foregroundStyle(RYColor.muted)
+                    }
+                    Spacer(minLength: 4)
+                    Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(RYColor.accent)
+                }
+                .padding(14)
+                .background(RYColor.accentTint, in: RoundedRectangle(cornerRadius: RYRadius.card))
+                .contentShape(RoundedRectangle(cornerRadius: RYRadius.card))
+            }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Пробный период: осталось \(days) \(Self.plural(days, "день", "дня", "дней")). Подключить подписку")
+            .accessibilityIdentifier("overview.trialBanner")
+        }
     }
 
     private func cover(compact: Bool) -> some View {
