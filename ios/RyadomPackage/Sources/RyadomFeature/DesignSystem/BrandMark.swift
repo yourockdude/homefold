@@ -1,13 +1,20 @@
 import SwiftUI
 
-/// Готовый логотип-надпись: дом и «HomeFold». У семей с подпиской — вариант с плюсом.
-/// Размер задаётся высотой: у обоих вариантов дом одинаковый.
+/// Готовый логотип-надпись: дом и «HomeFold». У семей с подпиской — вариант с плюсом;
+/// `inverse` — белая надпись для тёмных и цветных фонов (сплэш, экран подписки).
+/// Размер задаётся высотой: у всех вариантов дом одинаковый.
 struct BrandWordmark: View {
     var showsPlus = false
+    var inverse = false
     var height: CGFloat = 32
 
+    private var assetName: String {
+        if inverse { return "BrandWordmarkInverse" }
+        return showsPlus ? "BrandWordmarkPlus" : "BrandWordmark"
+    }
+
     var body: some View {
-        Image(showsPlus ? "BrandWordmarkPlus" : "BrandWordmark", bundle: .module)
+        Image(assetName, bundle: .module)
             .resizable()
             .scaledToFit()
             .frame(height: height)
@@ -15,7 +22,7 @@ struct BrandWordmark: View {
     }
 }
 
-/// Логотип HomeFold. В шапках — готовая надпись (`BrandWordmark`), на сплэше — дом и белое название.
+/// Логотип HomeFold. В шапках — готовая надпись (`BrandWordmark`), на сплэше — её белый вариант.
 struct BrandMark: View {
     enum Style { case compact, splash }
 
@@ -27,13 +34,7 @@ struct BrandMark: View {
     var body: some View {
         Group {
             if style == .splash {
-                VStack(spacing: 14) {
-                    Image("BrandLogo", bundle: .module).resizable().scaledToFit().frame(height: 128)
-                    Text("HomeFold")
-                        .font(.custom("HelveticaNeue-Bold", size: 40, relativeTo: .title2))
-                        .tracking(-0.8)
-                        .foregroundStyle(color)
-                }
+                BrandWordmark(inverse: true, height: 66)
             } else {
                 BrandWordmark(showsPlus: showsPlus, height: 34)
                     .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .leading)))

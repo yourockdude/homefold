@@ -85,7 +85,7 @@ struct PaywallView: View {
 
     private var hero: some View {
         VStack(spacing: 10) {
-            BrandWordmark(height: 64)
+            BrandWordmark(inverse: true, height: 64)
             Text(reason == .expired ? "Пробный период закончился" : "Подписка для всей семьи").ryFont(.title)
                 .foregroundStyle(RYColor.onAccent).multilineTextAlignment(.center)
                 .minimumScaleFactor(0.8).accessibilityAddTraits(.isHeader)
@@ -254,7 +254,7 @@ struct PaywallView: View {
     private var success: some View {
         VStack(spacing: 18) {
             Spacer()
-            BrandWordmark(showsPlus: true, height: 54)
+            BrandWordmark(inverse: true, height: 58)
                 .scaleEffect(purchased ? 1 : 0.85)
                 .animation(reduceMotion ? nil : .spring(duration: 0.5, bounce: 0.35), value: purchased)
             Text("HomeFold Plus подключён").ryFont(.title).foregroundStyle(RYColor.onAccent).multilineTextAlignment(.center)
