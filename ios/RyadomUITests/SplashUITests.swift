@@ -27,7 +27,7 @@ final class SplashUITests: XCTestCase {
         app.launchArguments = ["-RYDemo", "-RYSkipBiometrics"]
         app.launch()
         XCTAssertTrue(app.buttons["Отметить выполненным: Забрать Соню с танцев"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["HomeFold"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["HomeFold"].exists)
 
         app.buttons["Настройки профиля"].tap()
         XCTAssertTrue(app.staticTexts["Настройки"].waitForExistence(timeout: 3))
@@ -43,6 +43,6 @@ final class SplashUITests: XCTestCase {
         faceID.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.5)).tap()
         XCTAssertTrue(app.buttons["settings.save"].isEnabled)
         app.buttons["settings.save"].tap()
-        XCTAssertTrue(app.staticTexts["HomeFold"].waitForExistence(timeout: 3), "после сохранения возвращаемся на обзор")
+        XCTAssertTrue(app.descendants(matching: .any)["HomeFold"].waitForExistence(timeout: 3), "после сохранения возвращаемся на обзор")
     }
 }

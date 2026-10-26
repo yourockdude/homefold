@@ -85,8 +85,8 @@ struct PaywallView: View {
 
     private var hero: some View {
         VStack(spacing: 10) {
-            Image("BrandLogo", bundle: .module).resizable().scaledToFit().frame(height: 84)
-            Text(reason == .expired ? "Пробный период закончился" : "HomeFold Plus").ryFont(.title)
+            BrandWordmark(height: 64)
+            Text(reason == .expired ? "Пробный период закончился" : "Подписка для всей семьи").ryFont(.title)
                 .foregroundStyle(RYColor.onAccent).multilineTextAlignment(.center)
                 .minimumScaleFactor(0.8).accessibilityAddTraits(.isHeader)
             Text(subtitle).ryFont(.callout).foregroundStyle(RYColor.onAccent.opacity(0.85))
@@ -99,7 +99,7 @@ struct PaywallView: View {
         if case .trial(let days, _)? = family?.accessState() {
             return "Пробный период: осталось \(days) \(OverviewView.plural(days, "день", "дня", "дней"))"
         }
-        return "Подписка для всей семьи"
+        return "Подключите HomeFold Plus — всё для семьи в одном приложении"
     }
 
     private var family: FamilyRecord? { families.first }
@@ -254,8 +254,9 @@ struct PaywallView: View {
     private var success: some View {
         VStack(spacing: 18) {
             Spacer()
-            Image(systemName: "checkmark.circle.fill").font(.system(size: 76)).foregroundStyle(RYColor.onAccent)
-                .symbolEffect(.bounce, value: purchased)
+            BrandWordmark(showsPlus: true, height: 54)
+                .scaleEffect(purchased ? 1 : 0.85)
+                .animation(reduceMotion ? nil : .spring(duration: 0.5, bounce: 0.35), value: purchased)
             Text("HomeFold Plus подключён").ryFont(.title).foregroundStyle(RYColor.onAccent).multilineTextAlignment(.center)
                 .accessibilityIdentifier("paywall.success")
             Text("В семье теперь до 8 участников, дела можно повторять, а для документов — 10 ГБ.")

@@ -1,55 +1,46 @@
 import SwiftUI
 
-/// Логотип HomeFold: объёмный синий дом и название Helvetica Neue. На сплэше — крупный, название белое.
-/// У семей с подпиской после названия стоит синий плюс.
+/// Готовый логотип-надпись: дом и «HomeFold». У семей с подпиской — вариант с плюсом.
+/// Размер задаётся высотой: у обоих вариантов дом одинаковый.
+struct BrandWordmark: View {
+    var showsPlus = false
+    var height: CGFloat = 32
+
+    var body: some View {
+        Image(showsPlus ? "BrandWordmarkPlus" : "BrandWordmark", bundle: .module)
+            .resizable()
+            .scaledToFit()
+            .frame(height: height)
+            .accessibilityLabel(showsPlus ? "HomeFold Plus" : "HomeFold")
+    }
+}
+
+/// Логотип HomeFold. В шапках — готовая надпись (`BrandWordmark`), на сплэше — дом и белое название.
 struct BrandMark: View {
     enum Style { case compact, splash }
 
     var style: Style = .compact
     var color: Color = RYColor.accent
-    /// Подписка HomeFold Plus действует: после названия добавляется плюс.
+    /// Подписка HomeFold Plus действует: используется логотип с плюсом.
     var showsPlus = false
 
     var body: some View {
         Group {
             if style == .splash {
                 VStack(spacing: 14) {
-                    house(height: 128)
-                    wordmark(size: 40)
+                    Image("BrandLogo", bundle: .module).resizable().scaledToFit().frame(height: 128)
+                    Text("HomeFold")
+                        .font(.custom("HelveticaNeue-Bold", size: 40, relativeTo: .title2))
+                        .tracking(-0.8)
+                        .foregroundStyle(color)
                 }
             } else {
-                HStack(spacing: 6) {
-                    house(height: 30)
-                    wordmark(size: 24)
-                    if showsPlus { plus(height: 17) }
-                }
+                BrandWordmark(showsPlus: showsPlus, height: 34)
+                    .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .leading)))
             }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(showsPlus ? "HomeFold Plus" : "HomeFold")
-    }
-
-    private func house(height: CGFloat) -> some View {
-        Image("BrandLogo", bundle: .module)
-            .resizable()
-            .scaledToFit()
-            .frame(height: height)
-    }
-
-    private func plus(height: CGFloat) -> some View {
-        Image("BrandPlus", bundle: .module)
-            .resizable()
-            .scaledToFit()
-            .frame(height: height)
-            .offset(x: -2, y: -3)
-            .transition(.scale(scale: 0.4).combined(with: .opacity))
-    }
-
-    private func wordmark(size: CGFloat) -> some View {
-        Text("HomeFold")
-            .font(.custom("HelveticaNeue-Bold", size: size, relativeTo: .title2))
-            .tracking(-size * 0.02)
-            .foregroundStyle(color)
     }
 }
 

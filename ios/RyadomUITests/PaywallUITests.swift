@@ -15,7 +15,8 @@ final class PaywallUITests: XCTestCase {
         XCTAssertTrue(app.buttons["settings.subscription"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.buttons["settings.subscription"].label, "Подключить")
         app.buttons["settings.subscription"].tap()
-        XCTAssertTrue(app.staticTexts["HomeFold Plus"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["paywall.close"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Подписка для всей семьи"].exists)
     }
 
     // MARK: Пробный период
@@ -69,7 +70,7 @@ final class PaywallUITests: XCTestCase {
     /// В шапке «Обзора» у подписчика после названия стоит плюс; без подписки — нет.
     func testHeaderShowsPlusOnlyWithSubscription() {
         var app = launch()
-        XCTAssertTrue(app.staticTexts["HomeFold"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["HomeFold"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.descendants(matching: .any)["HomeFold Plus"].exists)
         app.terminate()
         app = launch(["-RYSubscribed"])
@@ -79,7 +80,7 @@ final class PaywallUITests: XCTestCase {
     /// Плюс появляется сразу после покупки, без перезапуска.
     func testPlusAppearsInHeaderAfterPurchase() {
         let app = launch(["-RYTrialDaysLeft", "5"])
-        XCTAssertTrue(app.staticTexts["HomeFold"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["HomeFold"].waitForExistence(timeout: 5))
         openPaywallFromSettings(app)
         app.buttons["paywall.purchase"].tap()
         XCTAssertTrue(app.staticTexts["paywall.success"].waitForExistence(timeout: 5))
