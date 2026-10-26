@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
     req.ctx = ctx;
 
     if (!this.reflector.getAllAndOverride<boolean>(ALLOW_NO_FAMILY, targets) && !ctx.familyId) {
-      throw new AppError(403, 'NO_FAMILY', 'Сначала создайте семью или примите приглашение');
+      throw new AppError(403, 'NO_FAMILY', 'Сначала добавьте семью или примите приглашение');
     }
     if (this.reflector.getAllAndOverride<boolean>(ADMIN_ONLY, targets) && ctx.role !== 'admin') {
       throw Err.forbidden('Действие доступно только администратору семьи');
