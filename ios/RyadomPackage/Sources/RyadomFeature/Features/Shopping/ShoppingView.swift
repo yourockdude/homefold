@@ -32,6 +32,7 @@ struct ShoppingView: View {
 
     @State private var path: [ShoppingRoute] = []
     @State private var formMode: ShoppingFormMode?
+    @State private var showVoice = false
     @State private var boughtExpanded = false
     @State private var confirmClear = false
     @State private var undoItem: ShoppingItemRecord?
@@ -63,6 +64,9 @@ struct ShoppingView: View {
             try? await Task.sleep(for: .milliseconds(300))
             if let item = allItems.first(where: { $0.id == id }) { formMode = .edit(item) }
             session.pendingDestination = nil
+        }
+        .sheet(isPresented: $showVoice) {
+            VoiceCaptureSheet(target: .shopping, members: members, currentUserId: session.userId, onShopping: addVoiceItems)
         }
         .sheet(item: $formMode) { mode in
             switch mode {
@@ -123,9 +127,24 @@ struct ShoppingView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
     }
 
+    /// Добавляет позиции, разобранные из голосовой фразы.
+    private func addVoiceItems(_ parsed: [ParsedShoppingItem]) {
+        guard let list else { return }
+        for item in parsed {
+            var draft = ShoppingItemDraft()
+            draft.name = item.name
+            draft.quantity = item.quantity
+            draft.unit = item.unit.rawValue
+            draft.category = item.category.rawValue
+            service?.add(draft, to: list)
+        }
+    }
+
     private var header: some View {
         RYScreenHeader(title: "Покупки",
                        subtitle: "Общий список семьи \(RussianNames.familyGenitive(families.first?.name ?? ""))") {
+            RYGlassCircleButton(systemImage: "mic", label: "Список голосом") { showVoice = true }
+                .accessibilityIdentifier("shopping.voice")
             Menu {
                 Button { path.append(.history) } label: { Label("История списков", systemImage: "clock.arrow.circlepath") }
                 Button { confirmClear = true } label: { Label("Убрать купленные", systemImage: "trash") }

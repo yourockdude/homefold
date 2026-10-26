@@ -94,6 +94,7 @@ struct TaskDetailView: View {
         .sheet(item: $sheet) { sheet in
             switch sheet {
             case .create(let date): TaskFormView(mode: .create(date), members: members, familyName: familyName)
+            case .createFromVoice: EmptyView() // из карточки дела голосом не создают
             case .edit(let id): TaskFormView(mode: .editOccurrence(id), members: members, familyName: familyName)
             case .editSeries(let id): TaskFormView(mode: .editSeries(id), members: members, familyName: familyName)
             }

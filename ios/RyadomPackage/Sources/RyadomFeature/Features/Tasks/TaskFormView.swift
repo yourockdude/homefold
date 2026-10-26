@@ -12,6 +12,8 @@ struct TaskFormView: View {
     let mode: Mode
     let members: [MemberRecord]
     let familyName: String
+    /// Заполненное из голосовой фразы дело; nil — обычное создание.
+    var initial: VoiceTaskResult?
 
     @Environment(AppSession.self) private var session
     @Environment(\.modelContext) private var context
@@ -51,6 +53,9 @@ struct TaskFormView: View {
         RYSheetScaffold(title: screenTitle, confirmTitle: isCreate ? "Создать" : "Сохранить",
                         confirmIdentifier: "task.submit", onCancel: { dismiss() }, onConfirm: submit) {
             Text("Для семьи \(RussianNames.familyGenitive(familyName))").ryFont(.callout).foregroundStyle(RYColor.muted)
+            if let initial {
+                voiceNotice(initial)
+            }
             if isSeriesEdit {
                 RYNotice(systemImage: "repeat", text: "Изменения применятся к этому и следующим делам серии. Выполненные и отдельно изменённые дела останутся как были.")
             }
@@ -70,6 +75,19 @@ struct TaskFormView: View {
         }
         .paywall(reason: $paywallReason)
         .onAppear(perform: load)
+    }
+
+    /// Подсказка для дела, созданного голосом, и объяснение, что не удалось применить.
+    private func voiceNotice(_ result: VoiceTaskResult) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            RYNotice(systemImage: "mic", title: "Распознано из фразы",
+                     text: "Проверьте детали и нажмите «Создать».")
+            if let note = result.note {
+                RYNotice(systemImage: "repeat", text: note)
+                Button { paywallReason = .recurringTasks } label: { Text("Подключить HomeFold Plus") }
+                    .buttonStyle(.rySecondary).accessibilityIdentifier("task.voiceUpgrade")
+            }
+        }
     }
 
     // MARK: Поля
@@ -270,10 +288,14 @@ struct TaskFormView: View {
         loaded = true
         switch mode {
         case .create(let date):
-            draft = TaskDraft(start: date)
-            draft.reminderMinutes = session.settings.notifications.defaultReminderMinutes
-            draft.assigneeId = session.userId
-            titleFocused = true
+            if let initial {
+                draft = initial.draft
+            } else {
+                draft = TaskDraft(start: date)
+                draft.reminderMinutes = session.settings.notifications.defaultReminderMinutes
+                draft.assigneeId = session.userId
+                titleFocused = true
+            }
         case .editOccurrence(let id), .editSeries(let id):
             guard let occ = occurrence(id) else { return }
             draft = TaskDraft(occurrence: occ, recurrence: series(occ.seriesId)?.recurrence ?? .none)

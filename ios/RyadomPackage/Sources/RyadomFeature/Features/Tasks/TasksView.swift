@@ -13,6 +13,9 @@ struct TasksView: View {
 
     @State private var path: [TaskRoute] = []
     @State private var sheet: TaskSheet?
+    @State private var showVoice = false
+    /// Разобранная фраза: ждёт закрытия листа записи, затем открывается форма.
+    @State private var pendingVoice: VoiceTaskResult?
     @State private var selectedDay = Calendar.current.startOfDay(for: .now)
     @State private var filter: TaskFilter = .all
     @State private var showMemberFilter = false
@@ -74,9 +77,13 @@ struct TasksView: View {
             path = [.detail(id)]
             session.pendingDestination = nil
         }
+        .sheet(isPresented: $showVoice, onDismiss: presentVoiceForm) {
+            VoiceCaptureSheet(target: .task, members: members, currentUserId: session.userId, onTask: handleVoice)
+        }
         .sheet(item: $sheet) { sheet in
             switch sheet {
             case .create(let date): TaskFormView(mode: .create(date), members: members, familyName: families.first?.name ?? "")
+            case .createFromVoice(let result): TaskFormView(mode: .create(defaultStart), members: members, familyName: families.first?.name ?? "", initial: result)
             case .edit(let id): TaskFormView(mode: .editOccurrence(id), members: members, familyName: families.first?.name ?? "")
             case .editSeries(let id): TaskFormView(mode: .editSeries(id), members: members, familyName: families.first?.name ?? "")
             }
@@ -95,8 +102,12 @@ struct TasksView: View {
     private var content: some View {
         VStack(spacing: 0) {
             RYScreenHeader(title: "Дела семьи", subtitle: "Когда заботы делятся на всех") {
-                RYGlassCircleButton(systemImage: "plus", label: "Новое дело") { sheet = .create(defaultStart) }
-                    .accessibilityIdentifier("tasks.plus")
+                HStack(spacing: 8) {
+                    RYGlassCircleButton(systemImage: "mic", label: "Дело голосом") { showVoice = true }
+                        .accessibilityIdentifier("tasks.voice")
+                    RYGlassCircleButton(systemImage: "plus", label: "Новое дело") { sheet = .create(defaultStart) }
+                        .accessibilityIdentifier("tasks.plus")
+                }
             }
             ScrollView {
                 VStack(alignment: .leading, spacing: RYSpacing.s) {
@@ -293,6 +304,31 @@ struct TasksView: View {
             return calendar.date(bySetting: .minute, value: 0, of: Date.now.addingTimeInterval(3600)) ?? .now
         }
         return calendar.date(bySettingHour: 18, minute: 0, second: 0, of: selectedDay) ?? selectedDay
+    }
+
+    /// Превращает разобранную фразу в черновик дела. Повтор доступен только в Plus.
+    private func handleVoice(_ parsed: ParsedTask) {
+        var draft = TaskDraft(start: parsed.start)
+        draft.title = parsed.title
+        draft.hasTime = parsed.hasTime
+        draft.assigneeId = parsed.assigneeId ?? session.userId
+        draft.reminderMinutes = parsed.reminderMinutes ?? session.settings.notifications.defaultReminderMinutes
+        var note: String?
+        if parsed.recurrence != .none {
+            if families.first?.isPremium ?? false {
+                draft.recurrence = parsed.recurrence
+            } else {
+                note = "Повтор «\(parsed.recurrence.title)» доступен в HomeFold Plus — пока дело создастся без повтора."
+            }
+        }
+        pendingVoice = VoiceTaskResult(draft: draft, note: note)
+    }
+
+    /// Второй лист нельзя показать, пока не закрылся первый: открываем форму после закрытия записи.
+    private func presentVoiceForm() {
+        guard let result = pendingVoice else { return }
+        pendingVoice = nil
+        sheet = .createFromVoice(result)
     }
 
     private func toggle(_ task: TaskOccurrenceRecord) {

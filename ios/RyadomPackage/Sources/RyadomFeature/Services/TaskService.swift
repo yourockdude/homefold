@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 /// Данные формы дела.
-public struct TaskDraft: Equatable, Sendable {
+public struct TaskDraft: Equatable, Hashable, Sendable {
     public var title = ""
     public var assigneeId: UUID?
     /// Дата и (если `hasTime`) время начала.
