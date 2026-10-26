@@ -96,8 +96,10 @@ final class SpeechCapture {
         engine.stop()
         watcher?.cancel()
         level = 0
-        state = .idle
-        if !transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { onFinished?() }
+        let hasText = !transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        // Распознавание оборвалось ошибкой, ничего не услышав: объясняем, а не молча возвращаем в начало.
+        state = (error != nil && !hasText) ? .failed : .idle
+        if hasText { onFinished?() }
     }
 
     /// Конец фразы по тишине: после слов — `silenceTimeout`; общий предел — `maxDuration`.
@@ -123,7 +125,7 @@ final class SpeechCapture {
 
 // MARK: Системное распознавание
 
-/// Передаёт звук из аудиопотока в запрос распознавания. Нужен, чтобы не тянуть несовместимые с потоками типы в изолированный код.
+/// Передаёт звук из аудиопотока в запрос распознавания.
 private final class AudioSink: @unchecked Sendable {
     private let request: SFSpeechAudioBufferRecognitionRequest
     private let onLevel: @Sendable (Float) -> Void
@@ -145,33 +147,37 @@ private final class AudioSink: @unchecked Sendable {
     }
 }
 
-@MainActor
-final class AppleSpeechEngine: SpeechEngine {
+/// Всё, что отдаёт системе замыкания (запрос доступа, аудио-тап, результат распознавания), живёт здесь — вне MainActor.
+/// Системные колбэки приходят с чужих очередей (TCC, аудиопоток, очередь распознавания). Замыкание, созданное внутри
+/// MainActor-класса, унаследовало бы его изоляцию, и Swift оборвал бы процесс проверкой очереди
+/// (`dispatch_assert_queue_fail`, SIGTRAP) — так приложение падало при нажатии на микрофон.
+nonisolated final class SpeechPipeline: @unchecked Sendable {
     private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "ru-RU"))
     private let audio = AVAudioEngine()
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
 
-    func requestAccess() async -> SpeechAccess {
-        guard let recognizer, recognizer.isAvailable else { return .unavailable }
-        let status = await withCheckedContinuation { (continuation: CheckedContinuation<SFSpeechRecognizerAuthorizationStatus, Never>) in
-            SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
+    var isAvailable: Bool { recognizer?.isAvailable ?? false }
+
+    func authorizationStatus() async -> SFSpeechRecognizerAuthorizationStatus {
+        await withCheckedContinuation { continuation in
+            SFSpeechRecognizer.requestAuthorization { status in continuation.resume(returning: status) }
         }
-        switch status {
-        case .authorized: break
-        case .restricted: return .restricted
-        default: return .denied
-        }
-        return await AVAudioApplication.requestRecordPermission() ? .granted : .denied
     }
 
-    func start(onTranscript: @escaping @MainActor (String) -> Void,
-               onLevel: @escaping @MainActor (Float) -> Void,
-               onEnd: @escaping @MainActor (Error?) -> Void) throws {
+    func microphoneGranted() async -> Bool {
+        await AVAudioApplication.requestRecordPermission()
+    }
+
+    func start(onTranscript: @escaping @Sendable (String) -> Void,
+               onLevel: @escaping @Sendable (Float) -> Void,
+               onEnd: @escaping @Sendable (Error?) -> Void) throws {
         guard let recognizer else { throw SpeechError.unavailable }
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.record, mode: .measurement, options: .duckOthers)
         try session.setActive(true, options: .notifyOthersOnDeactivation)
+        // Без аудиовхода (например, в симуляторе без микрофона) обращение к inputNode может оборвать процесс.
+        guard session.isInputAvailable, !(session.availableInputs ?? []).isEmpty else { throw SpeechError.noInput }
 
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
@@ -181,19 +187,18 @@ final class AppleSpeechEngine: SpeechEngine {
         self.request = request
 
         let input = audio.inputNode
-        let sink = AudioSink(request: request) { level in Task { @MainActor in onLevel(level) } }
+        let format = input.outputFormat(forBus: 0)
+        // Нулевая частота или каналы — тот же случай; installTap на таком формате роняет приложение.
+        guard format.sampleRate > 0, format.channelCount > 0 else { throw SpeechError.noInput }
+        let sink = AudioSink(request: request, onLevel: onLevel)
         input.removeTap(onBus: 0)
-        input.installTap(onBus: 0, bufferSize: 1024, format: input.outputFormat(forBus: 0)) { buffer, _ in sink.handle(buffer) }
+        input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in sink.handle(buffer) }
         audio.prepare()
         try audio.start()
 
         task = recognizer.recognitionTask(with: request) { result, error in
-            let text = result?.bestTranscription.formattedString
-            let finished = (result?.isFinal ?? false) || error != nil
-            Task { @MainActor in
-                if let text { onTranscript(text) }
-                if finished { onEnd(error) }
-            }
+            if let text = result?.bestTranscription.formattedString { onTranscript(text) }
+            if (result?.isFinal ?? false) || error != nil { onEnd(error) }
         }
     }
 
@@ -207,7 +212,33 @@ final class AppleSpeechEngine: SpeechEngine {
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
-    enum SpeechError: Error { case unavailable }
+    enum SpeechError: Error { case unavailable, noInput }
+}
+
+@MainActor
+final class AppleSpeechEngine: SpeechEngine {
+    private let pipeline = SpeechPipeline()
+
+    func requestAccess() async -> SpeechAccess {
+        guard pipeline.isAvailable else { return .unavailable }
+        switch await pipeline.authorizationStatus() {
+        case .authorized: break
+        case .restricted: return .restricted
+        default: return .denied
+        }
+        return await pipeline.microphoneGranted() ? .granted : .denied
+    }
+
+    func start(onTranscript: @escaping @MainActor (String) -> Void,
+               onLevel: @escaping @MainActor (Float) -> Void,
+               onEnd: @escaping @MainActor (Error?) -> Void) throws {
+        try pipeline.start(
+            onTranscript: { text in Task { @MainActor in onTranscript(text) } },
+            onLevel: { level in Task { @MainActor in onLevel(level) } },
+            onEnd: { error in Task { @MainActor in onEnd(error) } })
+    }
+
+    func stop() { pipeline.stop() }
 }
 
 #if DEBUG

@@ -139,4 +139,30 @@ final class VoiceUITests: XCTestCase {
         app.buttons["voice.cancel"].tap()
         XCTAssertTrue(app.buttons["shopping.add"].waitForExistence(timeout: 3))
     }
+
+    // MARK: Настоящий движок
+
+    /// Регрессия: нажатие на микрофон с системным распознаванием не роняло приложение
+    /// (колбэки запроса доступа приходят не на главном потоке). Доступ подтверждается системным окном.
+    func testRealEngineDoesNotCrash() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-RYDemo", "-RYSkipBiometrics"]   // без симулятора речи
+        addUIInterruptionMonitor(withDescription: "Доступ к микрофону и речи") { alert in
+            for title in ["OK", "ОК", "Разрешить", "Allow"] where alert.buttons[title].exists {
+                alert.buttons[title].tap()
+                return true
+            }
+            return false
+        }
+        app.launch()
+        app.buttons["tab.shopping"].tap()
+        app.buttons["shopping.voice"].tap()
+        sleep(3)
+        app.tap()   // даёт сработать монитору системных окон
+        sleep(2)
+        XCTAssertEqual(app.state, .runningForeground, "приложение упало после нажатия на голосовой ввод")
+        XCTAssertTrue(app.staticTexts["Список голосом"].exists)
+        XCTAssertTrue(transcript(app).exists, "лист остаётся рабочим: текст можно ввести вручную")
+    }
 }
