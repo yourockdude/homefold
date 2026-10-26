@@ -10,15 +10,18 @@ final class FamilyUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["Добавьте семью"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["tab.overview"].exists)
+        // Клавиатура поднимается сама: фокус сразу на имени.
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
 
-        app.buttons["onboarding.create"].tap()
-        XCTAssertTrue(app.staticTexts["Введите имя"].exists, "пустая форма не создаёт семью")
+        // Клавиша «Ввод» отправляет форму: пустая не создаёт семью.
+        app.typeText("\n")
+        app.typeText("\n")
+        XCTAssertTrue(app.staticTexts["Введите имя"].waitForExistence(timeout: 3))
 
         let name = app.textFields["onboarding.name"]
         name.tap(); name.typeText("Анна")
         let family = app.textFields["onboarding.family"]
-        family.tap(); family.typeText("Смирновы")
-        app.buttons["onboarding.create"].tap()
+        family.tap(); family.typeText("Смирновы\n")
 
         XCTAssertTrue(app.buttons["tab.overview"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Смирновы"].exists)

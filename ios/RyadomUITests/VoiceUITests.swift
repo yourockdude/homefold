@@ -116,6 +116,7 @@ final class VoiceUITests: XCTestCase {
         app.buttons["shopping.voice"].tap()
         XCTAssertTrue(app.staticTexts["Распознавание речи недоступно"].waitForExistence(timeout: 5))
         XCTAssertTrue(transcript(app).exists)
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3), "без распознавания клавиатура поднимается сама")
     }
 
     func testNothingRecognizedShowsHint() {

@@ -55,6 +55,11 @@ struct FamilyOnboardingView: View {
         .scrollDismissesKeyboard(.interactively)
         .background(RYColor.background.ignoresSafeArea())
         .sensoryFeedback(.success, trigger: errorText == nil && submitted)
+        .task {
+            // Ввод имени — единственное действие на экране: клавиатура поднимается сама, когда экран устоялся.
+            try? await Task.sleep(for: .milliseconds(450))
+            focus = .me
+        }
     }
 
     private func isEmpty(_ text: String) -> Bool { text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }

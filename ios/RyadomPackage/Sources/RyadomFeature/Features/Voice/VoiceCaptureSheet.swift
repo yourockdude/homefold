@@ -64,6 +64,10 @@ struct VoiceCaptureSheet: View {
         }
         .onDisappear { capture.stop() }
         .onChange(of: capture.transcript) { _, _ in nothingRecognized = false }
+        .onChange(of: capture.state) { _, state in
+            // Без распознавания речи остаётся только набор текста — клавиатура поднимается сразу.
+            if state == .unavailable || state == .restricted || state == .failed { textFocused = true }
+        }
         .sensoryFeedback(.impact(weight: .light), trigger: capture.isListening)
     }
 
