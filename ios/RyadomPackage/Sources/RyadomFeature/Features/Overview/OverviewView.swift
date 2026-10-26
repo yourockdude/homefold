@@ -83,7 +83,8 @@ struct OverviewView: View {
 
     private var header: some View {
         HStack {
-            BrandMark()
+            BrandMark(showsPlus: families.first?.accessState() == .subscribed)
+                .animation(RYMotion.snappy, value: families.first?.hasPlan)
             Spacer()
             RYGlassCircleButton(systemImage: "magnifyingglass", label: "Поиск", action: onOpenSearch)
                 .accessibilityIdentifier("overview.search")

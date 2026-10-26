@@ -1,11 +1,14 @@
 import SwiftUI
 
 /// Логотип HomeFold: объёмный синий дом и название Helvetica Neue. На сплэше — крупный, название белое.
+/// У семей с подпиской после названия стоит синий плюс.
 struct BrandMark: View {
     enum Style { case compact, splash }
 
     var style: Style = .compact
     var color: Color = RYColor.accent
+    /// Подписка HomeFold Plus действует: после названия добавляется плюс.
+    var showsPlus = false
 
     var body: some View {
         Group {
@@ -18,11 +21,12 @@ struct BrandMark: View {
                 HStack(spacing: 6) {
                     house(height: 30)
                     wordmark(size: 24)
+                    if showsPlus { plus(height: 17) }
                 }
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("HomeFold")
+        .accessibilityLabel(showsPlus ? "HomeFold Plus" : "HomeFold")
     }
 
     private func house(height: CGFloat) -> some View {
@@ -30,6 +34,15 @@ struct BrandMark: View {
             .resizable()
             .scaledToFit()
             .frame(height: height)
+    }
+
+    private func plus(height: CGFloat) -> some View {
+        Image("BrandPlus", bundle: .module)
+            .resizable()
+            .scaledToFit()
+            .frame(height: height)
+            .offset(x: -2, y: -3)
+            .transition(.scale(scale: 0.4).combined(with: .opacity))
     }
 
     private func wordmark(size: CGFloat) -> some View {
